@@ -239,6 +239,7 @@ export function createHeroScrollTransition(
     end: `+=${scrollDistance}`,
     pin: refs.pinTarget,
     pinSpacing: true,
+    refreshPriority: 10,
     scrub: getScrub("heroToMagazine"),
     animation: tl,
     onUpdate: (self) => {
@@ -283,6 +284,9 @@ export function createHeroScrollTransition(
       }
     },
   });
+
+  ScrollTrigger.sort();
+  ScrollTrigger.refresh();
 
   return {
     timeline: tl,

@@ -146,10 +146,9 @@ export function Chapter05EastIndia({
 
       ScrollTrigger.create({
         trigger: stage,
-        start: "top 55%",
-        once: true,
-        onEnter: () => headerTl.play(),
-        onEnterBack: () => headerTl.play(),
+        start: "top 75%",
+        animation: headerTl,
+        toggleActions: "play none none reverse",
       });
 
       // 2. Photo Stage Dramatic Curtain Reveal (triggers directly when the photo enters view)
@@ -193,10 +192,9 @@ export function Chapter05EastIndia({
       if (photoStage) {
         ScrollTrigger.create({
           trigger: photoStage,
-          start: "top 78%",
-          once: true,
-          onEnter: () => photoTl.play(),
-          onEnterBack: () => photoTl.play(),
+          start: "top 75%",
+          animation: photoTl,
+          toggleActions: "play none none reverse",
         });
       }
 

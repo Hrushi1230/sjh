@@ -12,7 +12,7 @@
  * - Planner handoff reusing Phase 3 Concierge Planner
  */
 
-import { useState, useCallback, useEffect, useRef } from "react";
+import { useState, useCallback, useEffect, useLayoutEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { journeyAtlasData } from "../../data/journeyAtlasData";
@@ -161,6 +161,12 @@ export function JourneysAcrossIndiaSection({
       delete win.__P9_SEEK_CHAPTER__;
     };
   }, [scrollToChapter]);
+
+  // Ensure all downstream chapter triggers are sorted and refreshed in DOM order
+  useLayoutEffect(() => {
+    ScrollTrigger.sort();
+    ScrollTrigger.refresh();
+  }, []);
 
   return (
     <section
