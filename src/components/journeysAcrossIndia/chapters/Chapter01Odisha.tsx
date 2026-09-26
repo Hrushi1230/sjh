@@ -104,7 +104,7 @@ export function Chapter01Odisha({
         return;
       }
 
-      // Initial state: hidden for progressive scroll-driven reveal
+      // Initial state: hidden for triggered reveal
       gsap.set(numRef.current, { opacity: 0, y: 6 });
       titleLineRefs.current.forEach((line) => {
         if (line) gsap.set(line, { y: "105%", opacity: 0 });
@@ -129,104 +129,95 @@ export function Chapter01Odisha({
       });
 
       gsap.set(photoImgRef.current, {
-        clipPath: "inset(20% 0% 0% 12%)",
-        scale: 1.035,
-        opacity: 1,
+        y: 16,
+        scale: 1.025,
+        opacity: 0,
+        clipPath: "inset(12% 0% 0% 0%)",
       });
       gsap.set(ctaRef.current, { opacity: 0, x: -6 });
 
-      // Master ScrollTrigger Scrub Timeline
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: track,
-          start: "top top",
-          end: "bottom bottom",
-          scrub: 0.45,
-          invalidateOnRefresh: true,
-        },
-      });
+      // Triggered Entrance Timeline (Complete around 850-1000ms)
+      const tl = gsap.timeline({ paused: true });
 
-      // 0.00 - 0.15: 01 number reveals
-      tl.to(numRef.current, { opacity: 1, y: 0, duration: 0.15, ease: "power2.out" }, 0.00);
+      // 0.00: 01 number reveals
+      tl.to(numRef.current, { opacity: 1, y: 0, duration: 0.20, ease: "power2.out" }, 0.00);
 
-      // 0.08 - 0.28: Title mask reveal
+      // 0.06: Title mask reveal
       titleLineRefs.current.forEach((line, idx) => {
         if (!line) return;
         tl.to(
           line,
-          { y: "0%", opacity: 1, duration: 0.18, ease: "power3.out" },
-          0.08 + idx * 0.06
+          { y: "0%", opacity: 1, duration: 0.24, ease: "power3.out" },
+          0.06 + idx * 0.06
         );
       });
 
-      // 0.22 - 0.40: Support copy enters
-      tl.to(copyRef.current, { opacity: 1, y: 0, duration: 0.18, ease: "power2.out" }, 0.22);
+      // 0.16: Support copy enters
+      tl.to(copyRef.current, { opacity: 1, y: 0, duration: 0.20, ease: "power2.out" }, 0.16);
 
-      // 0.30 - 0.75: Progressive route drawing
+      // 0.22: Sacred atlas route draws
       tl.to(
         routePathRef.current,
         {
           strokeDashoffset: 0,
-          duration: 0.45,
-          ease: "none",
+          duration: 0.50,
+          ease: "power1.inOut",
         },
-        0.30
+        0.22
       );
 
-      // Progressive node & label activations along route timing
-      const nodeTimings = [0.30, 0.38, 0.47, 0.56, 0.65, 0.74];
+      // Destination nodes & labels appear along route
+      const nodeTimings = [0.24, 0.32, 0.40, 0.48, 0.56, 0.64];
       routeNodes.forEach((_, idx) => {
         const t = nodeTimings[idx];
         const node = nodeRefs.current[idx];
         const label = labelRefs.current[idx];
 
         if (node) {
-          tl.to(node, { scale: 1, opacity: 1, duration: 0.08, ease: "back.out(1.8)" }, t);
+          tl.to(node, { scale: 1, opacity: 1, duration: 0.12, ease: "back.out(1.8)" }, t);
         }
         if (label) {
-          tl.to(label, { opacity: 1, x: 0, duration: 0.09, ease: "power2.out" }, t + 0.02);
+          tl.to(label, { opacity: 1, x: 0, duration: 0.14, ease: "power2.out" }, t + 0.02);
         }
       });
 
-      // 0.30 - 0.75: Progressive image resolve
+      // 0.25: Photo resolves smoothly
       tl.to(
         photoImgRef.current,
         {
-          clipPath: "inset(0% 0% 0% 0%)",
+          y: 0,
           scale: 1.0,
-          duration: 0.45,
-          ease: "power2.out",
+          opacity: 1,
+          clipPath: "inset(0% 0% 0% 0%)",
+          duration: 0.55,
+          ease: "power3.out",
         },
-        0.30
+        0.25
       );
 
-      // 0.75 - 0.92: Understated CTA reveals once route >75% complete
+      // 0.70: Understated CTA appears
       tl.to(
         ctaRef.current,
         {
           opacity: 1,
           x: 0,
-          duration: 0.17,
+          duration: 0.20,
           ease: "power2.out",
         },
-        0.75
+        0.70
       );
 
-      // 0.94 - 1.00: Chapter exit handoff
-      tl.to(
-        photoImgRef.current,
-        { opacity: 0.40, duration: 0.06, ease: "power1.in" },
-        0.94
-      );
-      tl.to(
-        [numRef.current, copyRef.current],
-        { y: -8, opacity: 0.7, duration: 0.06 },
-        0.94
-      );
+      // Trigger entrance once stage enters 72% of viewport
+      ScrollTrigger.create({
+        trigger: stage,
+        start: "top 72%",
+        once: true,
+        onEnter: () => tl.play(),
+      });
 
       // Register hook for testing
       (window as any).__P9_ODISHA_TL__ = tl;
-    }, track);
+    }, stage);
 
     return () => {
       delete (window as any).__P9_ODISHA_TL__;

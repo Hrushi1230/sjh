@@ -104,7 +104,7 @@ export function Chapter08CustomPlanning({
         return;
       }
 
-      // Initial state
+      // Initial state: hidden for triggered reveal
       gsap.set(numRef.current, { opacity: 0, y: 6 });
       headlineLineRefs.current.forEach((line) => {
         if (line) gsap.set(line, { y: "105%", opacity: 0 });
@@ -119,41 +119,33 @@ export function Chapter08CustomPlanning({
       });
 
       gsap.set(photoImgRef.current, {
-        translateY: 14,
+        y: 16,
         scale: 1.025,
-        opacity: 1,
+        opacity: 0,
       });
       gsap.set(ctaBtnRef.current, { opacity: 0, y: 8, scale: 0.98 });
 
-      // Master Custom Planning Timeline
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: track,
-          start: "top top",
-          end: "bottom bottom",
-          scrub: 0.4,
-          invalidateOnRefresh: true,
-        },
-      });
+      // Triggered Custom Planning Timeline (Complete around 800-950ms)
+      const tl = gsap.timeline({ paused: true });
 
-      // 0.00 - 0.18: 08 number reveals
-      tl.to(numRef.current, { opacity: 1, y: 0, duration: 0.15, ease: "power2.out" }, 0.00);
+      // 0.00: 08 number reveals
+      tl.to(numRef.current, { opacity: 1, y: 0, duration: 0.18, ease: "power2.out" }, 0.00);
 
-      // 0.08 - 0.34: Headline reveals line by line
+      // 0.06: Headline reveals line by line
       headlineLineRefs.current.forEach((line, idx) => {
         if (!line) return;
         tl.to(
           line,
-          { y: "0%", opacity: 1, duration: 0.18, ease: "power3.out" },
-          0.08 + idx * 0.06
+          { y: "0%", opacity: 1, duration: 0.22, ease: "power3.out" },
+          0.06 + idx * 0.05
         );
       });
 
-      // 0.28 - 0.40: Subheading enters
-      tl.to(subheadingRef.current, { opacity: 1, y: 0, duration: 0.14, ease: "power2.out" }, 0.28);
+      // 0.18: Subheading enters
+      tl.to(subheadingRef.current, { opacity: 1, y: 0, duration: 0.16, ease: "power2.out" }, 0.18);
 
-      // 0.36 - 0.64: Four planning lines resolve sequentially
-      const dimensionTimings = [0.36, 0.43, 0.50, 0.57];
+      // 0.20: Four planning lines resolve sequentially
+      const dimensionTimings = [0.20, 0.28, 0.36, 0.44];
       planningDimensions.forEach((_, idx) => {
         const t = dimensionTimings[idx];
         const dim = dimensionRefs.current[idx];
@@ -163,37 +155,46 @@ export function Chapter08CustomPlanning({
           tl.to(dim, { opacity: 1, x: 0, duration: 0.14, ease: "power2.out" }, t);
         }
         if (dash) {
-          tl.to(dash, { scaleX: 1, duration: 0.10, ease: "power2.out" }, t + 0.02);
+          tl.to(dash, { scaleX: 1, duration: 0.12, ease: "power2.out" }, t + 0.02);
         }
       });
 
-      // 0.50 - 0.78: Human image reveals slowly from bottom
+      // 0.22: Human image reveals smoothly
       tl.to(
         photoImgRef.current,
         {
-          translateY: 0,
+          y: 0,
           scale: 1.0,
-          duration: 0.38,
-          ease: "power2.out",
+          opacity: 1,
+          duration: 0.55,
+          ease: "power3.out",
         },
-        0.50
+        0.22
       );
 
-      // 0.72 - 0.90: Prominent PLAN MY JOURNEY button enters
+      // 0.64: Prominent PLAN MY JOURNEY button enters
       tl.to(
         ctaBtnRef.current,
         {
           opacity: 1,
           y: 0,
           scale: 1.0,
-          duration: 0.20,
-          ease: "power2.out",
+          duration: 0.22,
+          ease: "back.out(1.5)",
         },
-        0.72
+        0.64
       );
 
+      // Trigger entrance once stage enters 72% of viewport
+      ScrollTrigger.create({
+        trigger: stage,
+        start: "top 72%",
+        once: true,
+        onEnter: () => tl.play(),
+      });
+
       (window as any).__P9_CUSTOM_TL__ = tl;
-    }, track);
+    }, stage);
 
     return () => {
       delete (window as any).__P9_CUSTOM_TL__;

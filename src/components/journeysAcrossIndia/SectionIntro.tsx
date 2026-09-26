@@ -137,12 +137,12 @@ export function SectionIntro({ onExploreChapters }: SectionIntroProps) {
         0.60
       );
 
-      // Triggered on scroll entry (normal document flow, no sticky lock)
+      // Triggered on scroll entry (normal document flow, no sticky lock, once: true)
       ScrollTrigger.create({
         trigger: stage,
         start: "top 72%",
+        once: true,
         onEnter: () => tl.play(),
-        onLeaveBack: () => tl.reverse(),
       });
     }, stage);
 

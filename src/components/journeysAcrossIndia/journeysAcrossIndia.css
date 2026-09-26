@@ -73,47 +73,60 @@
   height: auto;
 }
 
+.p9-chapterTrack {
+  position: relative;
+  width: 100%;
+  height: auto;
+  box-sizing: border-box;
+}
+
 .p9-chapterTrack--odisha {
-  height: calc(100svh + 110svh);
+  min-height: clamp(88svh, 92svh, 95svh);
 }
 
 .p9-chapterTrack--chardham {
-  height: calc(100svh + 110svh);
+  min-height: clamp(88svh, 92svh, 95svh);
 }
 
 .p9-chapterTrack--south {
-  height: calc(100svh + 100svh);
+  min-height: clamp(82svh, 88svh, 90svh);
 }
 
 .p9-chapterTrack--north {
-  height: calc(100svh + 100svh);
+  min-height: clamp(82svh, 88svh, 90svh);
 }
 
 .p9-chapterTrack--east {
-  height: calc(100svh + 95svh);
+  min-height: clamp(80svh, 85svh, 88svh);
 }
 
 .p9-chapterTrack--west {
-  height: calc(100svh + 85svh);
+  min-height: clamp(74svh, 78svh, 82svh);
 }
 
 .p9-chapterTrack--central {
-  height: calc(100svh + 85svh);
+  min-height: clamp(74svh, 78svh, 82svh);
 }
 
 .p9-chapterTrack--custom {
-  height: calc(100svh + 105svh);
+  min-height: clamp(88svh, 92svh, 95svh);
 }
 
 .p9-chapterStage,
 .p9-viewport.p9-chapterStage {
-  position: sticky;
-  top: 0;
+  position: relative;
+  top: auto;
   z-index: 2;
-  height: 100svh;
-  min-height: 100svh;
-  max-height: 100svh;
-  overflow: hidden;
+  height: auto;
+  min-height: 78svh;
+  max-height: none;
+  overflow: clip;
+
+  padding-top: clamp(72px, 10svh, 108px);
+  padding-bottom: clamp(64px, 9svh, 96px);
+  padding-left: clamp(16px, 5vw, 24px);
+  padding-right: clamp(16px, 5vw, 24px);
+  box-sizing: border-box;
 }
 
 /* Masked Lines for Typographic Reveals */
@@ -177,22 +190,15 @@
 
 .p9-viewport {
   width: 100%;
-  height: 100svh;
+  height: auto;
+  min-height: 78svh;
   box-sizing: border-box;
-  padding: 12px 22px 0;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   background-color: #F4EFE6;
   border-bottom: 1px solid rgba(185, 148, 85, 0.15);
-  overflow: hidden;
-}
-
-@media (max-height: 750px) {
-  .p9-viewport {
-    min-height: 720px;
-    height: auto;
-  }
+  overflow: clip;
 }
 
 /* ==========================================================================
@@ -231,6 +237,8 @@
    ARCHIVED ROWS RAIL (Scroll Progression Specification)
    ========================================================================== */
 .p9-archivedRail {
+  position: relative;
+  top: auto;
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -1037,9 +1045,6 @@
 }
 
 @media (max-height: 815px) {
-  .p9-viewport {
-    padding-top: 8px;
-  }
   .p9-archivedRail {
     margin-bottom: 6px;
     padding-bottom: 3px;

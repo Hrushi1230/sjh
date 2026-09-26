@@ -91,7 +91,7 @@ export function Chapter05EastIndia({
         return;
       }
 
-      // Initial state
+      // Initial state: hidden for triggered reveal
       gsap.set(numRef.current, { opacity: 0, y: 6 });
       titleLineRefs.current.forEach((line) => {
         if (line) gsap.set(line, { y: "105%", opacity: 0 });
@@ -103,38 +103,32 @@ export function Chapter05EastIndia({
       });
 
       gsap.set(photoImgRef.current, {
-        clipPath: "inset(14% 0% 0% 0%)",
-        opacity: 0.85,
+        y: 16,
+        scale: 1.025,
+        opacity: 0,
+        clipPath: "inset(10% 0% 0% 0%)",
       });
       gsap.set(ctaRef.current, { opacity: 0, x: -6 });
 
-      // Master Layer Scrub Timeline
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: track,
-          start: "top top",
-          end: "bottom bottom",
-          scrub: 0.4,
-          invalidateOnRefresh: true,
-        },
-      });
+      // Triggered Layer Timeline (Complete around 700-850ms)
+      const tl = gsap.timeline({ paused: true });
 
-      // 0.00 - 0.18: 05 + title reveal
-      tl.to(numRef.current, { opacity: 1, y: 0, duration: 0.15, ease: "power2.out" }, 0.00);
+      // 0.00: 05 + title reveal
+      tl.to(numRef.current, { opacity: 1, y: 0, duration: 0.18, ease: "power2.out" }, 0.00);
       titleLineRefs.current.forEach((line, idx) => {
         if (!line) return;
         tl.to(
           line,
-          { y: "0%", opacity: 1, duration: 0.18, ease: "power3.out" },
-          0.06 + idx * 0.06
+          { y: "0%", opacity: 1, duration: 0.22, ease: "power3.out" },
+          0.05 + idx * 0.05
         );
       });
 
-      // 0.18 - 0.30: Support copy enters
-      tl.to(copyRef.current, { opacity: 1, y: 0, duration: 0.14, ease: "power2.out" }, 0.18);
+      // 0.14: Support copy enters
+      tl.to(copyRef.current, { opacity: 1, y: 0, duration: 0.16, ease: "power2.out" }, 0.14);
 
-      // 0.28 - 0.70: 4 Planes resolve with overlapping ranges
-      const layerTimings = [0.28, 0.36, 0.44, 0.52];
+      // 4 Planes resolve with subtle overlap
+      const layerTimings = [0.18, 0.26, 0.34, 0.42];
       layers.forEach((_, idx) => {
         const t = layerTimings[idx];
         const panel = panelRefs.current[idx];
@@ -147,19 +141,21 @@ export function Chapter05EastIndia({
         }
       });
 
-      // 0.30 - 0.70: Photo windows combine into full image
+      // 0.20: Photo combines into full image
       tl.to(
         photoImgRef.current,
         {
-          clipPath: "inset(0% 0% 0% 0%)",
+          y: 0,
+          scale: 1.0,
           opacity: 1.0,
-          duration: 0.40,
-          ease: "power2.out",
+          clipPath: "inset(0% 0% 0% 0%)",
+          duration: 0.55,
+          ease: "power3.out",
         },
-        0.30
+        0.20
       );
 
-      // 0.70 - 0.88: Understated CTA enters
+      // 0.58: Understated CTA enters
       tl.to(
         ctaRef.current,
         {
@@ -168,15 +164,19 @@ export function Chapter05EastIndia({
           duration: 0.18,
           ease: "power2.out",
         },
-        0.70
+        0.58
       );
 
-      // 0.94 - 1.00: Chapter exit handoff
-      tl.to(photoImgRef.current, { opacity: 0.40, duration: 0.06 }, 0.94);
-      tl.to([numRef.current, copyRef.current], { y: -8, opacity: 0.7, duration: 0.06 }, 0.94);
+      // Trigger entrance once stage enters 72% of viewport
+      ScrollTrigger.create({
+        trigger: stage,
+        start: "top 72%",
+        once: true,
+        onEnter: () => tl.play(),
+      });
 
       (window as any).__P9_EAST_TL__ = tl;
-    }, track);
+    }, stage);
 
     return () => {
       delete (window as any).__P9_EAST_TL__;

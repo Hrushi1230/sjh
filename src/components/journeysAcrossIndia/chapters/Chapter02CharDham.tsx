@@ -90,7 +90,7 @@ export function Chapter02CharDham({
         return;
       }
 
-      // Initial state
+      // Initial state: hidden for triggered reveal
       gsap.set(numRef.current, { opacity: 0, y: 6 });
       titleLineRefs.current.forEach((line) => {
         if (line) gsap.set(line, { y: "105%", opacity: 0 });
@@ -108,90 +108,87 @@ export function Chapter02CharDham({
       });
 
       gsap.set(photoImgRef.current, {
-        clipPath: "inset(28% 0% 0% 0%)",
-        translateY: 16,
+        y: 16,
         scale: 1.025,
-        opacity: 1,
+        opacity: 0,
+        clipPath: "inset(12% 0% 0% 0%)",
       });
       gsap.set(ctaRef.current, { opacity: 0, x: -6 });
 
-      // Master Ascent Timeline
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: track,
-          start: "top top",
-          end: "bottom bottom",
-          scrub: 0.5,
-          invalidateOnRefresh: true,
-        },
-      });
+      // Triggered Ascent Timeline (Complete around 800-950ms)
+      const tl = gsap.timeline({ paused: true });
 
-      // 0.00 - 0.18: 02 + title reveal
-      tl.to(numRef.current, { opacity: 1, y: 0, duration: 0.15, ease: "power2.out" }, 0.00);
+      // 0.00: 02 + title reveal
+      tl.to(numRef.current, { opacity: 1, y: 0, duration: 0.20, ease: "power2.out" }, 0.00);
       titleLineRefs.current.forEach((line, idx) => {
         if (!line) return;
         tl.to(
           line,
-          { y: "0%", opacity: 1, duration: 0.18, ease: "power3.out" },
+          { y: "0%", opacity: 1, duration: 0.24, ease: "power3.out" },
           0.06 + idx * 0.06
         );
       });
 
-      // 0.20 - 0.32: Support copy enters
-      tl.to(copyRef.current, { opacity: 1, y: 0, duration: 0.14, ease: "power2.out" }, 0.20);
+      // 0.16: Support copy enters
+      tl.to(copyRef.current, { opacity: 1, y: 0, duration: 0.18, ease: "power2.out" }, 0.16);
 
-      // 0.28 - 0.72: Ascending connecting line draws upward
+      // 0.20: Ascending connecting line draws upward
       tl.to(
         ascentPathRef.current,
         {
           strokeDashoffset: 0,
-          duration: 0.44,
-          ease: "none",
+          duration: 0.48,
+          ease: "power1.inOut",
         },
-        0.28
+        0.20
       );
 
-      // Waypoints activate sequentially in climbing elevation order
-      const waypointTimings = [0.28, 0.42, 0.56, 0.70];
+      // Waypoints activate sequentially in climbing elevation order (Yamunotri -> Gangotri -> Kedarnath -> Badrinath)
+      const waypointTimings = [0.22, 0.34, 0.46, 0.58];
       shrines.forEach((_, idx) => {
         const t = waypointTimings[idx];
         const el = waypointRefs.current[idx];
         if (el) {
-          tl.to(el, { opacity: 1, y: 0, duration: 0.10, ease: "power2.out" }, t);
+          tl.to(el, { opacity: 1, y: 0, duration: 0.14, ease: "power2.out" }, t);
         }
       });
 
-      // 0.28 - 0.72: Mountain image upward curtain reveal
+      // 0.24: Mountain image settles
       tl.to(
         photoImgRef.current,
         {
-          clipPath: "inset(0% 0% 0% 0%)",
-          translateY: 0,
+          y: 0,
           scale: 1.0,
-          duration: 0.44,
-          ease: "power2.out",
+          opacity: 1,
+          clipPath: "inset(0% 0% 0% 0%)",
+          duration: 0.55,
+          ease: "power3.out",
         },
-        0.28
+        0.24
       );
 
-      // 0.72 - 0.90: Understated CTA enters at final waypoint
+      // 0.68: Understated CTA enters at final waypoint
       tl.to(
         ctaRef.current,
         {
           opacity: 1,
           x: 0,
-          duration: 0.18,
+          duration: 0.20,
           ease: "power2.out",
         },
-        0.72
+        0.68
       );
 
-      // 0.94 - 1.00: Chapter exit handoff
-      tl.to(photoImgRef.current, { opacity: 0.40, duration: 0.06 }, 0.94);
-      tl.to([numRef.current, copyRef.current], { y: -8, opacity: 0.7, duration: 0.06 }, 0.94);
+      // Trigger entrance once stage enters 72% of viewport
+      ScrollTrigger.create({
+        trigger: stage,
+        start: "top 72%",
+        once: true,
+        onEnter: () => tl.play(),
+      });
 
       (window as any).__P9_CHARDHAM_TL__ = tl;
-    }, track);
+    }, stage);
 
     return () => {
       delete (window as any).__P9_CHARDHAM_TL__;

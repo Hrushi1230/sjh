@@ -94,7 +94,7 @@ export function Chapter03SouthIndia({
         return;
       }
 
-      // Initial state
+      // Initial state: hidden for triggered reveal
       gsap.set(numRef.current, { opacity: 0, y: 6 });
       titleLineRefs.current.forEach((line) => {
         if (line) gsap.set(line, { y: "105%", opacity: 0 });
@@ -113,93 +113,92 @@ export function Chapter03SouthIndia({
       });
 
       gsap.set(photoImgRef.current, {
-        clipPath: "inset(18% 0% 0% 0%)",
-        translateY: 14,
-        opacity: 1,
+        y: 16,
+        scale: 1.025,
+        opacity: 0,
+        clipPath: "inset(12% 0% 0% 0%)",
       });
       gsap.set(ctaRef.current, { opacity: 0, x: -6 });
 
-      // Master Flow Timeline
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: track,
-          start: "top top",
-          end: "bottom bottom",
-          scrub: 0.45,
-          invalidateOnRefresh: true,
-        },
-      });
+      // Triggered Flow Timeline (Complete around 750-900ms)
+      const tl = gsap.timeline({ paused: true });
 
-      // 0.00 - 0.18: 03 + title reveal
-      tl.to(numRef.current, { opacity: 1, y: 0, duration: 0.15, ease: "power2.out" }, 0.00);
+      // 0.00: 03 + title reveal
+      tl.to(numRef.current, { opacity: 1, y: 0, duration: 0.18, ease: "power2.out" }, 0.00);
       titleLineRefs.current.forEach((line, idx) => {
         if (!line) return;
         tl.to(
           line,
-          { y: "0%", opacity: 1, duration: 0.18, ease: "power3.out" },
-          0.06 + idx * 0.06
+          { y: "0%", opacity: 1, duration: 0.22, ease: "power3.out" },
+          0.06 + idx * 0.05
         );
       });
 
-      // 0.18 - 0.30: Support copy enters
-      tl.to(copyRef.current, { opacity: 1, y: 0, duration: 0.14, ease: "power2.out" }, 0.18);
+      // 0.16: Support copy enters
+      tl.to(copyRef.current, { opacity: 1, y: 0, duration: 0.18, ease: "power2.out" }, 0.16);
 
-      // 0.28 - 0.72: Route ribbon begins
+      // 0.20: Route ribbon begins
       tl.to(
         ribbonPathRef.current,
         {
           strokeDashoffset: 0,
-          duration: 0.44,
-          ease: "none",
+          duration: 0.46,
+          ease: "power1.inOut",
         },
-        0.28
+        0.20
       );
       tl.to(
         ribbonWashRef.current,
         { opacity: 1, duration: 0.35, ease: "power1.inOut" },
-        0.32
+        0.24
       );
 
-      // Locations resolve along curve with organic delays
-      const flowTimings = [0.30, 0.42, 0.54, 0.62, 0.70];
+      // Locations resolve along curve
+      const flowTimings = [0.24, 0.34, 0.44, 0.52, 0.60];
       flowNodes.forEach((_, idx) => {
         const t = flowTimings[idx];
         const el = locationRefs.current[idx];
         if (el) {
-          tl.to(el, { opacity: 1, scale: 1, duration: 0.10, ease: "back.out(1.6)" }, t);
+          tl.to(el, { opacity: 1, scale: 1, duration: 0.12, ease: "back.out(1.6)" }, t);
         }
       });
 
-      // 0.30 - 0.72: Photo lifts gently into place
+      // 0.22: Photo settles into place
       tl.to(
         photoImgRef.current,
         {
+          y: 0,
+          scale: 1.0,
+          opacity: 1,
           clipPath: "inset(0% 0% 0% 0%)",
-          translateY: 0,
-          duration: 0.42,
-          ease: "power2.out",
+          duration: 0.55,
+          ease: "power3.out",
         },
-        0.30
+        0.22
       );
 
-      // 0.72 - 0.90: Understated CTA appears once flow resolves
+      // 0.64: Understated CTA appears once flow resolves
       tl.to(
         ctaRef.current,
         {
           opacity: 1,
           x: 0,
-          duration: 0.18,
+          duration: 0.20,
           ease: "power2.out",
         },
-        0.72
+        0.64
       );
 
-      // 0.94 - 1.00: Chapter exit handoff
-      tl.to(photoImgRef.current, { opacity: 0.40, duration: 0.06 }, 0.94);
-      tl.to([numRef.current, copyRef.current], { y: -8, opacity: 0.7, duration: 0.06 }, 0.94);
+      // Trigger entrance once stage enters 72% of viewport
+      ScrollTrigger.create({
+        trigger: stage,
+        start: "top 72%",
+        once: true,
+        onEnter: () => tl.play(),
+      });
 
       (window as any).__P9_SOUTH_TL__ = tl;
-    }, track);
+    }, stage);
 
     return () => {
       delete (window as any).__P9_SOUTH_TL__;

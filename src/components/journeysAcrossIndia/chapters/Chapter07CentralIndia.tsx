@@ -81,7 +81,7 @@ export function Chapter07CentralIndia({
         return;
       }
 
-      // Initial state: title settles DOWNWARD from -10px
+      // Initial state: hidden for triggered reveal (title settles DOWNWARD from -8px)
       gsap.set(numRef.current, { opacity: 0, y: -8 });
       titleLineRefs.current.forEach((line) => {
         if (line) gsap.set(line, { y: "-10px", opacity: 0 });
@@ -92,80 +92,78 @@ export function Chapter07CentralIndia({
       gsap.set(bracketRef.current, { scaleX: 0, transformOrigin: "center center" });
 
       gsap.set(photoImgRef.current, {
-        translateY: 22,
-        opacity: 0.85,
+        y: 18,
+        scale: 1.02,
+        opacity: 0,
       });
       gsap.set(ctaRef.current, { opacity: 0, x: -5 });
 
-      // Master Grounded Timeline
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: track,
-          start: "top top",
-          end: "bottom bottom",
-          scrub: 0.3,
-          invalidateOnRefresh: true,
-        },
-      });
+      // Triggered Grounded Timeline (Complete around 550-700ms)
+      const tl = gsap.timeline({ paused: true });
 
-      // 0.00 - 0.24: 07 reveals & title settles DOWNWARD
+      // 0.00: 07 reveals & title settles DOWNWARD
       tl.to(numRef.current, { opacity: 1, y: 0, duration: 0.16, ease: "power2.out" }, 0.00);
       titleLineRefs.current.forEach((line, idx) => {
         if (!line) return;
         tl.to(
           line,
           { y: "0px", opacity: 1, duration: 0.20, ease: "power2.out" },
-          0.04 + idx * 0.06
+          0.04 + idx * 0.05
         );
       });
 
-      // 0.20 - 0.38: Body copy fades in
-      tl.to(copyRef.current, { opacity: 1, y: 0, duration: 0.18, ease: "power2.out" }, 0.20);
+      // 0.14: Body copy fades in
+      tl.to(copyRef.current, { opacity: 1, y: 0, duration: 0.14, ease: "power2.out" }, 0.14);
 
-      // 0.32 - 0.55: Architectural plumb-line draws downward to ground
+      // 0.16: Architectural plumb-line draws downward to ground
       tl.to(
         plumbLineRef.current,
-        { scaleY: 1, duration: 0.23, ease: "power2.out" },
-        0.32
+        { scaleY: 1, duration: 0.20, ease: "power2.out" },
+        0.16
       );
 
-      // 0.50 - 0.65: Grounding bracket expands
+      // 0.24: Grounding bracket expands
       tl.to(
         bracketRef.current,
         { scaleX: 1, duration: 0.15, ease: "power2.out" },
-        0.50
+        0.24
       );
 
-      // 0.35 - 0.70: Image enters from lower edge
+      // 0.14: Image settles
       tl.to(
         photoImgRef.current,
         {
-          translateY: 0,
+          y: 0,
+          scale: 1.0,
           opacity: 1.0,
-          duration: 0.35,
-          ease: "power2.out",
+          duration: 0.48,
+          ease: "power3.out",
         },
-        0.35
+        0.14
       );
 
-      // 0.65 - 0.85: Understated CTA enters
+      // 0.46: Understated CTA enters
       tl.to(
         ctaRef.current,
         {
           opacity: 1,
           x: 0,
-          duration: 0.20,
+          duration: 0.16,
           ease: "power2.out",
         },
-        0.65
+        0.46
       );
 
-      // 0.94 - 1.00: Chapter exit handoff
-      tl.to(photoImgRef.current, { opacity: 0.40, duration: 0.06 }, 0.94);
-      tl.to([numRef.current, copyRef.current], { y: -8, opacity: 0.7, duration: 0.06 }, 0.94);
+      // Trigger entrance once stage enters 72% of viewport
+      ScrollTrigger.create({
+        trigger: stage,
+        start: "top 72%",
+        once: true,
+        onEnter: () => tl.play(),
+      });
 
       (window as any).__P9_CENTRAL_TL__ = tl;
-    }, track);
+    }, stage);
 
     return () => {
       delete (window as any).__P9_CENTRAL_TL__;

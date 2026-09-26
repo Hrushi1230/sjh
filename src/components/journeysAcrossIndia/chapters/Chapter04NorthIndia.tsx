@@ -99,7 +99,7 @@ export function Chapter04NorthIndia({
         return;
       }
 
-      // Initial state
+      // Initial state: hidden for triggered reveal
       gsap.set(numRef.current, { opacity: 0, y: 6 });
       titleLineRefs.current.forEach((line) => {
         if (line) gsap.set(line, { y: "105%", opacity: 0 });
@@ -114,44 +114,36 @@ export function Chapter04NorthIndia({
       });
 
       gsap.set(photoImgRef.current, {
-        translateY: 16,
+        y: 16,
         scale: 1.02,
-        opacity: 1,
+        opacity: 0,
       });
       gsap.set(ctaRef.current, { opacity: 0, x: -6 });
 
-      // Master Horizon Timeline
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: track,
-          start: "top top",
-          end: "bottom bottom",
-          scrub: 0.4,
-          invalidateOnRefresh: true,
-        },
-      });
+      // Triggered Horizon Timeline (Complete around 700-850ms)
+      const tl = gsap.timeline({ paused: true });
 
-      // 0.00 - 0.18: 04 + title reveal
-      tl.to(numRef.current, { opacity: 1, y: 0, duration: 0.15, ease: "power2.out" }, 0.00);
+      // 0.00: 04 + title reveal
+      tl.to(numRef.current, { opacity: 1, y: 0, duration: 0.18, ease: "power2.out" }, 0.00);
       titleLineRefs.current.forEach((line, idx) => {
         if (!line) return;
         tl.to(
           line,
-          { y: "0%", opacity: 1, duration: 0.18, ease: "power3.out" },
-          0.06 + idx * 0.06
+          { y: "0%", opacity: 1, duration: 0.22, ease: "power3.out" },
+          0.05 + idx * 0.05
         );
       });
 
-      // 0.18 - 0.30: Support copy enters
-      tl.to(copyRef.current, { opacity: 1, y: 0, duration: 0.14, ease: "power2.out" }, 0.18);
+      // 0.14: Support copy enters
+      tl.to(copyRef.current, { opacity: 1, y: 0, duration: 0.16, ease: "power2.out" }, 0.14);
 
-      // 0.28 - 0.72: Five Horizons form sequentially
+      // Horizons extend and labels resolve
       const horizonTimings = [
-        { label: 0.28, line: 0.30 },
-        { label: 0.36, line: 0.38 },
-        { label: 0.44, line: 0.46 },
-        { label: 0.52, line: 0.54 },
-        { label: 0.60, line: 0.62 },
+        { label: 0.18, line: 0.20 },
+        { label: 0.26, line: 0.28 },
+        { label: 0.34, line: 0.36 },
+        { label: 0.42, line: 0.44 },
+        { label: 0.50, line: 0.52 },
       ];
 
       horizons.forEach((_, idx) => {
@@ -160,26 +152,27 @@ export function Chapter04NorthIndia({
         const line = lineRefs.current[idx];
 
         if (entry) {
-          tl.to(entry, { opacity: 1, y: 0, duration: 0.12, ease: "power2.out" }, tLabel);
+          tl.to(entry, { opacity: 1, y: 0, duration: 0.14, ease: "power2.out" }, tLabel);
         }
         if (line) {
-          tl.to(line, { scaleX: 1, duration: 0.14, ease: "power2.out" }, tLine);
+          tl.to(line, { scaleX: 1, duration: 0.16, ease: "power2.out" }, tLine);
         }
       });
 
-      // 0.30 - 0.70: Photo rises from lower frame
+      // 0.20: Photo settles
       tl.to(
         photoImgRef.current,
         {
-          translateY: 0,
+          y: 0,
           scale: 1.0,
-          duration: 0.40,
-          ease: "power2.out",
+          opacity: 1,
+          duration: 0.55,
+          ease: "power3.out",
         },
-        0.30
+        0.20
       );
 
-      // 0.72 - 0.90: Understated CTA enters
+      // 0.60: Understated CTA enters
       tl.to(
         ctaRef.current,
         {
@@ -188,15 +181,19 @@ export function Chapter04NorthIndia({
           duration: 0.18,
           ease: "power2.out",
         },
-        0.72
+        0.60
       );
 
-      // 0.94 - 1.00: Chapter exit handoff
-      tl.to(photoImgRef.current, { opacity: 0.40, duration: 0.06 }, 0.94);
-      tl.to([numRef.current, copyRef.current], { y: -8, opacity: 0.7, duration: 0.06 }, 0.94);
+      // Trigger entrance once stage enters 72% of viewport
+      ScrollTrigger.create({
+        trigger: stage,
+        start: "top 72%",
+        once: true,
+        onEnter: () => tl.play(),
+      });
 
       (window as any).__P9_NORTH_TL__ = tl;
-    }, track);
+    }, stage);
 
     return () => {
       delete (window as any).__P9_NORTH_TL__;

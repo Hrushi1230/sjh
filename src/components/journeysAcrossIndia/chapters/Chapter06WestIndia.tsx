@@ -76,7 +76,7 @@ export function Chapter06WestIndia({
         return;
       }
 
-      // Initial state
+      // Initial state: hidden for triggered reveal
       gsap.set(numRef.current, { opacity: 0, y: 6 });
       titleLineRefs.current.forEach((line) => {
         if (line) gsap.set(line, { y: "105%", opacity: 0 });
@@ -85,72 +85,73 @@ export function Chapter06WestIndia({
       gsap.set(ruleRef.current, { scaleX: 0, transformOrigin: "left center" });
 
       gsap.set(photoImgRef.current, {
-        clipPath: "inset(12% 0% 0% 0%)",
-        opacity: 1,
+        y: 16,
+        scale: 1.025,
+        opacity: 0,
+        clipPath: "inset(8% 0% 0% 0%)",
       });
       gsap.set(ctaRef.current, { opacity: 0, x: -5 });
 
-      // Master Restraint Timeline
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: track,
-          start: "top top",
-          end: "bottom bottom",
-          scrub: 0.3,
-          invalidateOnRefresh: true,
-        },
-      });
+      // Triggered Restraint Timeline (Complete around 550-700ms)
+      const tl = gsap.timeline({ paused: true });
 
-      // 0.00 - 0.22: 06 + title reveal
+      // 0.00: 06 + title reveal
       tl.to(numRef.current, { opacity: 1, y: 0, duration: 0.16, ease: "power2.out" }, 0.00);
       titleLineRefs.current.forEach((line, idx) => {
         if (!line) return;
         tl.to(
           line,
-          { y: "0%", opacity: 1, duration: 0.18, ease: "power3.out" },
-          0.06 + idx * 0.06
+          { y: "0%", opacity: 1, duration: 0.20, ease: "power3.out" },
+          0.05 + idx * 0.05
         );
       });
 
-      // 0.20 - 0.38: Body copy fades in
-      tl.to(copyRef.current, { opacity: 1, y: 0, duration: 0.18, ease: "power2.out" }, 0.20);
+      // 0.14: Body copy fades in
+      tl.to(copyRef.current, { opacity: 1, y: 0, duration: 0.14, ease: "power2.out" }, 0.14);
 
-      // 0.35 - 0.55: Architectural gold rule draws
+      // 0.16: Architectural gold rule draws
       tl.to(
         ruleRef.current,
-        { scaleX: 1, duration: 0.20, ease: "power2.out" },
-        0.35
+        { scaleX: 1, duration: 0.22, ease: "power2.out" },
+        0.16
       );
 
-      // 0.30 - 0.70: Slow peaceful image reveal
+      // 0.14: Photo settles
       tl.to(
         photoImgRef.current,
         {
+          y: 0,
+          scale: 1.0,
+          opacity: 1,
           clipPath: "inset(0% 0% 0% 0%)",
-          duration: 0.40,
-          ease: "power2.out",
+          duration: 0.48,
+          ease: "power3.out",
         },
-        0.30
+        0.14
       );
 
-      // 0.65 - 0.85: Understated CTA enters
+      // 0.46: Understated CTA enters
       tl.to(
         ctaRef.current,
         {
           opacity: 1,
           x: 0,
-          duration: 0.20,
+          duration: 0.16,
           ease: "power2.out",
         },
-        0.65
+        0.46
       );
 
-      // 0.94 - 1.00: Chapter exit handoff
-      tl.to(photoImgRef.current, { opacity: 0.40, duration: 0.06 }, 0.94);
-      tl.to([numRef.current, copyRef.current], { y: -8, opacity: 0.7, duration: 0.06 }, 0.94);
+      // Trigger entrance once stage enters 72% of viewport
+      ScrollTrigger.create({
+        trigger: stage,
+        start: "top 72%",
+        once: true,
+        onEnter: () => tl.play(),
+      });
 
       (window as any).__P9_WEST_TL__ = tl;
-    }, track);
+    }, stage);
 
     return () => {
       delete (window as any).__P9_WEST_TL__;
