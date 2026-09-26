@@ -91,19 +91,19 @@ export function createHeroScrollTransition(
     };
   }
 
-  // 1. Gate framing recession (progress 0.10 -> 0.34)
+  // 1. Gate framing recession (progress 0.08 -> 0.36)
   tl.to(
     refs.doors,
     {
       autoAlpha: 0,
       scale: 1.04,
-      duration: 0.24,
+      duration: 0.28,
       ease: "power2.inOut",
     },
-    0.10
+    0.08
   );
 
-  // 2. Journey Dock exits downward (progress 0.08 -> 0.28)
+  // 2. Journey Dock exits downward (progress 0.06 -> 0.28)
   tl.fromTo(
     refs.dock,
     {
@@ -115,13 +115,13 @@ export function createHeroScrollTransition(
       autoAlpha: 0,
       y: 24,
       scale: 0.94,
-      duration: 0.20,
+      duration: 0.22,
       ease: "power2.in",
     },
-    0.08
+    0.06
   );
 
-  // 3. Compass nav exits (progress 0.08 -> 0.25)
+  // 3. Compass nav exits (progress 0.06 -> 0.26)
   tl.fromTo(
     refs.compassNav,
     {
@@ -131,13 +131,13 @@ export function createHeroScrollTransition(
     {
       autoAlpha: 0,
       scale: 0.90,
-      duration: 0.17,
+      duration: 0.20,
       ease: "power2.in",
     },
-    0.08
+    0.06
   );
 
-  // 4. Hero typography departs cleanly (progress 0.26 -> 0.50)
+  // 4. Hero typography departs cleanly (progress 0.18 -> 0.42)
   tl.to(
     refs.heroCopy,
     {
@@ -146,21 +146,21 @@ export function createHeroScrollTransition(
       duration: 0.24,
       ease: "power2.in",
     },
-    0.26
+    0.18
   );
 
-  // 5. Warm ivory canvas (#F4EFE6) emerges (progress 0.20 -> 0.50)
+  // 5. Warm ivory canvas (#F4EFE6) emerges (progress 0.15 -> 0.53)
   tl.to(
     refs.ivoryCanvas,
     {
       opacity: 1,
-      duration: 0.30,
+      duration: 0.38,
       ease: "power1.inOut",
     },
-    0.20
+    0.15
   );
 
-  // 6. Hero image stage detaches from fullscreen, scales inward, and rounds corners (progress 0.26 -> 0.72)
+  // 6. Hero image stage detaches from fullscreen, scales inward, and rounds corners (progress 0.18 -> 0.78)
   tl.to(
     refs.cardStage,
     {
@@ -169,66 +169,69 @@ export function createHeroScrollTransition(
       borderRadius: "28px",
       boxShadow: "0 22px 52px rgba(17, 16, 14, 0.22)",
       top: targetCardTop,
-      duration: 0.46,
+      duration: 0.60,
       ease: "power2.inOut",
     },
-    0.26
+    0.18
   );
 
-  // 7. Subtle interior photographic reframe inside card (progress 0.28 -> 0.74)
+  // 7. Subtle interior photographic reframe inside card (progress 0.20 -> 0.78)
   tl.to(
     refs.cardImg,
     {
       scale: 1.05,
       y: -12,
       filter: "brightness(1) saturate(1) blur(0px)",
-      duration: 0.46,
+      duration: 0.58,
       ease: "power1.out",
     },
-    0.28
+    0.20
   );
 
-  // 8. Header palette adapts from light/gold to dark temple-black (#11100E) over ivory (progress 0.32 -> 0.65)
+  // 8. Header palette adapts from light/gold to dark temple-black (#11100E) over ivory (progress 0.30 -> 0.65)
   tl.to(
     refs.header,
     {
       color: "#11100E",
-      duration: 0.33,
+      duration: 0.35,
       ease: "power2.out",
     },
-    0.32
+    0.30
   );
 
-  // 9. Editorial section intro arrives: "WHAT ARE YOU LOOKING FOR? Not destinations. A feeling." (progress 0.44 -> 0.64)
+  // 9. Editorial section intro arrives: "WHAT ARE YOU LOOKING FOR? Not destinations. A feeling." (progress 0.44 -> 0.72)
   tl.fromTo(
     refs.editorialIntro,
     { autoAlpha: 0, y: 16 },
     {
       autoAlpha: 1,
       y: 0,
-      duration: 0.20,
+      duration: 0.28,
       ease: "power2.out",
     },
     0.44
   );
 
-  // 10. Editorial feeling details arrive below the card (progress 0.58 -> 0.76)
+  // 10. Editorial feeling details arrive below the card (progress 0.60 -> 0.88)
   tl.fromTo(
     refs.editorialMeta,
     { autoAlpha: 0, y: 20 },
     {
       autoAlpha: 1,
       y: 0,
-      duration: 0.18,
+      duration: 0.28,
       ease: "power3.out",
     },
-    0.58
+    0.60
   );
 
-  // ScrollTrigger instance pinning the hero over 135svh of native scroll
-  const scrollDistance = Math.round(viewportHeight * 1.35);
+  // Responsive scroll distance: mobile calibrated for effortless, buttery scroll (0.72vh ~ 600px), desktop 1.15vh
+  const isMobile = typeof window !== "undefined" && (window.innerWidth <= 600 || window.matchMedia("(pointer: coarse)").matches);
+  const scrollDistance = Math.round(viewportHeight * (isMobile ? 0.72 : 1.15));
 
   let wasLocked = false;
+  let wasDoorsHidden = false;
+  let wasEditorial = false;
 
   const st = ScrollTrigger.create({
     trigger: refs.track,
@@ -249,44 +252,33 @@ export function createHeroScrollTransition(
         callbacks?.onLockChange?.(isLocked);
       }
 
-      // Pointer event safety on fading controls
+      // Pointer event safety on fading controls (dock & compass)
       if (refs.dock) {
-        refs.dock.style.pointerEvents = p > 0.20 ? "none" : "auto";
-        if (p >= 0.28) {
-          refs.dock.style.opacity = "0";
-          refs.dock.style.visibility = "hidden";
-        } else if (p <= 0.04) {
-          refs.dock.style.opacity = "1";
-          refs.dock.style.visibility = "visible";
-          refs.dock.style.transform = "translate(0px, 0px) scale(1)";
-        } else {
-          refs.dock.style.visibility = "visible";
-        }
+        refs.dock.style.pointerEvents = p > 0.18 ? "none" : "auto";
       }
       if (refs.compassNav) {
-        refs.compassNav.style.pointerEvents = p > 0.18 ? "none" : "auto";
-        if (p >= 0.25) {
-          refs.compassNav.style.opacity = "0";
-          refs.compassNav.style.visibility = "hidden";
-        } else if (p <= 0.04) {
-          refs.compassNav.style.opacity = "1";
-          refs.compassNav.style.visibility = "visible";
-        } else {
-          refs.compassNav.style.visibility = "visible";
+        refs.compassNav.style.pointerEvents = p > 0.16 ? "none" : "auto";
+      }
+
+      // Doors visibility safety (only mutate DOM when threshold crosses)
+      if (refs.doors) {
+        const doorsHidden = p >= 0.36;
+        if (doorsHidden !== wasDoorsHidden) {
+          wasDoorsHidden = doorsHidden;
+          refs.doors.style.visibility = doorsHidden ? "hidden" : "visible";
         }
       }
 
-      // Doors visibility safety
-      if (refs.doors) {
-        refs.doors.style.visibility = p >= 0.34 ? "hidden" : "visible";
-      }
-
-      // Header adaptation class
+      // Header adaptation class (only mutate DOM when threshold crosses)
       if (refs.header) {
-        if (p > 0.50) {
-          refs.header.classList.add("is-editorial");
-        } else {
-          refs.header.classList.remove("is-editorial");
+        const isEdit = p > 0.48;
+        if (isEdit !== wasEditorial) {
+          wasEditorial = isEdit;
+          if (isEdit) {
+            refs.header.classList.add("is-editorial");
+          } else {
+            refs.header.classList.remove("is-editorial");
+          }
         }
       }
     },
@@ -316,40 +308,16 @@ export function createHeroScrollTransition(
       wasLocked = isLocked;
       callbacks?.onLockChange?.(isLocked);
       if (refs.doors) {
-        refs.doors.style.visibility = progress >= 0.34 ? "hidden" : "visible";
+        refs.doors.style.visibility = progress >= 0.36 ? "hidden" : "visible";
       }
       if (refs.dock) {
-        if (progress >= 0.28) {
-          refs.dock.style.opacity = "0";
-          refs.dock.style.visibility = "hidden";
-          refs.dock.style.pointerEvents = "none";
-        } else if (progress <= 0.04) {
-          refs.dock.style.opacity = "1";
-          refs.dock.style.visibility = "visible";
-          refs.dock.style.pointerEvents = "auto";
-          refs.dock.style.transform = "translate(0px, 0px) scale(1)";
-        } else {
-          refs.dock.style.visibility = "visible";
-          refs.dock.style.pointerEvents = progress > 0.20 ? "none" : "auto";
-        }
+        refs.dock.style.pointerEvents = progress > 0.18 ? "none" : "auto";
       }
       if (refs.compassNav) {
-        if (progress >= 0.25) {
-          refs.compassNav.style.opacity = "0";
-          refs.compassNav.style.visibility = "hidden";
-          refs.compassNav.style.pointerEvents = "none";
-        } else if (progress <= 0.04) {
-          refs.compassNav.style.opacity = "1";
-          refs.compassNav.style.visibility = "visible";
-          refs.compassNav.style.pointerEvents = "auto";
-          refs.compassNav.style.transform = "translate(0px, 0px) scale(1)";
-        } else {
-          refs.compassNav.style.visibility = "visible";
-          refs.compassNav.style.pointerEvents = progress > 0.18 ? "none" : "auto";
-        }
+        refs.compassNav.style.pointerEvents = progress > 0.16 ? "none" : "auto";
       }
       if (refs.header) {
-        if (progress > 0.50) {
+        if (progress > 0.48) {
           refs.header.classList.add("is-editorial");
         } else {
           refs.header.classList.remove("is-editorial");

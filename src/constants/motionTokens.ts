@@ -30,14 +30,14 @@ export const SJH_DURATION = {
 export const SJH_SCRUB = {
   // Mobile touch (coarse pointer): tight attachment to the thumb, minimal catch-up lag
   mobile: {
-    heroToMagazine: 0.40,
+    heroToMagazine: 0.20,
     travelThread: 0.28,
     trustLedger: 0.30,
     journeyAtlas: 0.35,
   },
   // Desktop mouse wheel (fine pointer): luxurious momentum gliding
   desktop: {
-    heroToMagazine: 0.80,
+    heroToMagazine: 0.70,
     travelThread: 0.55,
     trustLedger: 0.50,
     journeyAtlas: 0.50,

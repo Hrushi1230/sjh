@@ -176,9 +176,8 @@ export function MobileCinematicHero({
   const editorialMetaRef = useRef<HTMLDivElement>(null);
   const scrollTransitionRef = useRef<ScrollTransitionHandle | null>(null);
   const isScrollLockedRef = useRef(false);
-  const [scrollProgress, setScrollProgress] = useState(0);
+  const [isScrollLocked, setIsScrollLocked] = useState(false);
   const scrollProgressRef = useRef(0);
-  scrollProgressRef.current = scrollProgress;
 
   const currentDest = destinations[activeDestIndex];
   const incomingDest = destinations[incomingDestIndex];
@@ -189,18 +188,44 @@ export function MobileCinematicHero({
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => {
+    let ticking = false;
+    let prevScrolled = false;
+    let prevDark = false;
+    let prevEditorial = false;
+
+    const checkScroll = () => {
       const y = window.scrollY;
-      setIsScrolled(y > 60);
+      const nextScrolled = y > 60;
+      if (nextScrolled !== prevScrolled) {
+        prevScrolled = nextScrolled;
+        setIsScrolled(nextScrolled);
+      }
 
       const p11 = document.getElementById("start-your-journey");
-      const inDark = Boolean(p11 && p11.getBoundingClientRect().top <= 70);
-      setIsDarkTheme(inDark);
-      setIsEditorialTheme(y > 450 && !inDark);
+      const nextDark = Boolean(p11 && p11.getBoundingClientRect().top <= 70);
+      if (nextDark !== prevDark) {
+        prevDark = nextDark;
+        setIsDarkTheme(nextDark);
+      }
+
+      const nextEditorial = y > 450 && !nextDark;
+      if (nextEditorial !== prevEditorial) {
+        prevEditorial = nextEditorial;
+        setIsEditorialTheme(nextEditorial);
+      }
+
+      ticking = false;
+    };
+
+    const handleScroll = () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(checkScroll);
+      }
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
+    checkScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -797,6 +822,7 @@ export function MobileCinematicHero({
       win.__SJH_HERO_TIMELINE__ = tl;
       win.__SJH_SEEK__ = (t: number) => tl.pause(t);
       win.__SJH_SET_SETTLED__ = () => {
+        timelineRef.current?.kill();
         setHeroSettled(refs, gateCal);
         setIsIntroComplete(true);
         isIntroCompleteRef.current = true;
@@ -1021,7 +1047,7 @@ export function MobileCinematicHero({
 
     const handle = createHeroScrollTransition(refs, {
       onProgress: (p) => {
-        setScrollProgress(p);
+        scrollProgressRef.current = p;
         if (p > 0.02) {
           killAutoplayTimer();
           if (heroMotionStateRef.current === "auto-wait" || heroMotionStateRef.current === "settled") {
@@ -1034,6 +1060,7 @@ export function MobileCinematicHero({
       },
       onLockChange: (locked) => {
         isScrollLockedRef.current = locked;
+        setIsScrollLocked(locked);
       },
     });
     scrollTransitionRef.current = handle;
@@ -1041,8 +1068,10 @@ export function MobileCinematicHero({
     const win = window as any;
     win.__SJH_SCROLL_SEEK__ = (p: number) => {
       handle.seek(p);
-      setScrollProgress(p);
-      isScrollLockedRef.current = p > 0.04;
+      scrollProgressRef.current = p;
+      const locked = p > 0.04;
+      isScrollLockedRef.current = locked;
+      setIsScrollLocked(locked);
     };
     win.__SJH_GET_SCROLL_PROGRESS__ = () => scrollProgressRef.current;
 
@@ -1442,8 +1471,8 @@ export function MobileCinematicHero({
                   onClick={() => handleCompassTap("north")}
                   aria-label="Go to Kashmir (North)"
                   aria-current={currentDest.direction === "north" ? "true" : undefined}
-                  tabIndex={plannerState !== "closed" || scrollProgress > 0.04 ? -1 : 0}
-                  disabled={plannerState !== "closed" || scrollProgress > 0.04}
+                  tabIndex={plannerState !== "closed" || isScrollLocked ? -1 : 0}
+                  disabled={plannerState !== "closed" || isScrollLocked}
                 >
                   <span className="sjhHero__compassLabel">N</span>
                   <span className="sjhHero__compassDot" />
@@ -1455,8 +1484,8 @@ export function MobileCinematicHero({
                   onClick={() => handleCompassTap("east")}
                   aria-label="Go to Puri (East)"
                   aria-current={currentDest.direction === "east" ? "true" : undefined}
-                  tabIndex={plannerState !== "closed" || scrollProgress > 0.04 ? -1 : 0}
-                  disabled={plannerState !== "closed" || scrollProgress > 0.04}
+                  tabIndex={plannerState !== "closed" || isScrollLocked ? -1 : 0}
+                  disabled={plannerState !== "closed" || isScrollLocked}
                 >
                   <span className="sjhHero__compassDot" />
                   <span className="sjhHero__compassLabel">E</span>
@@ -1468,8 +1497,8 @@ export function MobileCinematicHero({
                   onClick={() => handleCompassTap("south")}
                   aria-label="Go to Kerala (South)"
                   aria-current={currentDest.direction === "south" ? "true" : undefined}
-                  tabIndex={plannerState !== "closed" || scrollProgress > 0.04 ? -1 : 0}
-                  disabled={plannerState !== "closed" || scrollProgress > 0.04}
+                  tabIndex={plannerState !== "closed" || isScrollLocked ? -1 : 0}
+                  disabled={plannerState !== "closed" || isScrollLocked}
                 >
                   <span className="sjhHero__compassDot" />
                   <span className="sjhHero__compassLabel">S</span>
@@ -1481,8 +1510,8 @@ export function MobileCinematicHero({
                   onClick={() => handleCompassTap("west")}
                   aria-label="Go to Rajasthan (West)"
                   aria-current={currentDest.direction === "west" ? "true" : undefined}
-                  tabIndex={plannerState !== "closed" || scrollProgress > 0.04 ? -1 : 0}
-                  disabled={plannerState !== "closed" || scrollProgress > 0.04}
+                  tabIndex={plannerState !== "closed" || isScrollLocked ? -1 : 0}
+                  disabled={plannerState !== "closed" || isScrollLocked}
                 >
                   <span className="sjhHero__compassLabel">W</span>
                   <span className="sjhHero__compassDot" />
@@ -1504,8 +1533,8 @@ export function MobileCinematicHero({
                       ? "Resume destination slideshow"
                       : "Pause destination slideshow"
                   }
-                  tabIndex={plannerState !== "closed" || scrollProgress > 0.04 ? -1 : 0}
-                  disabled={plannerState !== "closed" || scrollProgress > 0.04}
+                  tabIndex={plannerState !== "closed" || isScrollLocked ? -1 : 0}
+                  disabled={plannerState !== "closed" || isScrollLocked}
                 >
                   <span className="sjhHero__autoplayBtnIcon">
                     {isAutoplayManuallyPaused ? (
