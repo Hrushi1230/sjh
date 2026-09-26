@@ -179,17 +179,13 @@ export function Chapter02CharDham({
         0.78
       );
 
-      const st = ScrollTrigger.create({
+      ScrollTrigger.create({
         trigger: stage,
         start: "top 65%",
         once: true,
         onEnter: () => tl.play(),
         onEnterBack: () => tl.play(),
       });
-
-      if (st.progress > 0) {
-        tl.progress(1);
-      }
 
       (window as any).__P9_CHARDHAM_TL__ = tl;
     }, stage);

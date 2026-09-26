@@ -167,17 +167,13 @@ export function Chapter05EastIndia({
         0.76
       );
 
-      const st = ScrollTrigger.create({
+      ScrollTrigger.create({
         trigger: stage,
         start: "top 65%",
         once: true,
         onEnter: () => tl.play(),
         onEnterBack: () => tl.play(),
       });
-
-      if (st.progress > 0) {
-        tl.progress(1);
-      }
 
       (window as any).__P9_EAST_TL__ = tl;
     }, stage);

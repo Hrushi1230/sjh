@@ -207,17 +207,13 @@ export function Chapter01Odisha({
         0.82
       );
 
-      const st = ScrollTrigger.create({
+      ScrollTrigger.create({
         trigger: stage,
         start: "top 65%",
         once: true,
         onEnter: () => tl.play(),
         onEnterBack: () => tl.play(),
       });
-
-      if (st.progress > 0) {
-        tl.progress(1);
-      }
 
       // Register hook for testing
       (window as any).__P9_ODISHA_TL__ = tl;
