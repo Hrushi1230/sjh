@@ -120,58 +120,50 @@ export function Chapter03SouthIndia({
       });
       gsap.set(ctaRef.current, { opacity: 0, x: -6 });
 
-      // Master Scroll-Linked Scrub Timeline (Normal Flow — Zero Sticky, Zero Pin, Zero Exit Fade)
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: stage,
-          start: "top 82%",
-          end: "bottom 55%",
-          scrub: 0.45,
-          invalidateOnRefresh: true,
-        },
-      });
+      // Triggered timeline (Zero Sticky, Zero Pin, Zero Exit Fade)
+      const tl = gsap.timeline({ paused: true });
 
-      // 0.00 - 0.16: 03 + title reveal
-      tl.to(numRef.current, { opacity: 1, y: 0, duration: 0.16, ease: "power2.out" }, 0.00);
+      // 0.00 - 0.22: 03 + title reveal
+      tl.to(numRef.current, { opacity: 1, y: 0, duration: 0.22, ease: "power2.out" }, 0.00);
       titleLineRefs.current.forEach((line, idx) => {
         if (!line) return;
         tl.to(
           line,
-          { y: "0%", opacity: 1, duration: 0.20, ease: "power3.out" },
-          0.06 + idx * 0.05
+          { y: "0%", opacity: 1, duration: 0.32, ease: "power3.out" },
+          0.08 + idx * 0.08
         );
       });
 
-      // 0.16 - 0.32: Support copy enters
-      tl.to(copyRef.current, { opacity: 1, y: 0, duration: 0.16, ease: "power2.out" }, 0.16);
+      // 0.22 - 0.44: Support copy enters
+      tl.to(copyRef.current, { opacity: 1, y: 0, duration: 0.24, ease: "power2.out" }, 0.22);
 
-      // 0.20 - 0.70: Route ribbon begins
+      // 0.26 - 0.80: Route ribbon begins
       tl.to(
         ribbonPathRef.current,
         {
           strokeDashoffset: 0,
-          duration: 0.50,
+          duration: 0.55,
           ease: "power1.inOut",
         },
-        0.20
+        0.26
       );
       tl.to(
         ribbonWashRef.current,
-        { opacity: 1, duration: 0.40, ease: "power1.inOut" },
-        0.24
+        { opacity: 1, duration: 0.45, ease: "power1.inOut" },
+        0.30
       );
 
       // Locations resolve along curve
-      const flowTimings = [0.24, 0.34, 0.44, 0.52, 0.60];
+      const flowTimings = [0.28, 0.40, 0.52, 0.62, 0.72];
       flowNodes.forEach((_, idx) => {
         const t = flowTimings[idx];
         const el = locationRefs.current[idx];
         if (el) {
-          tl.to(el, { opacity: 1, scale: 1, duration: 0.12, ease: "back.out(1.6)" }, t);
+          tl.to(el, { opacity: 1, scale: 1, duration: 0.16, ease: "back.out(1.6)" }, t);
         }
       });
 
-      // 0.22 - 0.75: Photo settles into place
+      // 0.30 - 0.85: Photo settles into place
       tl.to(
         photoImgRef.current,
         {
@@ -179,23 +171,35 @@ export function Chapter03SouthIndia({
           scale: 1.0,
           opacity: 1,
           clipPath: "inset(0% 0% 0% 0%)",
-          duration: 0.51,
+          duration: 0.55,
           ease: "power3.out",
         },
-        0.22
+        0.30
       );
 
-      // 0.72 - 0.95: Understated CTA appears once flow resolves
+      // 0.80 - 1.04: Understated CTA appears once flow resolves
       tl.to(
         ctaRef.current,
         {
           opacity: 1,
           x: 0,
-          duration: 0.20,
+          duration: 0.24,
           ease: "power2.out",
         },
-        0.72
+        0.80
       );
+
+      const st = ScrollTrigger.create({
+        trigger: stage,
+        start: "top 65%",
+        once: true,
+        onEnter: () => tl.play(),
+        onEnterBack: () => tl.play(),
+      });
+
+      if (st.progress > 0) {
+        tl.progress(1);
+      }
 
       (window as any).__P9_SOUTH_TL__ = tl;
     }, stage);

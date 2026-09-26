@@ -98,69 +98,73 @@ export function Chapter07CentralIndia({
       });
       gsap.set(ctaRef.current, { opacity: 0, x: -5 });
 
-      // Master Scroll-Linked Scrub Timeline (Normal Flow — Zero Sticky, Zero Pin, Zero Exit Fade)
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: stage,
-          start: "top 82%",
-          end: "bottom 55%",
-          scrub: 0.40,
-          invalidateOnRefresh: true,
-        },
-      });
+      // Triggered timeline (Zero Sticky, Zero Pin, Zero Exit Fade)
+      const tl = gsap.timeline({ paused: true });
 
-      // 0.00 - 0.16: 07 reveals & title settles DOWNWARD
-      tl.to(numRef.current, { opacity: 1, y: 0, duration: 0.16, ease: "power2.out" }, 0.00);
+      // 0.00 - 0.22: 07 reveals & title settles DOWNWARD
+      tl.to(numRef.current, { opacity: 1, y: 0, duration: 0.22, ease: "power2.out" }, 0.00);
       titleLineRefs.current.forEach((line, idx) => {
         if (!line) return;
         tl.to(
           line,
-          { y: "0px", opacity: 1, duration: 0.20, ease: "power2.out" },
-          0.04 + idx * 0.05
+          { y: "0px", opacity: 1, duration: 0.32, ease: "power2.out" },
+          0.08 + idx * 0.08
         );
       });
 
-      // 0.14 - 0.30: Body copy fades in
-      tl.to(copyRef.current, { opacity: 1, y: 0, duration: 0.14, ease: "power2.out" }, 0.14);
+      // 0.20 - 0.42: Body copy fades in
+      tl.to(copyRef.current, { opacity: 1, y: 0, duration: 0.22, ease: "power2.out" }, 0.20);
 
-      // 0.18 - 0.65: Architectural plumb-line draws downward to ground
+      // 0.26 - 0.58: Architectural plumb-line draws downward to ground
       tl.to(
         plumbLineRef.current,
-        { scaleY: 1, duration: 0.22, ease: "power2.out" },
-        0.18
-      );
-
-      // 0.26 - 0.70: Grounding bracket expands
-      tl.to(
-        bracketRef.current,
-        { scaleX: 1, duration: 0.16, ease: "power2.out" },
+        { scaleY: 1, duration: 0.32, ease: "power2.out" },
         0.26
       );
 
-      // 0.16 - 0.70: Image settles
+      // 0.38 - 0.62: Grounding bracket expands
+      tl.to(
+        bracketRef.current,
+        { scaleX: 1, duration: 0.24, ease: "power2.out" },
+        0.38
+      );
+
+      // 0.28 - 0.80: Image settles
       tl.to(
         photoImgRef.current,
         {
           y: 0,
           scale: 1.0,
           opacity: 1.0,
-          duration: 0.48,
+          duration: 0.52,
           ease: "power3.out",
         },
-        0.16
+        0.28
       );
 
-      // 0.68 - 0.92: Understated CTA enters
+      // 0.72 - 0.96: Understated CTA enters
       tl.to(
         ctaRef.current,
         {
           opacity: 1,
           x: 0,
-          duration: 0.18,
+          duration: 0.24,
           ease: "power2.out",
         },
-        0.68
+        0.72
       );
+
+      const st = ScrollTrigger.create({
+        trigger: stage,
+        start: "top 65%",
+        once: true,
+        onEnter: () => tl.play(),
+        onEnterBack: () => tl.play(),
+      });
+
+      if (st.progress > 0) {
+        tl.progress(1);
+      }
 
       (window as any).__P9_CENTRAL_TL__ = tl;
     }, stage);

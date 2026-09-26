@@ -115,53 +115,45 @@ export function Chapter02CharDham({
       });
       gsap.set(ctaRef.current, { opacity: 0, x: -6 });
 
-      // Master Scroll-Linked Scrub Timeline (Normal Flow — Zero Sticky, Zero Pin, Zero Exit Fade)
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: stage,
-          start: "top 82%",
-          end: "bottom 55%",
-          scrub: 0.45,
-          invalidateOnRefresh: true,
-        },
-      });
+      // Triggered timeline (Zero Sticky, Zero Pin, Zero Exit Fade)
+      const tl = gsap.timeline({ paused: true });
 
-      // 0.00 - 0.16: 02 + title reveal
-      tl.to(numRef.current, { opacity: 1, y: 0, duration: 0.16, ease: "power2.out" }, 0.00);
+      // 0.00 - 0.22: 02 + title reveal
+      tl.to(numRef.current, { opacity: 1, y: 0, duration: 0.22, ease: "power2.out" }, 0.00);
       titleLineRefs.current.forEach((line, idx) => {
         if (!line) return;
         tl.to(
           line,
-          { y: "0%", opacity: 1, duration: 0.20, ease: "power3.out" },
-          0.06 + idx * 0.06
+          { y: "0%", opacity: 1, duration: 0.32, ease: "power3.out" },
+          0.08 + idx * 0.08
         );
       });
 
-      // 0.18 - 0.34: Support copy enters
-      tl.to(copyRef.current, { opacity: 1, y: 0, duration: 0.16, ease: "power2.out" }, 0.18);
+      // 0.22 - 0.44: Support copy enters
+      tl.to(copyRef.current, { opacity: 1, y: 0, duration: 0.24, ease: "power2.out" }, 0.22);
 
-      // 0.20 - 0.70: Ascending connecting line draws upward
+      // 0.26 - 0.80: Ascending connecting line draws upward
       tl.to(
         ascentPathRef.current,
         {
           strokeDashoffset: 0,
-          duration: 0.50,
+          duration: 0.55,
           ease: "power1.inOut",
         },
-        0.20
+        0.26
       );
 
       // Waypoints activate sequentially in climbing elevation order (Yamunotri -> Gangotri -> Kedarnath -> Badrinath)
-      const waypointTimings = [0.22, 0.34, 0.46, 0.58];
+      const waypointTimings = [0.28, 0.42, 0.56, 0.70];
       shrines.forEach((_, idx) => {
         const t = waypointTimings[idx];
         const el = waypointRefs.current[idx];
         if (el) {
-          tl.to(el, { opacity: 1, y: 0, duration: 0.12, ease: "power2.out" }, t);
+          tl.to(el, { opacity: 1, y: 0, duration: 0.18, ease: "power2.out" }, t);
         }
       });
 
-      // 0.24 - 0.75: Mountain image settles
+      // 0.30 - 0.85: Mountain image settles
       tl.to(
         photoImgRef.current,
         {
@@ -169,23 +161,35 @@ export function Chapter02CharDham({
           scale: 1.0,
           opacity: 1,
           clipPath: "inset(0% 0% 0% 0%)",
-          duration: 0.51,
+          duration: 0.55,
           ease: "power3.out",
         },
-        0.24
+        0.30
       );
 
-      // 0.72 - 0.95: Understated CTA enters at final waypoint
+      // 0.78 - 1.02: Understated CTA enters at final waypoint
       tl.to(
         ctaRef.current,
         {
           opacity: 1,
           x: 0,
-          duration: 0.20,
+          duration: 0.24,
           ease: "power2.out",
         },
-        0.72
+        0.78
       );
+
+      const st = ScrollTrigger.create({
+        trigger: stage,
+        start: "top 65%",
+        once: true,
+        onEnter: () => tl.play(),
+        onEnterBack: () => tl.play(),
+      });
+
+      if (st.progress > 0) {
+        tl.progress(1);
+      }
 
       (window as any).__P9_CHARDHAM_TL__ = tl;
     }, stage);

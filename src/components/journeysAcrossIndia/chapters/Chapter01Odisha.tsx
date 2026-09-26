@@ -136,60 +136,52 @@ export function Chapter01Odisha({
       });
       gsap.set(ctaRef.current, { opacity: 0, x: -6 });
 
-      // Master Scroll-Linked Scrub Timeline (Normal Flow — Zero Sticky, Zero Pin, Zero Exit Fade)
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: stage,
-          start: "top 82%",
-          end: "bottom 55%",
-          scrub: 0.45,
-          invalidateOnRefresh: true,
-        },
-      });
+      // Triggered timeline (Zero Sticky, Zero Pin, Zero Exit Fade)
+      const tl = gsap.timeline({ paused: true });
 
-      // 0.00 - 0.16: 01 number reveals
-      tl.to(numRef.current, { opacity: 1, y: 0, duration: 0.16, ease: "power2.out" }, 0.00);
+      // 0.00 - 0.22: 01 number reveals
+      tl.to(numRef.current, { opacity: 1, y: 0, duration: 0.22, ease: "power2.out" }, 0.00);
 
-      // 0.06 - 0.28: Title mask reveal
+      // 0.08 - 0.36: Title mask reveal
       titleLineRefs.current.forEach((line, idx) => {
         if (!line) return;
         tl.to(
           line,
-          { y: "0%", opacity: 1, duration: 0.20, ease: "power3.out" },
-          0.06 + idx * 0.06
+          { y: "0%", opacity: 1, duration: 0.32, ease: "power3.out" },
+          0.08 + idx * 0.08
         );
       });
 
-      // 0.18 - 0.34: Support copy enters
-      tl.to(copyRef.current, { opacity: 1, y: 0, duration: 0.16, ease: "power2.out" }, 0.18);
+      // 0.22 - 0.44: Support copy enters
+      tl.to(copyRef.current, { opacity: 1, y: 0, duration: 0.24, ease: "power2.out" }, 0.22);
 
-      // 0.22 - 0.72: Progressive sacred atlas route drawing
+      // 0.26 - 0.80: Progressive sacred atlas route drawing
       tl.to(
         routePathRef.current,
         {
           strokeDashoffset: 0,
-          duration: 0.50,
+          duration: 0.55,
           ease: "power1.inOut",
         },
-        0.22
+        0.26
       );
 
       // Progressive destination nodes & labels appear along route
-      const nodeTimings = [0.24, 0.33, 0.42, 0.51, 0.60, 0.69];
+      const nodeTimings = [0.28, 0.38, 0.48, 0.58, 0.68, 0.78];
       routeNodes.forEach((_, idx) => {
         const t = nodeTimings[idx];
         const node = nodeRefs.current[idx];
         const label = labelRefs.current[idx];
 
         if (node) {
-          tl.to(node, { scale: 1, opacity: 1, duration: 0.10, ease: "back.out(1.8)" }, t);
+          tl.to(node, { scale: 1, opacity: 1, duration: 0.16, ease: "back.out(1.8)" }, t);
         }
         if (label) {
-          tl.to(label, { opacity: 1, x: 0, duration: 0.12, ease: "power2.out" }, t + 0.02);
+          tl.to(label, { opacity: 1, x: 0, duration: 0.18, ease: "power2.out" }, t + 0.02);
         }
       });
 
-      // 0.24 - 0.75: Photo resolves smoothly
+      // 0.30 - 0.85: Photo resolves smoothly
       tl.to(
         photoImgRef.current,
         {
@@ -197,23 +189,35 @@ export function Chapter01Odisha({
           scale: 1.0,
           opacity: 1,
           clipPath: "inset(0% 0% 0% 0%)",
-          duration: 0.51,
+          duration: 0.55,
           ease: "power2.out",
         },
-        0.24
+        0.30
       );
 
-      // 0.75 - 0.95: Understated CTA reveals (settles into final visible state)
+      // 0.82 - 1.05: Understated CTA reveals
       tl.to(
         ctaRef.current,
         {
           opacity: 1,
           x: 0,
-          duration: 0.20,
+          duration: 0.24,
           ease: "power2.out",
         },
-        0.75
+        0.82
       );
+
+      const st = ScrollTrigger.create({
+        trigger: stage,
+        start: "top 65%",
+        once: true,
+        onEnter: () => tl.play(),
+        onEnterBack: () => tl.play(),
+      });
+
+      if (st.progress > 0) {
+        tl.progress(1);
+      }
 
       // Register hook for testing
       (window as any).__P9_ODISHA_TL__ = tl;
