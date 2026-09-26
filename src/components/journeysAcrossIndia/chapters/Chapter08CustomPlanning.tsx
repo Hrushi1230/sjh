@@ -17,23 +17,20 @@ import { useRef, useLayoutEffect } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { JourneyAtlasItem } from "../../../data/journeyAtlasData";
-import { ChapterIndexRail } from "../ChapterIndexRail";
 import { PhoneHeader } from "../PhoneHeader";
 
 gsap.registerPlugin(ScrollTrigger);
 
 interface Chapter08Props {
   data: JourneyAtlasItem;
-  allData: JourneyAtlasItem[];
-  onSelectIndex: (index: number) => void;
+  allData?: JourneyAtlasItem[];
+  onSelectIndex?: (index: number) => void;
   onOpenPlanner?: () => void;
   isPlannerReadyState?: boolean;
 }
 
 export function Chapter08CustomPlanning({
   data,
-  allData,
-  onSelectIndex,
   onOpenPlanner,
   isPlannerReadyState = false,
 }: Chapter08Props) {
@@ -212,13 +209,6 @@ export function Chapter08CustomPlanning({
       >
         {/* Top Header Bar: SJH | ≡ */}
         <PhoneHeader />
-
-        {/* Top Archived Rows Rail */}
-        <ChapterIndexRail
-          items={allData}
-          currentIndex={7}
-          onSelectIndex={onSelectIndex}
-        />
 
         {/* Chapter Number & Human Headline */}
         <div className="p9-chapter__header">

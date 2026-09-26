@@ -19,22 +19,19 @@ import { useRef, useLayoutEffect } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { JourneyAtlasItem } from "../../../data/journeyAtlasData";
-import { ChapterIndexRail } from "../ChapterIndexRail";
 import { PhoneHeader } from "../PhoneHeader";
 
 gsap.registerPlugin(ScrollTrigger);
 
 interface Chapter02Props {
   data: JourneyAtlasItem;
-  allData: JourneyAtlasItem[];
-  onSelectIndex: (index: number) => void;
+  allData?: JourneyAtlasItem[];
+  onSelectIndex?: (index: number) => void;
   onOpenPlanner?: (destinationHint?: string) => void;
 }
 
 export function Chapter02CharDham({
   data,
-  allData,
-  onSelectIndex,
   onOpenPlanner,
 }: Chapter02Props) {
   const trackRef = useRef<HTMLDivElement>(null);
@@ -206,13 +203,6 @@ export function Chapter02CharDham({
       >
         {/* Top Header Bar: SJH | ≡ */}
         <PhoneHeader />
-
-        {/* Top Archived Rows Rail */}
-        <ChapterIndexRail
-          items={allData}
-          currentIndex={1}
-          onSelectIndex={onSelectIndex}
-        />
 
         {/* Chapter Number & Title */}
         <div className="p9-chapter__header">
