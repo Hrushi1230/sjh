@@ -121,30 +121,38 @@ export function Chapter08CustomPlanning({
       gsap.set(photoImgRef.current, {
         y: 16,
         scale: 1.025,
-        opacity: 0,
+        opacity: 0.80,
       });
       gsap.set(ctaBtnRef.current, { opacity: 0, y: 8, scale: 0.98 });
 
-      // Triggered Custom Planning Timeline (Complete around 800-950ms)
-      const tl = gsap.timeline({ paused: true });
+      // Master Scroll-Linked Scrub Timeline (Normal Flow — Zero Sticky, Zero Pin, Zero Exit Fade)
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: stage,
+          start: "top 82%",
+          end: "bottom 55%",
+          scrub: 0.45,
+          invalidateOnRefresh: true,
+        },
+      });
 
-      // 0.00: 08 number reveals
-      tl.to(numRef.current, { opacity: 1, y: 0, duration: 0.18, ease: "power2.out" }, 0.00);
+      // 0.00 - 0.16: 08 number reveals
+      tl.to(numRef.current, { opacity: 1, y: 0, duration: 0.16, ease: "power2.out" }, 0.00);
 
-      // 0.06: Headline reveals line by line
+      // 0.06 - 0.26: Headline reveals line by line
       headlineLineRefs.current.forEach((line, idx) => {
         if (!line) return;
         tl.to(
           line,
-          { y: "0%", opacity: 1, duration: 0.22, ease: "power3.out" },
+          { y: "0%", opacity: 1, duration: 0.20, ease: "power3.out" },
           0.06 + idx * 0.05
         );
       });
 
-      // 0.18: Subheading enters
-      tl.to(subheadingRef.current, { opacity: 1, y: 0, duration: 0.16, ease: "power2.out" }, 0.18);
+      // 0.16 - 0.32: Subheading enters
+      tl.to(subheadingRef.current, { opacity: 1, y: 0, duration: 0.16, ease: "power2.out" }, 0.16);
 
-      // 0.20: Four planning lines resolve sequentially
+      // 0.20 - 0.68: Four planning lines resolve sequentially
       const dimensionTimings = [0.20, 0.28, 0.36, 0.44];
       planningDimensions.forEach((_, idx) => {
         const t = dimensionTimings[idx];
@@ -159,39 +167,31 @@ export function Chapter08CustomPlanning({
         }
       });
 
-      // 0.22: Human image reveals smoothly
+      // 0.22 - 0.75: Human image reveals smoothly
       tl.to(
         photoImgRef.current,
         {
           y: 0,
           scale: 1.0,
           opacity: 1,
-          duration: 0.55,
+          duration: 0.51,
           ease: "power3.out",
         },
         0.22
       );
 
-      // 0.64: Prominent PLAN MY JOURNEY button enters
+      // 0.72 - 0.95: Prominent PLAN MY JOURNEY button enters
       tl.to(
         ctaBtnRef.current,
         {
           opacity: 1,
           y: 0,
           scale: 1.0,
-          duration: 0.22,
+          duration: 0.20,
           ease: "back.out(1.5)",
         },
-        0.64
+        0.72
       );
-
-      // Trigger entrance once stage enters 72% of viewport
-      ScrollTrigger.create({
-        trigger: stage,
-        start: "top 72%",
-        once: true,
-        onEnter: () => tl.play(),
-      });
 
       (window as any).__P9_CUSTOM_TL__ = tl;
     }, stage);

@@ -104,7 +104,7 @@ export function Chapter01Odisha({
         return;
       }
 
-      // Initial state: hidden for triggered reveal
+      // Initial state: hidden for progressive scroll-driven reveal
       gsap.set(numRef.current, { opacity: 0, y: 6 });
       titleLineRefs.current.forEach((line) => {
         if (line) gsap.set(line, { y: "105%", opacity: 0 });
@@ -131,31 +131,39 @@ export function Chapter01Odisha({
       gsap.set(photoImgRef.current, {
         y: 16,
         scale: 1.025,
-        opacity: 0,
+        opacity: 0.75,
         clipPath: "inset(12% 0% 0% 0%)",
       });
       gsap.set(ctaRef.current, { opacity: 0, x: -6 });
 
-      // Triggered Entrance Timeline (Complete around 850-1000ms)
-      const tl = gsap.timeline({ paused: true });
+      // Master Scroll-Linked Scrub Timeline (Normal Flow — Zero Sticky, Zero Pin, Zero Exit Fade)
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: stage,
+          start: "top 82%",
+          end: "bottom 55%",
+          scrub: 0.45,
+          invalidateOnRefresh: true,
+        },
+      });
 
-      // 0.00: 01 number reveals
-      tl.to(numRef.current, { opacity: 1, y: 0, duration: 0.20, ease: "power2.out" }, 0.00);
+      // 0.00 - 0.16: 01 number reveals
+      tl.to(numRef.current, { opacity: 1, y: 0, duration: 0.16, ease: "power2.out" }, 0.00);
 
-      // 0.06: Title mask reveal
+      // 0.06 - 0.28: Title mask reveal
       titleLineRefs.current.forEach((line, idx) => {
         if (!line) return;
         tl.to(
           line,
-          { y: "0%", opacity: 1, duration: 0.24, ease: "power3.out" },
+          { y: "0%", opacity: 1, duration: 0.20, ease: "power3.out" },
           0.06 + idx * 0.06
         );
       });
 
-      // 0.16: Support copy enters
-      tl.to(copyRef.current, { opacity: 1, y: 0, duration: 0.20, ease: "power2.out" }, 0.16);
+      // 0.18 - 0.34: Support copy enters
+      tl.to(copyRef.current, { opacity: 1, y: 0, duration: 0.16, ease: "power2.out" }, 0.18);
 
-      // 0.22: Sacred atlas route draws
+      // 0.22 - 0.72: Progressive sacred atlas route drawing
       tl.to(
         routePathRef.current,
         {
@@ -166,22 +174,22 @@ export function Chapter01Odisha({
         0.22
       );
 
-      // Destination nodes & labels appear along route
-      const nodeTimings = [0.24, 0.32, 0.40, 0.48, 0.56, 0.64];
+      // Progressive destination nodes & labels appear along route
+      const nodeTimings = [0.24, 0.33, 0.42, 0.51, 0.60, 0.69];
       routeNodes.forEach((_, idx) => {
         const t = nodeTimings[idx];
         const node = nodeRefs.current[idx];
         const label = labelRefs.current[idx];
 
         if (node) {
-          tl.to(node, { scale: 1, opacity: 1, duration: 0.12, ease: "back.out(1.8)" }, t);
+          tl.to(node, { scale: 1, opacity: 1, duration: 0.10, ease: "back.out(1.8)" }, t);
         }
         if (label) {
-          tl.to(label, { opacity: 1, x: 0, duration: 0.14, ease: "power2.out" }, t + 0.02);
+          tl.to(label, { opacity: 1, x: 0, duration: 0.12, ease: "power2.out" }, t + 0.02);
         }
       });
 
-      // 0.25: Photo resolves smoothly
+      // 0.24 - 0.75: Photo resolves smoothly
       tl.to(
         photoImgRef.current,
         {
@@ -189,13 +197,13 @@ export function Chapter01Odisha({
           scale: 1.0,
           opacity: 1,
           clipPath: "inset(0% 0% 0% 0%)",
-          duration: 0.55,
-          ease: "power3.out",
+          duration: 0.51,
+          ease: "power2.out",
         },
-        0.25
+        0.24
       );
 
-      // 0.70: Understated CTA appears
+      // 0.75 - 0.95: Understated CTA reveals (settles into final visible state)
       tl.to(
         ctaRef.current,
         {
@@ -204,16 +212,8 @@ export function Chapter01Odisha({
           duration: 0.20,
           ease: "power2.out",
         },
-        0.70
+        0.75
       );
-
-      // Trigger entrance once stage enters 72% of viewport
-      ScrollTrigger.create({
-        trigger: stage,
-        start: "top 72%",
-        once: true,
-        onEnter: () => tl.play(),
-      });
 
       // Register hook for testing
       (window as any).__P9_ODISHA_TL__ = tl;

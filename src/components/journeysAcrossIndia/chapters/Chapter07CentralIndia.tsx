@@ -94,14 +94,22 @@ export function Chapter07CentralIndia({
       gsap.set(photoImgRef.current, {
         y: 18,
         scale: 1.02,
-        opacity: 0,
+        opacity: 0.80,
       });
       gsap.set(ctaRef.current, { opacity: 0, x: -5 });
 
-      // Triggered Grounded Timeline (Complete around 550-700ms)
-      const tl = gsap.timeline({ paused: true });
+      // Master Scroll-Linked Scrub Timeline (Normal Flow — Zero Sticky, Zero Pin, Zero Exit Fade)
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: stage,
+          start: "top 82%",
+          end: "bottom 55%",
+          scrub: 0.40,
+          invalidateOnRefresh: true,
+        },
+      });
 
-      // 0.00: 07 reveals & title settles DOWNWARD
+      // 0.00 - 0.16: 07 reveals & title settles DOWNWARD
       tl.to(numRef.current, { opacity: 1, y: 0, duration: 0.16, ease: "power2.out" }, 0.00);
       titleLineRefs.current.forEach((line, idx) => {
         if (!line) return;
@@ -112,24 +120,24 @@ export function Chapter07CentralIndia({
         );
       });
 
-      // 0.14: Body copy fades in
+      // 0.14 - 0.30: Body copy fades in
       tl.to(copyRef.current, { opacity: 1, y: 0, duration: 0.14, ease: "power2.out" }, 0.14);
 
-      // 0.16: Architectural plumb-line draws downward to ground
+      // 0.18 - 0.65: Architectural plumb-line draws downward to ground
       tl.to(
         plumbLineRef.current,
-        { scaleY: 1, duration: 0.20, ease: "power2.out" },
-        0.16
+        { scaleY: 1, duration: 0.22, ease: "power2.out" },
+        0.18
       );
 
-      // 0.24: Grounding bracket expands
+      // 0.26 - 0.70: Grounding bracket expands
       tl.to(
         bracketRef.current,
-        { scaleX: 1, duration: 0.15, ease: "power2.out" },
-        0.24
+        { scaleX: 1, duration: 0.16, ease: "power2.out" },
+        0.26
       );
 
-      // 0.14: Image settles
+      // 0.16 - 0.70: Image settles
       tl.to(
         photoImgRef.current,
         {
@@ -139,28 +147,20 @@ export function Chapter07CentralIndia({
           duration: 0.48,
           ease: "power3.out",
         },
-        0.14
+        0.16
       );
 
-      // 0.46: Understated CTA enters
+      // 0.68 - 0.92: Understated CTA enters
       tl.to(
         ctaRef.current,
         {
           opacity: 1,
           x: 0,
-          duration: 0.16,
+          duration: 0.18,
           ease: "power2.out",
         },
-        0.46
+        0.68
       );
-
-      // Trigger entrance once stage enters 72% of viewport
-      ScrollTrigger.create({
-        trigger: stage,
-        start: "top 72%",
-        once: true,
-        onEnter: () => tl.play(),
-      });
 
       (window as any).__P9_CENTRAL_TL__ = tl;
     }, stage);

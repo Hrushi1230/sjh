@@ -87,15 +87,23 @@ export function Chapter06WestIndia({
       gsap.set(photoImgRef.current, {
         y: 16,
         scale: 1.025,
-        opacity: 0,
+        opacity: 0.80,
         clipPath: "inset(8% 0% 0% 0%)",
       });
       gsap.set(ctaRef.current, { opacity: 0, x: -5 });
 
-      // Triggered Restraint Timeline (Complete around 550-700ms)
-      const tl = gsap.timeline({ paused: true });
+      // Master Scroll-Linked Scrub Timeline (Normal Flow — Zero Sticky, Zero Pin, Zero Exit Fade)
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: stage,
+          start: "top 82%",
+          end: "bottom 55%",
+          scrub: 0.40,
+          invalidateOnRefresh: true,
+        },
+      });
 
-      // 0.00: 06 + title reveal
+      // 0.00 - 0.16: 06 + title reveal
       tl.to(numRef.current, { opacity: 1, y: 0, duration: 0.16, ease: "power2.out" }, 0.00);
       titleLineRefs.current.forEach((line, idx) => {
         if (!line) return;
@@ -106,17 +114,17 @@ export function Chapter06WestIndia({
         );
       });
 
-      // 0.14: Body copy fades in
+      // 0.14 - 0.30: Body copy fades in
       tl.to(copyRef.current, { opacity: 1, y: 0, duration: 0.14, ease: "power2.out" }, 0.14);
 
-      // 0.16: Architectural gold rule draws
+      // 0.18 - 0.65: Architectural gold rule draws
       tl.to(
         ruleRef.current,
         { scaleX: 1, duration: 0.22, ease: "power2.out" },
-        0.16
+        0.18
       );
 
-      // 0.14: Photo settles
+      // 0.16 - 0.70: Photo settles
       tl.to(
         photoImgRef.current,
         {
@@ -127,28 +135,20 @@ export function Chapter06WestIndia({
           duration: 0.48,
           ease: "power3.out",
         },
-        0.14
+        0.16
       );
 
-      // 0.46: Understated CTA enters
+      // 0.68 - 0.92: Understated CTA enters
       tl.to(
         ctaRef.current,
         {
           opacity: 1,
           x: 0,
-          duration: 0.16,
+          duration: 0.18,
           ease: "power2.out",
         },
-        0.46
+        0.68
       );
-
-      // Trigger entrance once stage enters 72% of viewport
-      ScrollTrigger.create({
-        trigger: stage,
-        start: "top 72%",
-        once: true,
-        onEnter: () => tl.play(),
-      });
 
       (window as any).__P9_WEST_TL__ = tl;
     }, stage);

@@ -105,26 +105,34 @@ export function Chapter05EastIndia({
       gsap.set(photoImgRef.current, {
         y: 16,
         scale: 1.025,
-        opacity: 0,
+        opacity: 0.75,
         clipPath: "inset(10% 0% 0% 0%)",
       });
       gsap.set(ctaRef.current, { opacity: 0, x: -6 });
 
-      // Triggered Layer Timeline (Complete around 700-850ms)
-      const tl = gsap.timeline({ paused: true });
+      // Master Scroll-Linked Scrub Timeline (Normal Flow — Zero Sticky, Zero Pin, Zero Exit Fade)
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: stage,
+          start: "top 82%",
+          end: "bottom 55%",
+          scrub: 0.45,
+          invalidateOnRefresh: true,
+        },
+      });
 
-      // 0.00: 05 + title reveal
-      tl.to(numRef.current, { opacity: 1, y: 0, duration: 0.18, ease: "power2.out" }, 0.00);
+      // 0.00 - 0.16: 05 + title reveal
+      tl.to(numRef.current, { opacity: 1, y: 0, duration: 0.16, ease: "power2.out" }, 0.00);
       titleLineRefs.current.forEach((line, idx) => {
         if (!line) return;
         tl.to(
           line,
-          { y: "0%", opacity: 1, duration: 0.22, ease: "power3.out" },
+          { y: "0%", opacity: 1, duration: 0.20, ease: "power3.out" },
           0.05 + idx * 0.05
         );
       });
 
-      // 0.14: Support copy enters
+      // 0.14 - 0.30: Support copy enters
       tl.to(copyRef.current, { opacity: 1, y: 0, duration: 0.16, ease: "power2.out" }, 0.14);
 
       // 4 Planes resolve with subtle overlap
@@ -141,7 +149,7 @@ export function Chapter05EastIndia({
         }
       });
 
-      // 0.20: Photo combines into full image
+      // 0.20 - 0.75: Photo combines into full image
       tl.to(
         photoImgRef.current,
         {
@@ -149,31 +157,23 @@ export function Chapter05EastIndia({
           scale: 1.0,
           opacity: 1.0,
           clipPath: "inset(0% 0% 0% 0%)",
-          duration: 0.55,
+          duration: 0.51,
           ease: "power3.out",
         },
         0.20
       );
 
-      // 0.58: Understated CTA enters
+      // 0.72 - 0.95: Understated CTA enters
       tl.to(
         ctaRef.current,
         {
           opacity: 1,
           x: 0,
-          duration: 0.18,
+          duration: 0.20,
           ease: "power2.out",
         },
-        0.58
+        0.72
       );
-
-      // Trigger entrance once stage enters 72% of viewport
-      ScrollTrigger.create({
-        trigger: stage,
-        start: "top 72%",
-        once: true,
-        onEnter: () => tl.play(),
-      });
 
       (window as any).__P9_EAST_TL__ = tl;
     }, stage);
