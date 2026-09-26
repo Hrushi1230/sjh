@@ -941,7 +941,7 @@
   height: auto;
   max-height: 250px;
   object-fit: contain;
-  opacity: 0.12; /* Exact 8-14% watermark requirement */
+  opacity: 0.42;
 }
 
 .p9-intro__bottomLandscape {

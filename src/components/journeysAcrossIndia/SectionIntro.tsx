@@ -158,11 +158,11 @@ export function SectionIntro({ onExploreChapters }: SectionIntroProps) {
         0.68
       );
 
-      // 0.72 - 1.00: India outline softly appears
+      // 0.72 - 1.00: India outline softly appears (crisp vector watermark)
       tl.to(
         outlineRef.current,
         {
-          opacity: 0.12,
+          opacity: 0.42,
           scale: 1.0,
           duration: 0.28,
           ease: "power2.out",
@@ -279,7 +279,7 @@ export function SectionIntro({ onExploreChapters }: SectionIntroProps) {
           </div>
           <img
             ref={outlineRef}
-            src="/assets/phase9/p9-india-outline.png"
+            src="/assets/phase9/p9-india-outline.svg"
             alt=""
             width={900}
             height={900}
