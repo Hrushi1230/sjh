@@ -62,6 +62,7 @@ type Props = {
 };
 
 const SESSION_STORAGE_KEY = "sjh_hero_intro_seen";
+const AUTOPLAY_DWELL_SECONDS = 2.5;
 
 export function MobileCinematicHero({
   onOpenMenu,
@@ -360,7 +361,7 @@ export function MobileCinematicHero({
               },
               () => {
                 heroMotionStateRef.current = "settled";
-                scheduleAutoplayRef.current(6.25);
+                scheduleAutoplayRef.current(AUTOPLAY_DWELL_SECONDS);
               }
             );
           }
@@ -451,7 +452,7 @@ export function MobileCinematicHero({
 
   // Schedule next autoplay cycle with cancellable GSAP delayedCall
   const scheduleAutoplay = useCallback(
-    (delay = 6.25) => {
+    (delay = AUTOPLAY_DWELL_SECONDS) => {
       killAutoplayTimer();
       if (!canAutoplay()) return;
 
@@ -793,7 +794,7 @@ export function MobileCinematicHero({
         ], 600, 300);
 
         if (!prefersReducedMotionRef.current) {
-          scheduleAutoplayRef.current(6.25);
+          scheduleAutoplayRef.current(AUTOPLAY_DWELL_SECONDS);
         }
         return;
       }
@@ -813,7 +814,7 @@ export function MobileCinematicHero({
           `${assetBase}/hero-kerala.webp`,
         ], 800, 400);
 
-        scheduleAutoplayRef.current(6.25);
+        scheduleAutoplayRef.current(AUTOPLAY_DWELL_SECONDS);
       });
       timelineRef.current = tl;
 
@@ -827,7 +828,7 @@ export function MobileCinematicHero({
         setIsIntroComplete(true);
         isIntroCompleteRef.current = true;
         heroMotionStateRef.current = "settled";
-        scheduleAutoplayRef.current(6.25);
+        scheduleAutoplayRef.current(AUTOPLAY_DWELL_SECONDS);
       };
       win.__SJH_GET_SLIVER_PX__ = () => {
         const leftImg = root.current?.querySelector(".sjhHero__door--left");
@@ -989,7 +990,7 @@ export function MobileCinematicHero({
         killAutoplayTimer();
       } else {
         if (canAutoplay()) {
-          scheduleAutoplay(6.25);
+          scheduleAutoplay(AUTOPLAY_DWELL_SECONDS);
         }
       }
     };
