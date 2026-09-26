@@ -1,0 +1,1056 @@
+/**
+ * SHREE JAGANNATH HOLIDAYS — PHASE 9: JOURNEYS ACROSS INDIA
+ * Mobile Transition Storyboard Implementation
+ * Canvas: #F4EFE6 | Primary: #181510 | Gold: #B99455 | Hairline: rgba(185,148,85,.25)
+ */
+
+/* ==========================================================================
+   MASTER CONTAINER
+   ========================================================================== */
+.sjhJourneysAcrossIndia {
+  position: relative;
+  width: 100%;
+  background-color: #F4EFE6;
+  color: #181510;
+  box-sizing: border-box;
+  overflow: visible;
+  z-index: 10;
+}
+
+.sjhJourneysAcrossIndia__container {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+/* ==========================================================================
+   VIEWPORT BASELINE & STICKY CHOREOGRAPHY (Pass B)
+   ========================================================================== */
+.p9-chapterTrack {
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.p9-chapterTrack--intro {
+  height: calc(100svh + 80svh);
+}
+
+.p9-chapterTrack--odisha {
+  height: calc(100svh + 135svh);
+}
+
+.p9-chapterTrack--chardham {
+  height: calc(100svh + 125svh);
+}
+
+.p9-chapterTrack--south {
+  height: calc(100svh + 120svh);
+}
+
+.p9-chapterTrack--north {
+  height: calc(100svh + 115svh);
+}
+
+.p9-chapterTrack--east {
+  height: calc(100svh + 110svh);
+}
+
+.p9-chapterTrack--west {
+  height: calc(100svh + 85svh);
+}
+
+.p9-chapterTrack--central {
+  height: calc(100svh + 85svh);
+}
+
+.p9-chapterTrack--custom {
+  height: calc(100svh + 120svh);
+}
+
+.p9-chapterStage,
+.p9-viewport.p9-chapterStage {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  height: 100svh;
+  min-height: 100svh;
+  max-height: 100svh;
+  overflow: hidden;
+}
+
+/* Masked Lines for Typographic Reveals */
+.p9-maskedLine {
+  display: block;
+  overflow: hidden;
+}
+
+.p9-maskedLine__inner {
+  display: block;
+  will-change: transform, opacity;
+}
+
+/* Phase 8 -> Phase 9 Handoff */
+.p9-handoff {
+  position: relative;
+  width: 100%;
+  height: 90px;
+  margin-bottom: 4px;
+  flex-shrink: 0;
+}
+
+.p9-handoff__row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 18px;
+  margin-bottom: 2px;
+}
+
+.p9-handoff__num {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 13px;
+  font-style: italic;
+  font-weight: 700;
+  color: #B99455;
+  width: 16px;
+  flex-shrink: 0;
+}
+
+.p9-handoff__title {
+  font-family: "Manrope", -apple-system, sans-serif;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(24, 21, 16, 0.55);
+}
+
+.p9-handoff__svg {
+  position: absolute;
+  top: 18px;
+  left: 0;
+  width: 100%;
+  height: 72px;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.p9-viewport {
+  width: 100%;
+  height: 100svh;
+  box-sizing: border-box;
+  padding: 12px 22px 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  background-color: #F4EFE6;
+  border-bottom: 1px solid rgba(185, 148, 85, 0.15);
+  overflow: hidden;
+}
+
+@media (max-height: 750px) {
+  .p9-viewport {
+    min-height: 720px;
+    height: auto;
+  }
+}
+
+/* ==========================================================================
+   HEADER BAR (SJH | ≡)
+   ========================================================================== */
+.p9-phoneHeader {
+  display: none !important;
+}
+
+.p9-phoneHeader__brand {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #181510;
+}
+
+.p9-phoneHeader__menu {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  width: 22px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.p9-phoneHeader__menuLine {
+  width: 100%;
+  height: 1.5px;
+  background-color: #181510;
+  border-radius: 1px;
+}
+
+/* ==========================================================================
+   ARCHIVED ROWS RAIL (Scroll Progression Specification)
+   ========================================================================== */
+.p9-archivedRail {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 12px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(185, 148, 85, 0.22);
+  flex-shrink: 0;
+}
+
+.p9-archivedRail__row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: "Manrope", -apple-system, sans-serif;
+  cursor: pointer;
+  height: 18px;
+}
+
+.p9-archivedRail__num {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 13px;
+  font-style: italic;
+  font-weight: 700;
+  color: #B99455;
+  width: 16px;
+  flex-shrink: 0;
+}
+
+.p9-archivedRail__title {
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.p9-archivedRail__row.is-archived .p9-archivedRail__num {
+  opacity: 0.55;
+}
+
+.p9-archivedRail__row.is-archived .p9-archivedRail__title {
+  color: rgba(24, 21, 16, 0.42);
+}
+
+.p9-archivedRail__row.is-current .p9-archivedRail__title {
+  color: #181510;
+  font-weight: 800;
+}
+
+.p9-archivedRail__row.is-future .p9-archivedRail__num,
+.p9-archivedRail__row.is-future .p9-archivedRail__title {
+  color: rgba(24, 21, 16, 0.22);
+}
+
+.p9-archivedRail__activeIndicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  margin-left: 4px;
+}
+
+.p9-archivedRail__bullet {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background-color: #B99455;
+  flex-shrink: 0;
+}
+
+.p9-archivedRail__line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, #B99455, rgba(185, 148, 85, 0.2));
+}
+
+/* ==========================================================================
+   CHAPTER HEADER & TYPOGRAPHY
+   ========================================================================== */
+.p9-chapter__header {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 8px;
+  flex-shrink: 0;
+}
+
+.p9-chapter__num {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 26px;
+  font-style: italic;
+  font-weight: 600;
+  color: #B99455;
+  line-height: 1;
+}
+
+.p9-chapter__title {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 34px;
+  font-weight: 500;
+  line-height: 0.98;
+  letter-spacing: -0.015em;
+  color: #181510;
+  margin: 3px 0 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.p9-chapter__titleLine {
+  display: block;
+}
+
+.p9-chapter__headline {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 32px;
+  font-weight: 500;
+  line-height: 0.96;
+  letter-spacing: -0.015em;
+  color: #181510;
+  margin: 3px 0 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.p9-chapter__headlineLine {
+  display: block;
+}
+
+.p9-chapter__copy {
+  font-family: "Manrope", -apple-system, sans-serif;
+  font-size: 13.5px;
+  font-weight: 400;
+  line-height: 1.45;
+  color: rgba(24, 21, 16, 0.68);
+  margin: 4px 0 0;
+}
+
+.p9-chapter__subheading {
+  font-family: "Manrope", -apple-system, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #B99455;
+  margin: 6px 0 0;
+}
+
+/* ==========================================================================
+   MIDDLE NOTATION & ROUTE AXES
+   ========================================================================== */
+/* ==========================================================================
+   CHAPTER 01: ODISHA EDITORIAL ATLAS ROUTE
+   ========================================================================== */
+.p9-odishaAtlasRoute {
+  position: relative;
+  width: 100%;
+  max-width: 340px;
+  height: 124px;
+  margin: 4px 0 6px;
+  flex-shrink: 0;
+}
+
+.p9-odishaAtlasRoute__svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  display: block;
+}
+
+.p9-odishaAtlasRoute__text {
+  font-family: "Manrope", -apple-system, sans-serif;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  fill: #181510;
+  stroke: #F4EFE6;
+  stroke-width: 3.5px;
+  stroke-linejoin: round;
+  paint-order: stroke fill;
+  dominant-baseline: middle;
+}
+
+/* ==========================================================================
+   CHAPTER 02: CHAR DHAM ASCENDING PILGRIMAGE
+   ========================================================================== */
+.p9-chAscent {
+  position: relative;
+  width: 100%;
+  max-width: 340px;
+  height: 124px;
+  margin: 4px 0 6px;
+  flex-shrink: 0;
+}
+
+.p9-chAscent__svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  display: block;
+}
+
+.p9-chAscent__text {
+  font-family: "Manrope", -apple-system, sans-serif;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  fill: #181510;
+  stroke: #F4EFE6;
+  stroke-width: 3.5px;
+  stroke-linejoin: round;
+  paint-order: stroke fill;
+  dominant-baseline: middle;
+}
+
+/* ==========================================================================
+   CHAPTER 03: SOUTH INDIA GENTLE FLOW RIBBON
+   ========================================================================== */
+.p9-chFlowRibbon {
+  position: relative;
+  width: 100%;
+  max-width: 340px;
+  height: 124px;
+  margin: 4px 0 6px;
+  flex-shrink: 0;
+}
+
+.p9-chFlowRibbon__svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  display: block;
+}
+
+.p9-chFlowRibbon__text {
+  font-family: "Manrope", -apple-system, sans-serif;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  fill: #181510;
+  stroke: #F4EFE6;
+  stroke-width: 3.5px;
+  stroke-linejoin: round;
+  paint-order: stroke fill;
+  dominant-baseline: middle;
+}
+
+/* ==========================================================================
+   CHAPTER 04: NORTH INDIA HORIZON STRATA LINES
+   ========================================================================== */
+.p9-chHorizons {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin: 6px 0 8px;
+  flex-shrink: 0;
+}
+
+.p9-chHorizons__entry {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5px;
+}
+
+.p9-chHorizons__name {
+  font-family: "Manrope", -apple-system, sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #181510;
+  line-height: 1.2;
+}
+
+.p9-chHorizons__line {
+  height: 1.2px;
+  background: linear-gradient(to right, #B99455 0%, rgba(185, 148, 85, 0.15) 100%);
+  border-radius: 1px;
+}
+
+/* ==========================================================================
+   CHAPTER 05: EAST INDIA OFFSET EDITORIAL LAYERS
+   ========================================================================== */
+.p9-chLayers {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin: 6px 0 8px;
+  flex-shrink: 0;
+}
+
+.p9-chLayers__panel {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 10px;
+  border-left: 2px solid #B99455;
+  border-top: 1px solid rgba(185, 148, 85, 0.22);
+  width: 220px;
+  box-sizing: border-box;
+  border-radius: 0 2px 2px 0;
+}
+
+.p9-chLayers__num {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 12px;
+  font-weight: 700;
+  font-style: italic;
+  color: #B99455;
+  line-height: 1;
+}
+
+.p9-chLayers__name {
+  font-family: "Manrope", -apple-system, sans-serif;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #181510;
+}
+
+.p9-chLayers__edgeMask {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 20px;
+  background: linear-gradient(to right, transparent, rgba(244, 239, 230, 0.5));
+  pointer-events: none;
+}
+
+/* ==========================================================================
+   CHAPTER 06: WEST INDIA QUIET WHITESPACE
+   ========================================================================== */
+.p9-quietSpace {
+  height: 28px;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.p9-quietSpace__rule {
+  width: 36px;
+  height: 1px;
+  background-color: rgba(185, 148, 85, 0.4);
+}
+
+/* ==========================================================================
+   CHAPTER 07: CENTRAL INDIA GROUNDED COMPOSITION
+   ========================================================================== */
+.p9-groundedAxis {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin: 4px 0 8px;
+  padding-left: 6px;
+  flex-shrink: 0;
+}
+
+.p9-groundedAxis__plumbLine {
+  width: 1.5px;
+  height: 30px;
+  background: linear-gradient(to bottom, #B99455, rgba(185, 148, 85, 0.25));
+}
+
+.p9-groundedAxis__bracket {
+  width: 12px;
+  height: 1.5px;
+  background: #B99455;
+  margin-left: -5px;
+}
+
+.p9-chapter__photoStage--grounded {
+  border-top: 1px solid rgba(185, 148, 85, 0.28);
+}
+
+/* ==========================================================================
+   CHAPTER 08: CUSTOM PLANNING DIMENSIONS (EDITORIAL MICRO MARKERS)
+   ========================================================================== */
+.p9-customDimensions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 6px 0 8px;
+  flex-shrink: 0;
+}
+
+.p9-customDimensions__item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.p9-customDimensions__num {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 13px;
+  font-weight: 700;
+  font-style: italic;
+  color: #B99455;
+  line-height: 1;
+  width: 15px;
+  flex-shrink: 0;
+}
+
+.p9-customDimensions__dash {
+  width: 7px;
+  height: 1px;
+  background-color: #B99455;
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+
+.p9-customDimensions__text {
+  font-family: "Manrope", -apple-system, sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(24, 21, 16, 0.88);
+}
+
+/* ==========================================================================
+   GLOBAL UNDERSTATED EDITORIAL TEXT CTA (CHAPTERS 01–07)
+   ========================================================================== */
+.p9-understatedCta {
+  position: absolute;
+  bottom: calc(max(18px, env(safe-area-inset-bottom, 18px)) + 2px);
+  left: 22px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+  border-bottom: 1px solid rgba(185, 148, 85, 0.75);
+  color: #F4EFE6;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.75);
+  text-decoration: none;
+  font-family: "Manrope", -apple-system, sans-serif;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+  z-index: 5;
+  transition: all 0.2s ease;
+}
+
+.p9-understatedCta:hover {
+  border-bottom-color: #B99455;
+  color: #B99455;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.9);
+}
+
+.p9-understatedCta__label {
+  display: inline-block;
+}
+
+.p9-understatedCta__arrow {
+  color: #B99455;
+  font-size: 13px;
+  line-height: 1;
+  transition: transform 0.2s ease;
+}
+
+.p9-understatedCta:hover .p9-understatedCta__arrow {
+  transform: translateX(3px);
+}
+
+/* ==========================================================================
+   PHOTO STAGE WITH ORGANIC GRADIENT UPWARD BLEND
+   ========================================================================== */
+.p9-chapter__photoStage {
+  position: relative;
+  width: calc(100% + 44px);
+  margin-left: -22px;
+  margin-top: auto;
+  height: clamp(285px, 40vh, 345px);
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.p9-chapter__photoImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center bottom;
+  display: block;
+}
+
+.p9-chapter__photoBlend {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 90px;
+  background: linear-gradient(
+    to bottom,
+    #F4EFE6 0%,
+    rgba(244, 239, 230, 0.85) 25%,
+    rgba(244, 239, 230, 0) 100%
+  );
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Specific image object positions */
+.p9-chapter--chardham .p9-chapter__photoImg {
+  object-position: center 30%;
+}
+
+.p9-chapter--south .p9-chapter__photoImg {
+  object-position: center 50%;
+}
+
+.p9-chapter--north .p9-chapter__photoImg {
+  object-position: center 40%;
+}
+
+.p9-chapter--east .p9-chapter__photoImg {
+  object-position: center 40%;
+}
+
+.p9-chapter--west .p9-chapter__photoImg {
+  object-position: center 50%;
+}
+
+.p9-chapter--central .p9-chapter__photoImg {
+  object-position: center 60%;
+}
+
+.p9-chapter--custom .p9-chapter__photoImg {
+  object-position: center 35%;
+}
+
+/* ==========================================================================
+   FLOATING PILL CTA BUTTONS (Storyboard Match)
+   ========================================================================== */
+.p9-floatingCta {
+  position: absolute;
+  bottom: calc(max(16px, env(safe-area-inset-bottom, 16px)) + 2px);
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 14px 7px 18px;
+  border-radius: 999px;
+  background: rgba(244, 239, 230, 0.95);
+  border: 1px solid rgba(185, 148, 85, 0.45);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
+  color: #181510;
+  text-decoration: none;
+  font-family: "Manrope", -apple-system, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+  z-index: 5;
+  transition: all 0.2s ease;
+}
+
+.p9-floatingCta:hover {
+  background: #F4EFE6;
+  border-color: #B99455;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.28);
+  transform: translateX(-50%) translateY(-2px);
+}
+
+.p9-floatingCta__arrow {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #181510;
+  color: #F4EFE6;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  line-height: 1;
+  transition: transform 0.2s ease;
+}
+
+.p9-floatingCta:hover .p9-floatingCta__arrow {
+  transform: translateX(2px);
+}
+
+/* Chapter 08: Rich Gold Filled Button */
+.p9-floatingCta--gold {
+  background: #B99455;
+  border-color: #A37E3F;
+  color: #181510;
+  box-shadow: 0 8px 24px rgba(185, 148, 85, 0.35);
+}
+
+.p9-floatingCta--gold .p9-floatingCta__arrow {
+  background: #181510;
+  color: #B99455;
+}
+
+.p9-floatingCta--gold:hover,
+.p9-floatingCta--gold.is-ready {
+  background: #C7A263;
+  box-shadow: 0 10px 30px rgba(185, 148, 85, 0.45);
+}
+
+.p9-floatingCta__badge {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  padding: 2px 6px;
+  background: #181510;
+  color: #B99455;
+  border-radius: 999px;
+  margin-left: 2px;
+}
+
+/* ==========================================================================
+   SECTION INTRO (Frame 1 Match)
+   ========================================================================== */
+.p9-intro {
+  text-align: center;
+  align-items: center;
+  padding-bottom: 0;
+}
+
+.p9-intro__threadConnector {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 4px;
+  margin-bottom: 12px;
+}
+
+.p9-intro__threadLine {
+  width: 1.5px;
+  height: 44px;
+  background-color: #B99455;
+}
+
+.p9-intro__threadRing {
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid #B99455;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background-color: #F4EFE6;
+  margin: -2px 0;
+}
+
+.p9-intro__threadRingDot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background-color: #B99455;
+}
+
+.p9-intro__threadLineSub {
+  width: 1.5px;
+  height: 24px;
+  background-color: #B99455;
+}
+
+.p9-intro__eyebrowWrap {
+  margin-top: 4px;
+}
+
+.p9-intro__eyebrow {
+  font-family: "Manrope", -apple-system, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #B99455;
+}
+
+.p9-intro__statementWrap {
+  margin-top: 14px;
+}
+
+.p9-intro__statement {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 50px;
+  font-weight: 500;
+  line-height: 0.94;
+  letter-spacing: -0.02em;
+  color: #181510;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.p9-intro__copyWrap {
+  margin-top: 16px;
+}
+
+.p9-intro__copy {
+  font-family: "Manrope", -apple-system, sans-serif;
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: rgba(24, 21, 16, 0.72);
+  margin: 0 auto;
+}
+
+.p9-intro__watermarkArea {
+  position: relative;
+  margin-top: auto;
+  width: 100%;
+  height: 260px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.p9-intro__pinRing {
+  position: absolute;
+  top: 30px;
+  width: 22px;
+  height: 22px;
+  border: 1.5px solid #B99455;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background-color: rgba(244, 239, 230, 0.85);
+  z-index: 2;
+}
+
+.p9-intro__pinRingOuter {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #B99455;
+}
+
+.p9-intro__outlineImg {
+  position: absolute;
+  bottom: 0;
+  width: 270px;
+  height: auto;
+  max-height: 250px;
+  object-fit: contain;
+  opacity: 0.12; /* Exact 8-14% watermark requirement */
+}
+
+.p9-intro__bottomLandscape {
+  position: relative;
+  width: calc(100% + 44px);
+  margin-left: -22px;
+  height: 120px;
+  flex-shrink: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(24, 21, 16, 0.04) 50%,
+    rgba(24, 21, 16, 0.08) 100%
+  );
+}
+
+.p9-intro__scrollCue {
+  background: none;
+  border: none;
+  padding: 8px 0;
+  color: #B99455;
+  font-family: "Manrope", -apple-system, sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+}
+
+/* ==========================================================================
+   RESPONSIVE MATRIX RULES
+   ========================================================================== */
+@media (max-width: 365px) {
+  .p9-viewport {
+    padding: 12px 16px 0;
+  }
+  .p9-chapter__title {
+    font-size: 30px;
+  }
+  .p9-understatedCta {
+    left: 16px;
+  }
+  .p9-chapter__photoStage {
+    height: 300px;
+    width: calc(100% + 32px);
+    margin-left: -16px;
+  }
+}
+
+@media (max-height: 815px) {
+  .p9-viewport {
+    padding-top: 8px;
+  }
+  .p9-archivedRail {
+    margin-bottom: 6px;
+    padding-bottom: 3px;
+  }
+  .p9-chapter__title {
+    font-size: 30px;
+  }
+  .p9-chapter__copy {
+    font-size: 12.5px;
+  }
+  .p9-chapter__photoStage {
+    height: 290px;
+  }
+}
+
+@media (min-width: 410px) {
+  .p9-chapter__title {
+    font-size: 38px;
+  }
+  .p9-chapter__photoStage {
+    height: 380px;
+  }
+}
+
+/* ==========================================================================
+   REDUCED MOTION OVERRIDES (Section 19)
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  .p9-chapterTrack {
+    min-height: auto !important;
+  }
+  .p9-chapterStage {
+    position: relative !important;
+    top: auto !important;
+  }
+  .p9-maskedLine {
+    overflow: visible !important;
+  }
+  .p9-maskedLine__inner {
+    transform: none !important;
+    opacity: 1 !important;
+  }
+  .p9-handoff__svg path {
+    stroke-dashoffset: 0 !important;
+  }
+  .p9-understatedCta {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+

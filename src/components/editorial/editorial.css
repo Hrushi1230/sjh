@@ -1,0 +1,525 @@
+/* ==========================================================================
+   SHREE JAGANNATH HOLIDAYS — PHASE 5: CHOOSE YOUR FEELING
+   Editorial Travel Chapters Stylesheet (Mobile-First)
+   ========================================================================== */
+
+:root {
+  --sjh-tone-faith: #F4EFE6;
+  --sjh-tone-escape: #F1F2EE;
+  --sjh-tone-discover: #F3E9DC;
+  --sjh-tone-slow: #EEF1E8;
+  --sjh-ink-primary: #11100E;
+  --sjh-ink-secondary: rgba(17, 16, 14, 0.72);
+  --sjh-ink-muted: rgba(17, 16, 14, 0.52);
+  --sjh-gold-antique: #B99455;
+  --sjh-gold-light: #D4AF37;
+  --sjh-gold-rule: rgba(185, 148, 85, 0.35);
+}
+
+/* Master Editorial Container */
+.sjhEditorialExperience {
+  position: relative;
+  width: 100%;
+  max-width: 100vw;
+  background-color: var(--sjh-tone-faith);
+  color: var(--sjh-ink-primary);
+  overflow-x: hidden;
+  box-sizing: border-box;
+  transition: background-color 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+  will-change: background-color;
+}
+
+/* --------------------------------------------------------------------------
+   First Chapter Continuation (Consumes Phase 4 Final State)
+   -------------------------------------------------------------------------- */
+.sjhFirstChapterContinuation {
+  position: relative;
+  width: 100%;
+  padding: clamp(24px, 5svh, 40px) 20px clamp(48px, 8svh, 64px);
+  box-sizing: border-box;
+  max-width: 440px;
+  margin: 0 auto;
+}
+
+.sjhFirstChapter__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.sjhFirstChapter__header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: clamp(14px, 3svh, 20px);
+}
+
+.sjhFirstChapter__number {
+  font: 400 clamp(32px, 8vw, 42px)/1 "Cormorant Garamond", Georgia, serif;
+  color: var(--sjh-gold-antique);
+  letter-spacing: -0.02em;
+}
+
+.sjhFirstChapter__total {
+  font: 400 13px/1 "Manrope", sans-serif;
+  color: var(--sjh-ink-muted);
+  margin-left: 2px;
+}
+
+.sjhFirstChapter__divider {
+  width: 1px;
+  height: 28px;
+  background-color: var(--sjh-gold-rule);
+}
+
+.sjhFirstChapter__meta {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.sjhFirstChapter__feeling {
+  font: 700 clamp(11px, 2.8vw, 13px)/1.2 "Manrope", sans-serif;
+  letter-spacing: 0.22em;
+  color: var(--sjh-gold-antique);
+  text-transform: uppercase;
+}
+
+.sjhFirstChapter__location {
+  font: 400 clamp(10px, 2.5vw, 11px)/1.3 "Manrope", sans-serif;
+  letter-spacing: 0.16em;
+  color: var(--sjh-ink-muted);
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.sjhFirstChapter__intro {
+  font: 400 clamp(17px, 4.4vw, 20px)/1.3 "Cormorant Garamond", Georgia, serif;
+  font-style: italic;
+  color: var(--sjh-gold-antique);
+  margin-bottom: 6px;
+}
+
+.sjhFirstChapter__title {
+  margin: 0 0 clamp(14px, 3svh, 18px);
+  font: 400 clamp(36px, 9.6vw, 48px)/1.06 "Cormorant Garamond", Georgia, serif;
+  letter-spacing: -0.015em;
+  color: var(--sjh-ink-primary);
+  text-transform: uppercase;
+}
+
+.sjhFirstChapter__titleLine {
+  display: block;
+  overflow: hidden;
+}
+
+.sjhFirstChapter__body {
+  margin: 0 auto clamp(24px, 4.5svh, 32px);
+  max-width: 330px;
+  font: 400 clamp(14px, 3.8vw, 16px)/1.55 "Manrope", sans-serif;
+  color: var(--sjh-ink-secondary);
+  text-wrap: balance;
+}
+
+/* --------------------------------------------------------------------------
+   Experience Markers Row (3 Columns)
+   -------------------------------------------------------------------------- */
+.sjhExperienceRow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  width: 100%;
+  max-width: 360px;
+  margin: 0 auto;
+  padding: 16px 0 0;
+  border-top: 1px solid var(--sjh-gold-rule);
+}
+
+.sjhExperienceItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+}
+
+.sjhExperienceItem__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--sjh-gold-antique);
+  width: 28px;
+  height: 28px;
+}
+
+.sjhExperienceItem__label {
+  font: 500 clamp(11px, 2.9vw, 12px)/1.25 "Manrope", sans-serif;
+  letter-spacing: 0.04em;
+  color: var(--sjh-ink-secondary);
+}
+
+/* Phase 5 Secondary Journey Explore Link */
+.sjhChapter__exploreLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 14px;
+  padding: 8px 14px;
+  min-height: 44px;
+  background: none;
+  border: none;
+  font: 600 clamp(11px, 2.8vw, 12px)/1.2 "Manrope", sans-serif;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--sjh-gold-antique);
+  cursor: pointer;
+  text-decoration: none;
+  transition: opacity 0.2s ease, transform 0.15s ease;
+  will-change: transform;
+}
+
+.sjhChapter__exploreLink:hover,
+.sjhChapter__exploreLink:focus-visible {
+  opacity: 0.85;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.sjhChapter__exploreLink:active {
+  transform: scale(0.97);
+}
+
+.sjhChapter__exploreArrow {
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+
+.sjhChapter__exploreLink:hover .sjhChapter__exploreArrow {
+  transform: translateX(3px);
+}
+
+/* --------------------------------------------------------------------------
+   Subsequent Chapter Tracks (Chapters 02, 03, 04)
+   -------------------------------------------------------------------------- */
+.sjhChapterTrack {
+  position: relative;
+  width: 100%;
+  min-height: clamp(620px, 92svh, 860px);
+  padding: clamp(20px, 3.5svh, 36px) 18px clamp(28px, 4.5svh, 44px);
+  box-sizing: border-box;
+}
+
+.sjhChapterContent {
+  width: 100%;
+  max-width: 440px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+/* Chapter Marker Bar (Top of Chapter) */
+.sjhChapter__topBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--sjh-gold-rule);
+}
+
+.sjhChapter__leadGroup {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sjhChapter__indexNumber {
+  font: 400 clamp(28px, 7.5vw, 36px)/1 "Cormorant Garamond", Georgia, serif;
+  color: var(--sjh-gold-antique);
+  letter-spacing: -0.02em;
+}
+
+.sjhChapter__indexTotal {
+  font: 400 13px/1 "Manrope", sans-serif;
+  color: var(--sjh-ink-muted);
+  margin-left: 2px;
+}
+
+.sjhChapter__labelGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.sjhChapter__feelingTag {
+  font: 700 clamp(11px, 2.8vw, 12px)/1.2 "Manrope", sans-serif;
+  letter-spacing: 0.20em;
+  color: var(--sjh-gold-antique);
+  text-transform: uppercase;
+}
+
+.sjhChapter__locationTag {
+  font: 400 clamp(9.5px, 2.4vw, 11px)/1.3 "Manrope", sans-serif;
+  letter-spacing: 0.14em;
+  color: var(--sjh-ink-muted);
+  text-transform: uppercase;
+}
+
+/* Static Micro Line Hook for Phase 6 */
+.sjhChapter__threadHook {
+  width: 24px;
+  height: 1px;
+  background-color: var(--sjh-gold-antique);
+  opacity: 0.6;
+}
+
+/* Media Framing Container */
+.sjhChapter__mediaContainer {
+  position: relative;
+  width: 100%;
+  height: clamp(250px, 38svh, 340px);
+  border-radius: 28px;
+  overflow: hidden;
+  box-shadow: 0 16px 42px rgba(17, 16, 14, 0.16);
+  background-color: #0E0D0B;
+  margin: clamp(14px, 2.4svh, 20px) 0;
+  will-change: transform, clip-path;
+}
+
+.sjhChapter__mediaImg {
+  width: 100%;
+  height: 116%;
+  object-fit: cover;
+  transform: translateY(0px) scale(1.03);
+  will-change: transform;
+}
+
+/* Lower Editorial Narrative Block */
+.sjhChapter__narrative {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+}
+
+.sjhChapter__headline {
+  margin: 0 0 clamp(8px, 1.8svh, 12px);
+  font: 400 clamp(32px, 8.8vw, 44px)/1.08 "Cormorant Garamond", Georgia, serif;
+  letter-spacing: -0.015em;
+  color: var(--sjh-ink-primary);
+  text-transform: uppercase;
+}
+
+.sjhChapter__headlineLine {
+  display: block;
+  overflow: hidden;
+}
+
+.sjhChapter__headlineLine span {
+  display: block;
+  transform: translateY(0%);
+  will-change: transform;
+}
+
+.sjhChapter__copy {
+  margin: 0 auto clamp(14px, 2.5svh, 18px);
+  max-width: 320px;
+  font: 400 clamp(13.5px, 3.6vw, 15px)/1.5 "Manrope", sans-serif;
+  color: var(--sjh-ink-secondary);
+  text-wrap: balance;
+}
+
+/* --------------------------------------------------------------------------
+   Four Distinct Art-Directed Layout Variants
+   -------------------------------------------------------------------------- */
+
+/* 1. FAITH Variant (Sacred / Devotional / Warm Gold) */
+.sjhChapter--faith {
+  background-color: var(--sjh-tone-faith);
+}
+
+.sjhChapter--faith .sjhChapter__mediaContainer::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 38%;
+  background: linear-gradient(to top, rgba(244, 239, 230, 0.45) 0%, transparent 100%);
+  pointer-events: none;
+}
+
+/* 2. ESCAPE Variant (Silence / Space / Altitude / Tall Image) */
+.sjhChapter--escape {
+  background-color: var(--sjh-tone-escape);
+}
+
+.sjhChapter--escape .sjhChapter__mediaContainer {
+  height: clamp(270px, 41svh, 370px);
+  border-radius: 24px;
+}
+
+.sjhChapter--escape .sjhChapter__headline {
+  font-size: clamp(34px, 9.2vw, 46px);
+  letter-spacing: 0.01em;
+}
+
+.sjhChapter--escape .sjhChapter__copy {
+  max-width: 290px;
+}
+
+/* 3. DISCOVER Variant (Architecture / Stone / Heritage Jharokha Arch) */
+.sjhChapter--discover {
+  background-color: var(--sjh-tone-discover);
+}
+
+.sjhChapter--discover .sjhChapter__mediaContainer {
+  border-radius: 38px 38px 20px 20px;
+  box-shadow: 0 18px 46px rgba(45, 30, 15, 0.18);
+}
+
+.sjhChapter--discover .sjhChapter__mediaContainer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 38px 38px 20px 20px;
+  border: 1px solid rgba(185, 148, 85, 0.28);
+  pointer-events: none;
+  z-index: 3;
+}
+
+.sjhChapter--discover .sjhChapter__headline {
+  letter-spacing: -0.02em;
+}
+
+/* 4. SLOW DOWN Variant (Calm Waters / Generous Negative Space / Sage) */
+.sjhChapter--slow {
+  background-color: var(--sjh-tone-slow);
+}
+
+.sjhChapter--slow .sjhChapter__mediaContainer {
+  height: clamp(240px, 36svh, 320px);
+  border-radius: 32px;
+}
+
+.sjhChapter--slow .sjhChapter__narrative {
+  padding: 0 8px;
+}
+
+.sjhChapter--slow .sjhChapter__copy {
+  max-width: 340px;
+  line-height: 1.6;
+}
+
+/* --------------------------------------------------------------------------
+   Responsive Viewport Refinements
+   -------------------------------------------------------------------------- */
+
+/* Compact Android screens (360x800) */
+@media (max-width: 365px) {
+
+  .sjhFirstChapterContinuation,
+  .sjhChapterContent {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .sjhChapter__mediaContainer {
+    height: clamp(210px, 32svh, 270px);
+    border-radius: 20px;
+  }
+
+  .sjhChapter__headline {
+    font-size: clamp(28px, 8.2vw, 34px);
+  }
+
+  .sjhChapter__copy {
+    font-size: 13px;
+    margin-bottom: 10px;
+  }
+
+  .sjhExperienceRow {
+    gap: 4px;
+    padding-top: 10px;
+  }
+
+  .sjhExperienceItem__label {
+    font-size: 10.5px;
+  }
+}
+
+/* iPhone Mini & iPhone X (375x812) */
+@media (min-width: 366px) and (max-width: 385px) {
+  .sjhChapter__mediaContainer {
+    height: clamp(230px, 35svh, 300px);
+  }
+}
+
+/* Taller / Wider Viewports (412x915, 430x932) */
+@media (min-width: 410px) {
+
+  .sjhFirstChapterContinuation,
+  .sjhChapterContent {
+    max-width: 420px;
+  }
+
+  .sjhChapter__mediaContainer {
+    height: clamp(280px, 40svh, 360px);
+  }
+
+  .sjhExperienceRow {
+    max-width: 380px;
+    gap: 12px;
+  }
+}
+
+/* Short height screens (e.g. landscape or small devices) */
+@media (max-height: 700px) {
+  .sjhChapterContent {
+    height: auto;
+    position: relative;
+    top: 0;
+  }
+
+  .sjhChapterTrack {
+    min-height: auto;
+    padding-bottom: 40px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Reduced Motion Support
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .sjhEditorialExperience {
+    transition: none !important;
+  }
+
+  .sjhChapterSticky {
+    position: relative !important;
+    top: 0 !important;
+    height: auto !important;
+    min-height: auto !important;
+    padding: 32px 18px !important;
+  }
+
+  .sjhChapterTrack {
+    min-height: auto !important;
+  }
+
+  .sjhChapter__mediaImg,
+  .sjhChapter__nextMediaImg {
+    transform: none !important;
+    transition: none !important;
+  }
+
+  .sjhChapter__nextMediaMask {
+    display: none !important;
+  }
+
+  .sjhChapter__headlineLine span {
+    transform: none !important;
+  }
+}

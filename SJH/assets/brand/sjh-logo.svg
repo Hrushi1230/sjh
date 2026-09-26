@@ -1,0 +1,17 @@
+<svg width="240" height="180" viewBox="0 0 240 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <linearGradient id="g" x1="62" y1="8" x2="176" y2="150" gradientUnits="userSpaceOnUse">
+    <stop stop-color="#F7DE98"/><stop offset="0.48" stop-color="#D6A64F"/><stop offset="1" stop-color="#9A6926"/>
+  </linearGradient>
+</defs>
+<!-- simplified lotus/flame mark -->
+<path d="M120 12C110 30 111 46 120 59C129 46 130 30 120 12Z" fill="url(#g)"/>
+<path d="M102 32C98 52 105 66 120 77C119 59 113 44 102 32Z" fill="url(#g)" opacity=".95"/>
+<path d="M138 32C142 52 135 66 120 77C121 59 127 44 138 32Z" fill="url(#g)" opacity=".95"/>
+<path d="M89 54C91 72 101 83 120 88C112 72 101 61 89 54Z" fill="url(#g)" opacity=".88"/>
+<path d="M151 54C149 72 139 83 120 88C128 72 139 61 151 54Z" fill="url(#g)" opacity=".88"/>
+<circle cx="120" cy="77" r="4" fill="#F4C96D"/>
+<text x="120" y="132" text-anchor="middle" fill="url(#g)" font-family="Cormorant Garamond, Georgia, serif" font-size="62" font-weight="500" letter-spacing="-2">SJH</text>
+<text x="120" y="155" text-anchor="middle" fill="#F6E9CC" font-family="Manrope, Arial, sans-serif" font-size="8.5" font-weight="600" letter-spacing="3.4">SHREE JAGANNATH</text>
+<text x="120" y="169" text-anchor="middle" fill="#F6E9CC" font-family="Manrope, Arial, sans-serif" font-size="8.5" font-weight="600" letter-spacing="4.2">HOLIDAYS</text>
+</svg>

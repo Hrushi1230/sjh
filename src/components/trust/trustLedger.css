@@ -1,0 +1,771 @@
+/**
+ * SHREE JAGANNATH HOLIDAYS — PHASE 8: THE TRUST LEDGER
+ * Scoped Styles, Editorial Grid, Mask Reveals & Architectural Rules
+ */
+
+/* --------------------------------------------------------------------------
+   Master Section Container
+   -------------------------------------------------------------------------- */
+.sjhTrustLedger {
+  position: relative;
+  width: 100%;
+  background-color: #F4EFE6;
+  color: #11100E;
+  transition: background-color 0.8s cubic-bezier(0.2, 0.9, 0.3, 1);
+  /* Boundary clarity: Section 05 on Homepage */
+  z-index: 10;
+}
+
+.sjhTrustLedger__container {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 0 clamp(20px, 6vw, 32px);
+  box-sizing: border-box;
+}
+
+/* --------------------------------------------------------------------------
+   The Signature Thread-to-Ledger Transition (90° Bend)
+   -------------------------------------------------------------------------- */
+.sjhTrustTransition {
+  position: relative;
+  width: 100%;
+  height: 120px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  pointer-events: none;
+}
+
+.sjhTrustTransition__svg {
+  width: 100%;
+  max-width: 420px;
+  height: 120px;
+  overflow: visible;
+}
+
+.sjhTrustTransition__path {
+  fill: none;
+  stroke: #B99455;
+  stroke-width: 1.5px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+/* --------------------------------------------------------------------------
+   Sticky Eyebrow Lockup
+   -------------------------------------------------------------------------- */
+.sjhTrustEyebrowSticky {
+  position: sticky;
+  top: calc(env(safe-area-inset-top, 0px) + 20px);
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 0;
+  margin-bottom: 24px;
+  pointer-events: none;
+}
+
+.sjhTrustEyebrowSticky__tag {
+  font-family: "Manrope", sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #B99455;
+  white-space: nowrap;
+  transition: opacity 0.3s ease;
+}
+
+.sjhTrustEyebrowSticky__rule {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, rgba(185, 148, 85, 0.4), transparent);
+  transform-origin: left;
+}
+
+/* --------------------------------------------------------------------------
+   Section Intro & Master Statement
+   -------------------------------------------------------------------------- */
+.sjhTrustIntro {
+  position: relative;
+  padding-top: 12px;
+  padding-bottom: clamp(42px, 8.5svh, 64px);
+}
+
+.sjhTrustIntro__statement {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(44px, 12vw, 58px);
+  line-height: 0.94;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: #11100E;
+  margin: 0;
+  padding-right: clamp(16px, 6vw, 40px);
+}
+
+.sjhTrustMaskedLine {
+  display: block;
+  overflow: hidden;
+  line-height: 0.96;
+}
+
+.sjhTrustMaskedLine__inner {
+  display: block;
+  transform: translateY(105%);
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+/* --------------------------------------------------------------------------
+   The Architectural Ledger Spine (x ≈ 24%)
+   -------------------------------------------------------------------------- */
+.sjhLedgerSpine {
+  position: absolute;
+  top: 120px;
+  bottom: 60px;
+  left: clamp(84px, 24vw, 110px);
+  width: 1px;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.sjhLedgerSpine__segment {
+  position: absolute;
+  width: 1px;
+  background: rgba(185, 148, 85, 0.24);
+  transform-origin: top;
+  will-change: transform, opacity;
+}
+
+/* --------------------------------------------------------------------------
+   Living Trust Ledger Track & Sticky Viewport (One Master Living Composition)
+   -------------------------------------------------------------------------- */
+.trust-ledger-track {
+  position: relative;
+  width: 100%;
+  min-height: calc(100svh + 175svh);
+}
+
+.trust-ledger-sticky {
+  position: sticky;
+  top: var(--header-offset, 0px);
+  min-height: calc(100svh - var(--header-offset, 0px));
+  height: calc(100svh - var(--header-offset, 0px));
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.trust-ledger-content {
+  position: relative;
+  width: 100%;
+  max-width: 398px;
+  margin: 0 auto;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+/* --------------------------------------------------------------------------
+   Archived Rows Container (Top Region ~18-24% of Viewport)
+   -------------------------------------------------------------------------- */
+.trust-archived-rows {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  padding-top: clamp(8px, 1.8svh, 14px);
+  z-index: 10;
+}
+
+.trust-archived-row {
+  position: relative;
+  width: 100%;
+  height: 0;
+  opacity: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.trust-archived-row__content {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.trust-archived-row__num {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 15px;
+  font-style: italic;
+  font-weight: 500;
+  color: #B99455;
+  line-height: 1;
+}
+
+.trust-archived-row__title {
+  font-family: "Manrope", sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(24, 21, 16, 0.52);
+  line-height: 1;
+}
+
+.trust-archived-row__ruleWrap {
+  position: relative;
+  width: 100%;
+  height: 6px;
+  display: flex;
+  align-items: center;
+  margin-top: 5px;
+}
+
+.trust-archived-row__line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: rgba(185, 148, 85, 0.28);
+}
+
+.trust-archived-row__dot {
+  position: absolute;
+  left: 20px;
+  width: 4.5px;
+  height: 4.5px;
+  border-radius: 50%;
+  background: #B99455;
+  z-index: 2;
+  transform: translateX(-50%);
+}
+
+.trust-archived-rows__finalRule {
+  width: 100%;
+  height: 1.5px;
+  background: #B99455;
+  margin-top: 8px;
+  transform-origin: left;
+  transform: scaleX(0);
+  opacity: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Active Trust Stage Container (Middle & Bottom Region)
+   -------------------------------------------------------------------------- */
+.trust-active-stage {
+  position: relative;
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+}
+
+.trust-stage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  padding-top: clamp(14px, 3svh, 24px);
+}
+
+.trust-stage__num {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(34px, 8.5vw, 42px);
+  font-style: italic;
+  font-weight: 400;
+  color: #B99455;
+  line-height: 1;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.trust-stage__title {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(30px, 8vw, 38px);
+  line-height: 1.04;
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  text-transform: uppercase;
+  color: #181510;
+  margin: 0 0 14px 0;
+}
+
+.trust-stage__title span {
+  display: block;
+}
+
+.trust-stage__body {
+  font-family: "Manrope", sans-serif;
+  font-size: clamp(14.5px, 3.8vw, 15.5px);
+  line-height: 1.52;
+  color: rgba(24, 21, 16, 0.70);
+  margin: 0 0 16px 0;
+  max-width: 290px;
+}
+
+/* Stage 01: PERSONALLY CRAFTED (Stacked rules metadata) */
+.trust-stage__meta--rules {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 210px;
+  margin-top: 10px;
+}
+
+.trust-stage__metaRuleItem {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.trust-stage__metaLine {
+  width: 100%;
+  height: 1px;
+  background: rgba(185, 148, 85, 0.28);
+  margin: 4px 0;
+}
+
+.trust-stage__metaLabel {
+  font-family: "Manrope", sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(24, 21, 16, 0.65);
+  padding: 3px 0;
+}
+
+.trust-stage__svgWrap--01 {
+  position: absolute;
+  right: -10px;
+  bottom: clamp(16px, 4svh, 32px);
+  width: clamp(230px, 64vw, 280px);
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Stage 02: ROOTED IN ODISHA (Left-aligned with rising temple) */
+.trust-stage--02 .trust-stage__body {
+  max-width: 280px;
+}
+
+.trust-stage__meta--odisha {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-family: "Manrope", sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #B99455;
+  margin-top: 10px;
+}
+
+.trust-stage__svgWrap--02 {
+  position: absolute;
+  right: clamp(4px, 2vw, 16px);
+  bottom: clamp(4px, 1.5svh, 16px);
+  width: clamp(190px, 54vw, 245px);
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Stage 03: ONE HUMAN CONTACT (5-dot Relational Connector) */
+.trust-stage--03 .trust-stage__body {
+  max-width: 300px;
+}
+
+.trust-stage__relationalConnector {
+  position: relative;
+  width: 100%;
+  max-width: 240px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  margin: 16px 0 0 0;
+}
+
+.trust-stage__relationalLine {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: rgba(185, 148, 85, 0.45);
+}
+
+.trust-stage__relationalMarker {
+  position: absolute;
+  background: #B99455;
+  z-index: 2;
+}
+
+.trust-stage__relationalMarker--dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  top: 50%;
+}
+
+.trust-stage__relationalMarker--diamond {
+  width: 5px;
+  height: 5px;
+  transform: translate(-50%, -50%) rotate(45deg);
+  top: 50%;
+}
+
+.trust-stage__svgWrap--03 {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: clamp(16px, 3.5svh, 28px);
+  width: clamp(270px, 80vw, 340px);
+  margin: 0 auto;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Stage 04: DETAILS, HANDLED (Disciplined ledger items with center dots) */
+.trust-stage--04 .trust-stage__body {
+  max-width: 280px;
+}
+
+.trust-stage__ledgerLabels {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  max-width: 250px;
+  margin-top: 14px;
+}
+
+.trust-stage__ledgerItem {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+}
+
+.trust-stage__ledgerName {
+  font-family: "Manrope", sans-serif;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(185, 148, 85, 0.85);
+  width: 72px;
+}
+
+.trust-stage__ledgerRuleWrap {
+  position: relative;
+  flex: 1;
+  max-width: 120px;
+  height: 6px;
+  display: flex;
+  align-items: center;
+}
+
+.trust-stage__ledgerRule {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: rgba(185, 148, 85, 0.4);
+}
+
+.trust-stage__ledgerDot {
+  position: absolute;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #B99455;
+  transform: translate(-50%, 0);
+}
+
+.trust-stage__svgWrap--04 {
+  position: absolute;
+  right: clamp(4px, 2vw, 16px);
+  bottom: clamp(6px, 1.5svh, 18px);
+  width: clamp(180px, 52vw, 235px);
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Common SVG Image Rules */
+.trust-stage__svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* --------------------------------------------------------------------------
+   Stage 05: FULL LEDGER + BRIDGE (Frame I in Master Design Board)
+   -------------------------------------------------------------------------- */
+.trust-stage--bridge {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding-top: clamp(8px, 1.8svh, 16px);
+  z-index: 5;
+  pointer-events: auto;
+}
+
+.trust-bridge__threadWrap {
+  width: 40px;
+  height: 64px;
+  margin-bottom: 12px;
+}
+
+.trust-bridge__threadSvg {
+  width: 40px;
+  height: 64px;
+  overflow: visible;
+}
+
+.trust-bridge__headline {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(30px, 7.8vw, 38px);
+  line-height: 1.05;
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  text-transform: uppercase;
+  color: #181510;
+  margin: 0;
+  max-width: 320px;
+}
+
+.trust-bridge__maskedLine {
+  display: block;
+  overflow: hidden;
+  line-height: 1.05;
+}
+
+.trust-bridge__maskedLine__inner {
+  display: block;
+  transform: translateY(105%);
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+.trust-bridge__footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 40px;
+  gap: 8px;
+  margin-top: clamp(14px, 2.5svh, 22px);
+  opacity: 0;
+}
+
+.trust-bridge__lowerLine {
+  width: 1.5px;
+  height: 42px;
+  background: #B99455;
+}
+
+.trust-bridge__eyebrow {
+  font-family: "Manrope", sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #B99455;
+  text-align: center;
+}
+
+.trust-bridge__downArrow {
+  display: block;
+}
+
+/* --------------------------------------------------------------------------
+   Section Outro & Phase 9 Traveller Stories Bridge (Frame I fallback)
+   -------------------------------------------------------------------------- */
+.sjhTrustOutro {
+  position: relative;
+  padding-top: clamp(32px, 6svh, 48px);
+  padding-bottom: clamp(48px, 10svh, 72px);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  z-index: 5;
+}
+
+/* Vertical Thread Connector with Diamond Tip */
+.sjhTrustOutro__threadWrap {
+  width: 100%;
+  height: 74px;
+  margin-bottom: 20px;
+}
+
+.sjhTrustOutro__threadSvg {
+  width: 100px;
+  height: 74px;
+  overflow: visible;
+}
+
+.sjhTrustOutro__bracketPath {
+  fill: none;
+  stroke: #B99455;
+  stroke-width: 1.5px;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.sjhTrustOutro__headline {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(30px, 8vw, 40px);
+  line-height: 1.05;
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  text-transform: uppercase;
+  color: #181510;
+  margin: 0;
+  max-width: 340px;
+}
+
+.sjhTrustOutro__bridgeFooter {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.sjhTrustOutro__lowerLine {
+  width: 1.5px;
+  height: 48px;
+  background: #B99455;
+  margin-left: 48px;
+}
+
+.sjhTrustOutro__eyebrow {
+  font-family: "Manrope", sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #B99455;
+  margin-left: 36px;
+}
+
+.sjhTrustOutro__downArrow {
+  margin-left: 43px;
+  display: block;
+}
+
+/* --------------------------------------------------------------------------
+   Responsive Viewport Refinements (360px & 430px)
+   -------------------------------------------------------------------------- */
+@media (max-width: 365px) {
+  .trust-ledger-content {
+    padding: 0 4px;
+  }
+  .trust-stage__title {
+    font-size: clamp(28px, 7.8vw, 34px);
+  }
+  .trust-stage__body {
+    font-size: 14px;
+  }
+  .trust-archived-row__title {
+    font-size: 10px;
+  }
+  .trust-stage__svg {
+    transform: scale(0.92);
+    transform-origin: bottom right;
+  }
+  .sjhTrustIntro__statement {
+    font-size: 40px;
+    line-height: 0.96;
+  }
+  .sjhTrustOutro__headline {
+    font-size: 28px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Prefers-Reduced-Motion Adaptations (Document Flow, Full Contrast)
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .sjhTrustMaskedLine__inner,
+  .sjhLedgerSpine__segment {
+    transform: none !important;
+    opacity: 1 !important;
+  }
+  
+  .sjhTrustTransition__path,
+  .sjhTrustOutro__bracketPath {
+    stroke-dashoffset: 0 !important;
+  }
+
+  .sjhTrustEyebrowSticky__rule {
+    transform: none !important;
+  }
+
+  .trust-ledger-track {
+    min-height: auto !important;
+  }
+
+  .trust-ledger-sticky {
+    position: relative !important;
+    top: 0 !important;
+    height: auto !important;
+    min-height: auto !important;
+    overflow: visible !important;
+  }
+
+  .trust-active-stage {
+    position: relative !important;
+    height: auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 48px !important;
+  }
+
+  .trust-stage {
+    position: relative !important;
+    opacity: 1 !important;
+    display: flex !important;
+    transform: none !important;
+    pointer-events: auto !important;
+  }
+
+  .trust-archived-row {
+    height: 34px !important;
+    opacity: 1 !important;
+  }
+
+  .trust-archived-rows__finalRule {
+    transform: none !important;
+    opacity: 1 !important;
+  }
+
+  .trust-stage__svgWrap--01,
+  .trust-stage__svgWrap--02,
+  .trust-stage__svgWrap--03,
+  .trust-stage__svgWrap--04 {
+    opacity: 0.20 !important;
+    transform: none !important;
+  }
+}

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>SJH Travel Memories Contact Sheet</title>
+  <style>
+    body { font-family: sans-serif; background: #111; color: #fff; padding: 20px; }
+    .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    .card { background: #222; border-radius: 8px; overflow: hidden; padding: 10px; }
+    img { width: 100%; height: auto; display: block; border-radius: 4px; }
+    .title { font-weight: bold; margin-top: 8px; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <h1>SJH Real Travel Memories — 28 Photos (Natural Ratio)</h1>
+  <div class="grid">
+    <!-- Generate 01 to 28 -->
+    <script>
+      for (let i = 1; i <= 28; i++) {
+        const num = String(i).padStart(2, '0');
+        document.write(`
+          <div class="card">
+            <img src="/assets/travel-memories/memory-${num}.jpg">
+            <div class="title">Memory ${num}</div>
+          </div>
+        `);
+      }
+    </script>
+  </div>
+</body>
+</html>

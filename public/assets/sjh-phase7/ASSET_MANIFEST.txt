@@ -1,0 +1,20 @@
+SHREE JAGANNATH HOLIDAYS — PHASE 7 FINAL ASSETS
+
+Main journey images: 1200x1500 (4:5)
+Supporting detail images: 1200x900 (4:3)
+Format: WebP quality 90
+
+journey-sacred-odisha.webp — 1200x1500 — 443.5 KB
+journey-kashmir-valley.webp — 1200x1500 — 430.7 KB
+journey-royal-rajasthan.webp — 1200x1500 — 388.5 KB
+journey-kerala-slowly.webp — 1200x1500 — 420.7 KB
+odisha-konark-detail.webp — 1200x900 — 436.7 KB
+odisha-bhubaneswar-detail.webp — 1200x900 — 293.9 KB
+kashmir-srinagar-detail.webp — 1200x900 — 379.6 KB
+kashmir-pahalgam-detail.webp — 1200x900 — 436.5 KB
+rajasthan-jodhpur-detail.webp — 1200x900 — 384.6 KB
+rajasthan-udaipur-detail.webp — 1200x900 — 385.2 KB
+kerala-munnar-detail.webp — 1200x900 — 339.7 KB
+kerala-kochi-detail.webp — 1200x900 — 352.5 KB
+
+Kashmir note: main image carries the Gulmarg/mountain visual; supporting images are Srinagar/Dal Lake and Pahalgam.

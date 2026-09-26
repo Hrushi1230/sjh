@@ -1,0 +1,716 @@
+/**
+ * SHREE JAGANNATH HOLIDAYS — JOURNEY DETAIL PAGE STYLES
+ * Mobile-First Editorial Architecture for Internal Journey Routes
+ */
+
+/* View Transition API shared element name */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+::view-transition-old(journey-hero-media),
+::view-transition-new(journey-hero-media) {
+  animation-duration: 0.65s;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Master Detail Page Wrapper */
+.sjhDetailPage {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  color: var(--sjh-black-deep, #0B0A08);
+  font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+.sjhDetailPage__container {
+  width: 100%;
+  max-width: 440px;
+  margin: 0 auto;
+  padding: 0 18px 48px;
+  box-sizing: border-box;
+}
+
+/* Top Navigation Bar */
+.sjhDetailNav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 16px 0;
+  border-bottom: 1px solid rgba(185, 148, 85, 0.3);
+  margin-bottom: clamp(14px, 2.4svh, 20px);
+}
+
+.sjhDetailNav__backBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  font: 600 clamp(11.5px, 2.8vw, 12.5px)/1 'Manrope', sans-serif;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: #B99455;
+  cursor: pointer;
+  padding: 8px 0;
+  min-height: 44px;
+  transition: opacity 0.2s ease, transform 0.15s ease;
+}
+
+.sjhDetailNav__backBtn:hover,
+.sjhDetailNav__backBtn:focus-visible {
+  opacity: 0.8;
+  transform: translateX(-2px);
+}
+
+.sjhDetailNav__brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sjhDetailNav__brandName {
+  font: 700 10.5px/1.2 'Manrope', sans-serif;
+  letter-spacing: 0.18em;
+  color: #11100E;
+  text-transform: uppercase;
+}
+
+/* --------------------------------------------------------------------------
+   A. HERO SECTION
+   -------------------------------------------------------------------------- */
+.sjhDetailHero {
+  position: relative;
+  width: 100%;
+  margin-bottom: clamp(28px, 4.5svh, 40px);
+}
+
+.sjhDetailHero__headerMeta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(185, 148, 85, 0.35);
+  margin-bottom: 14px;
+}
+
+.sjhDetailHero__index {
+  font: 400 clamp(24px, 6.5vw, 30px)/1 'Cormorant Garamond', Georgia, serif;
+  color: #B99455;
+}
+
+.sjhDetailHero__mood {
+  font: 700 clamp(10px, 2.5vw, 11px)/1.2 'Manrope', sans-serif;
+  letter-spacing: 0.18em;
+  color: rgba(17, 16, 14, 0.7);
+  text-transform: uppercase;
+}
+
+.sjhDetailHero__mediaWrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  border-radius: 26px;
+  overflow: hidden;
+  box-shadow: 0 16px 42px rgba(17, 16, 14, 0.14);
+  background-color: #11100E;
+  margin-bottom: clamp(16px, 2.8svh, 22px);
+}
+
+.sjhDetailHero__mediaImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  view-transition-name: journey-hero-media;
+}
+
+.sjhDetailHero__title {
+  margin: 0 0 clamp(10px, 1.8svh, 14px);
+  font: 400 clamp(36px, 10vw, 48px)/1.04 'Cormorant Garamond', Georgia, serif;
+  letter-spacing: -0.015em;
+  color: #11100E;
+  text-transform: uppercase;
+}
+
+.sjhDetailHero__titleLine {
+  display: block;
+  overflow: hidden;
+}
+
+.sjhDetailHero__routeMeta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.sjhDetailHero__routeStop {
+  font: 600 clamp(12px, 3vw, 13px)/1.3 'Manrope', sans-serif;
+  letter-spacing: 0.10em;
+  color: #B99455;
+  text-transform: uppercase;
+}
+
+.sjhDetailHero__routeDivider {
+  color: rgba(185, 148, 85, 0.45);
+  font-size: 10px;
+}
+
+.sjhDetailHero__durationBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: rgba(185, 148, 85, 0.15);
+  padding: 4px 12px;
+  border-radius: 999px;
+  font: 500 12px/1.3 'Manrope', sans-serif;
+  color: rgba(17, 16, 14, 0.7);
+  margin-bottom: 12px;
+}
+
+.sjhDetailHero__tagline {
+  font: italic 400 clamp(15px, 4vw, 17px)/1.45 'Cormorant Garamond', Georgia, serif;
+  color: #B99455;
+  margin-bottom: 8px;
+}
+
+/* --------------------------------------------------------------------------
+   B. WHY THIS JOURNEY
+   -------------------------------------------------------------------------- */
+.sjhDetailSection {
+  position: relative;
+  width: 100%;
+  padding: clamp(24px, 3.8svh, 34px) 0;
+  border-top: 1px solid rgba(185, 148, 85, 0.22);
+  box-sizing: border-box;
+}
+
+.sjhDetailSection__eyebrow {
+  display: inline-block;
+  font: 700 11px/1.2 'Manrope', sans-serif;
+  letter-spacing: 0.20em;
+  color: #B99455;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.sjhDetailSection__title {
+  font: 400 clamp(26px, 7vw, 34px)/1.15 'Cormorant Garamond', Georgia, serif;
+  color: #11100E;
+  margin-bottom: clamp(14px, 2.4svh, 18px);
+}
+
+.sjhDetailWhy__lead {
+  font: 500 clamp(15px, 3.9vw, 16.5px)/1.55 'Manrope', sans-serif;
+  color: #11100E;
+  margin-bottom: 14px;
+}
+
+.sjhDetailWhy__p {
+  font: 400 clamp(14px, 3.6vw, 15px)/1.6 'Manrope', sans-serif;
+  color: rgba(17, 16, 14, 0.78);
+  margin-bottom: 12px;
+}
+
+.sjhDetailWhy__highlights {
+  list-style: none;
+  padding: 0;
+  margin: 18px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sjhDetailWhy__highlightItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font: 500 clamp(13px, 3.4vw, 14px)/1.45 'Manrope', sans-serif;
+  color: #11100E;
+}
+
+.sjhDetailWhy__highlightDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #B99455;
+  margin-top: 6px;
+  flex-shrink: 0;
+}
+
+/* --------------------------------------------------------------------------
+   C. ROUTE OVERVIEW
+   -------------------------------------------------------------------------- */
+.sjhDetailRoute__meta {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.sjhDetailRoute__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: rgba(185, 148, 85, 0.12);
+  padding: 6px 12px;
+  border-radius: 999px;
+  font: 600 11.5px/1 'Manrope', sans-serif;
+  letter-spacing: 0.05em;
+  color: #B99455;
+  text-transform: uppercase;
+}
+
+.sjhDetailRoute__timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 18px;
+  position: relative;
+  padding-left: 20px;
+}
+
+.sjhDetailRoute__timeline::before {
+  content: "";
+  position: absolute;
+  left: 6px;
+  top: 8px;
+  bottom: 8px;
+  width: 1px;
+  background: linear-gradient(to bottom, #B99455 0%, rgba(185, 148, 85, 0.3) 100%);
+}
+
+.sjhDetailRoute__stop {
+  position: relative;
+}
+
+.sjhDetailRoute__stopDot {
+  position: absolute;
+  left: -20px;
+  top: 5px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background-color: #B99455;
+  border: 2px solid var(--sjh-ivory, #F4EFE6);
+}
+
+.sjhDetailRoute__stopCity {
+  font: 700 14px/1.2 'Manrope', sans-serif;
+  color: #11100E;
+}
+
+.sjhDetailRoute__stopNights {
+  font: 500 12px/1.3 'Manrope', sans-serif;
+  color: #B99455;
+  margin-left: 8px;
+}
+
+.sjhDetailRoute__stopHighlight {
+  font: 400 13px/1.45 'Manrope', sans-serif;
+  color: rgba(17, 16, 14, 0.7);
+  margin-top: 3px;
+}
+
+/* --------------------------------------------------------------------------
+   D. DAY-BY-DAY ITINERARY WITH CONTEXTUAL SUPPORTING PHOTOGRAPHY
+   -------------------------------------------------------------------------- */
+.sjhDetailItinerary__list {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.sjhDetailDayCard {
+  background-color: rgba(255, 255, 255, 0.65);
+  border: 1px solid rgba(185, 148, 85, 0.25);
+  border-radius: 20px;
+  padding: 18px;
+  box-shadow: 0 6px 20px rgba(17, 16, 14, 0.05);
+}
+
+.sjhDetailDayCard__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.sjhDetailDayCard__dayNum {
+  font: 700 11.5px/1 'Manrope', sans-serif;
+  letter-spacing: 0.16em;
+  color: #B99455;
+  text-transform: uppercase;
+}
+
+.sjhDetailDayCard__location {
+  font: 500 11.5px/1 'Manrope', sans-serif;
+  color: rgba(17, 16, 14, 0.55);
+  text-transform: uppercase;
+}
+
+.sjhDetailDayCard__title {
+  font: 400 clamp(19px, 5.2vw, 23px)/1.2 'Cormorant Garamond', Georgia, serif;
+  color: #11100E;
+  margin-bottom: 8px;
+}
+
+.sjhDetailDayCard__summary {
+  font: 400 13.5px/1.5 'Manrope', sans-serif;
+  color: rgba(17, 16, 14, 0.75);
+  margin-bottom: 12px;
+}
+
+/* Contextual Supporting Photography inside the itinerary */
+.sjhDetailDayCard__photoWrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(17, 16, 14, 0.10);
+  margin: 12px 0;
+  background-color: #11100E;
+}
+
+.sjhDetailDayCard__photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.sjhDetailDayCard__caption {
+  position: absolute;
+  bottom: 0;
+  inset-inline: 0;
+  padding: 8px 12px;
+  background: linear-gradient(to top, rgba(17, 16, 14, 0.75) 0%, transparent 100%);
+  color: #F4EFE6;
+  font: 500 10.5px/1 'Manrope', sans-serif;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.sjhDetailDayCard__activities {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sjhDetailDayCard__actItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font: 400 13px/1.45 'Manrope', sans-serif;
+  color: rgba(17, 16, 14, 0.85);
+}
+
+.sjhDetailDayCard__actDot {
+  color: #B99455;
+  font-size: 14px;
+  line-height: 1;
+}
+
+/* --------------------------------------------------------------------------
+   E. ESSENTIALS, STAY, INCLUSIONS GRIDS
+   -------------------------------------------------------------------------- */
+.sjhDetailInfoGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.sjhDetailInfoCard {
+  background-color: rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(185, 148, 85, 0.2);
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.sjhDetailInfoCard__label {
+  font: 700 11px/1.2 'Manrope', sans-serif;
+  letter-spacing: 0.14em;
+  color: #B99455;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.sjhDetailInfoCard__text {
+  font: 400 13.5px/1.55 'Manrope', sans-serif;
+  color: rgba(17, 16, 14, 0.8);
+}
+
+/* Inclusions & Exclusions Checklist */
+.sjhDetailChecklist {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sjhDetailChecklist__item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font: 400 13px/1.45 'Manrope', sans-serif;
+  color: rgba(17, 16, 14, 0.85);
+}
+
+.sjhDetailChecklist__icon {
+  color: #B99455;
+  font-weight: bold;
+}
+
+/* --------------------------------------------------------------------------
+   F. FINAL PLAN THIS JOURNEY CTA
+   -------------------------------------------------------------------------- */
+.sjhDetailPlanCta {
+  position: relative;
+  width: 100%;
+  padding: clamp(32px, 5svh, 48px) 0 24px;
+  text-align: center;
+}
+
+.sjhDetailPlanCta__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 52px;
+  width: 100%;
+  max-width: 360px;
+  padding: 0 28px;
+  background-color: #11100E;
+  color: #F4EFE6;
+  border: 1px solid rgba(185, 148, 85, 0.35);
+  border-radius: 999px;
+  font: 700 clamp(13px, 3.2vw, 14px)/1 'Manrope', sans-serif;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 10px 30px rgba(17, 16, 14, 0.16);
+  transition: transform 0.18s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+  will-change: transform;
+}
+
+.sjhDetailPlanCta__btn:hover,
+.sjhDetailPlanCta__btn:focus-visible {
+  background-color: #1A1916;
+  color: #FFFFFF;
+  box-shadow: 0 14px 34px rgba(17, 16, 14, 0.22);
+}
+
+.sjhDetailPlanCta__btn:active {
+  transform: scale(0.98);
+}
+
+.sjhDetailPlanCta__sub {
+  font: 400 12px/1.4 'Manrope', sans-serif;
+  color: rgba(17, 16, 14, 0.6);
+  margin-top: 10px;
+}
+
+/* Editorial Framework Disclaimer */
+.sjhDetailFrameworkNote {
+  padding: 32px 16px 12px;
+  border-top: 1px solid rgba(185, 148, 85, 0.22);
+  margin-top: 40px;
+  text-align: center;
+}
+
+.sjhDetailFrameworkNote p {
+  font: 400 11px/1.65 'Manrope', sans-serif;
+  color: rgba(11, 10, 8, 0.52);
+  margin: 0 auto;
+  max-width: 380px;
+  letter-spacing: 0.02em;
+}
+
+/* Detail Page Journey Planner Modal Overrides */
+.sjhPlanModal__card {
+  padding: 24px 20px 20px !important;
+  box-sizing: border-box !important;
+  background-color: #11100E !important;
+  color: #F4EFE6 !important;
+}
+
+.sjhPlanModal__card .sjhHero__plannerHeader {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding-bottom: 12px !important;
+  border-bottom: 1px solid rgba(185, 148, 85, 0.25) !important;
+}
+
+.sjhPlanModal__card .sjhHero__plannerTitle {
+  font-family: "Cormorant Garamond", Georgia, serif !important;
+  font-size: 20px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.14em !important;
+  color: #F4EFE6 !important;
+  margin: 0 !important;
+}
+
+.sjhPlanModal__card .sjhHero__plannerClose {
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 50% !important;
+  display: grid !important;
+  place-items: center !important;
+  color: rgba(244, 239, 230, 0.75) !important;
+  font-size: 20px !important;
+  background: transparent !important;
+  border: none !important;
+  cursor: pointer !important;
+}
+
+.sjhPlanModal__card .sjhHero__plannerBody {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+  margin-top: 14px !important;
+  overflow-y: visible !important;
+}
+
+.sjhPlanModal__card .sjhHero__plannerRow {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(244, 239, 230, 0.12) !important;
+  border-radius: 14px !important;
+  padding: 10px 14px !important;
+}
+
+.sjhPlanModal__card .sjhHero__plannerLabel {
+  display: block !important;
+  font-size: 10px !important;
+  letter-spacing: 0.14em !important;
+  text-transform: uppercase !important;
+  color: #B99455 !important;
+  margin-bottom: 4px !important;
+  font-weight: 600 !important;
+}
+
+.sjhPlanModal__card .sjhHero__plannerInput {
+  width: 100% !important;
+  background: transparent !important;
+  border: none !important;
+  color: #F4EFE6 !important;
+  font-size: 14px !important;
+  outline: none !important;
+}
+
+.sjhPlanModal__card .sjhHero__plannerValueWrap {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  cursor: pointer !important;
+}
+
+.sjhPlanModal__card .sjhHero__plannerValue {
+  color: #F4EFE6 !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+}
+
+.sjhPlanModal__card .sjhHero__whenPills {
+  display: flex !important;
+  gap: 8px !important;
+  margin-top: 6px !important;
+}
+
+.sjhPlanModal__card .sjhHero__whenPill {
+  padding: 6px 12px !important;
+  border-radius: 999px !important;
+  border: 1px solid rgba(244, 239, 230, 0.2) !important;
+  background: transparent !important;
+  color: rgba(244, 239, 230, 0.7) !important;
+  font-size: 12px !important;
+  cursor: pointer !important;
+}
+
+.sjhPlanModal__card .sjhHero__whenPill.is-active {
+  background: rgba(185, 148, 85, 0.2) !important;
+  border-color: #B99455 !important;
+  color: #F4EFE6 !important;
+}
+
+.sjhPlanModal__card .sjhHero__steppers {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+  margin-top: 6px !important;
+}
+
+.sjhPlanModal__card .sjhHero__stepperRow {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+}
+
+.sjhPlanModal__card .sjhHero__stepperLabel {
+  font-size: 13px !important;
+  color: rgba(244, 239, 230, 0.85) !important;
+}
+
+.sjhPlanModal__card .sjhHero__stepperControls {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+
+.sjhPlanModal__card .sjhHero__stepperBtn {
+  width: 28px !important;
+  height: 28px !important;
+  border-radius: 50% !important;
+  border: 1px solid rgba(244, 239, 230, 0.25) !important;
+  background: transparent !important;
+  color: #F4EFE6 !important;
+  font-size: 16px !important;
+  display: grid !important;
+  place-items: center !important;
+  cursor: pointer !important;
+}
+
+.sjhPlanModal__card .sjhHero__stepperValue {
+  font-size: 14px !important;
+  color: #F4EFE6 !important;
+  min-width: 16px !important;
+  text-align: center !important;
+}
+
+.sjhPlanModal__card .sjhHero__plannerCta {
+  margin-top: 10px !important;
+  width: 100% !important;
+  padding: 15px 20px !important;
+  background-color: #B99455 !important;
+  color: #11100E !important;
+  border: none !important;
+  border-radius: 999px !important;
+  font-family: 'Manrope', sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.12em !important;
+  text-transform: uppercase !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  cursor: pointer !important;
+}
+

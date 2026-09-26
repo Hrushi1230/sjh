@@ -1,0 +1,570 @@
+/* ==========================================================================
+   SHREE JAGANNATH HOLIDAYS — PHASE 6: THE TRAVEL THREAD
+   Continuous Editorial Travel Route Stylesheet (Mobile-First)
+   ========================================================================== */
+
+/* Master Region Wrapper */
+.sjhTravelThreadRegion {
+  position: relative;
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+.sjhTravelThreadRegion__inner {
+  position: relative;
+  width: 100%;
+  z-index: 2;
+}
+
+/* --------------------------------------------------------------------------
+   SVG Travel Thread Overlay (Single Compound Layer)
+   -------------------------------------------------------------------------- */
+.sjhTravelThread {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 5;
+  overflow: visible;
+  will-change: stroke-dashoffset;
+}
+
+/* Foreground Scroll-Drawn Crisp Antique Gold Path (Zero blur, crisp 1.55px) */
+.sjhTravelThread__path {
+  stroke: var(--sjh-gold-antique, #B99455);
+  stroke-width: 1.55px;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  will-change: stroke-dashoffset;
+}
+
+/* --------------------------------------------------------------------------
+   Interactive Waypoint Nodes (Purely Visual: Small Node + Chapter Icon Only)
+   -------------------------------------------------------------------------- */
+.sjhTravelThread__nodes {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 6;
+}
+
+.sjhThreadNode {
+  position: absolute;
+  transform: translate(-50%, -50%) scale(0.65);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.28s ease, transform 0.32s cubic-bezier(0.2, 0.9, 0.3, 1);
+  will-change: transform, opacity;
+  pointer-events: none;
+}
+
+.sjhThreadNode.is-reached {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+/* Purely Visual Circular Icon Chip (No Text) */
+.sjhThreadNode__iconChip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(17, 16, 14, 0.92);
+  border: 1px solid rgba(185, 148, 85, 0.45);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.28);
+  margin-bottom: 5px;
+  color: var(--sjh-gold-antique, #B99455);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* Small Node Dot & Outer Ring on Path */
+.sjhThreadNode__marker {
+  position: relative;
+  width: 8px;
+  height: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sjhThreadNode__ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1.2px solid var(--sjh-gold-antique, #B99455);
+  background: rgba(17, 16, 14, 0.95);
+  box-shadow: 0 0 6px rgba(185, 148, 85, 0.35);
+}
+
+.sjhThreadNode__dot {
+  position: relative;
+  width: 2.5px;
+  height: 2.5px;
+  border-radius: 50%;
+  background: var(--sjh-gold-antique, #B99455);
+  z-index: 2;
+}
+
+/* --------------------------------------------------------------------------
+   Final Destination Node (One-Time Arrival Bloom Only)
+   -------------------------------------------------------------------------- */
+@keyframes sjhFinalArrivalBloom {
+  0% {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  35% {
+    transform: scale(1.6);
+    opacity: 0.65;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.22;
+  }
+}
+
+.sjhThreadFinalNode {
+  position: absolute;
+  transform: translate(-50%, -50%) scale(0.7);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.32s ease, transform 0.36s cubic-bezier(0.2, 0.9, 0.3, 1);
+  will-change: transform, opacity;
+  pointer-events: none;
+}
+
+.sjhThreadFinalNode.is-reached {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.sjhThreadFinalNode__halo {
+  position: absolute;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(185, 148, 85, 0.45) 0%, transparent 70%);
+  opacity: 0;
+}
+
+.sjhThreadFinalNode.is-reached .sjhThreadFinalNode__halo {
+  animation: sjhFinalArrivalBloom 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.sjhThreadFinalNode__ring {
+  position: relative;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1.8px solid var(--sjh-gold-antique, #B99455);
+  background: rgba(17, 16, 14, 0.95);
+  box-shadow: 0 0 12px rgba(185, 148, 85, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sjhThreadFinalNode__center {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--sjh-gold-antique, #B99455);
+}
+
+.sjhThreadFinalNode__label {
+  margin-top: 8px;
+  font: 700 9.5px/1 "Manrope", sans-serif;
+  letter-spacing: 0.16em;
+  color: var(--sjh-gold-antique, #B99455);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* --------------------------------------------------------------------------
+   Travel Thread Outro (Screen 06 Reference Design: The Travel Thread Connects)
+   -------------------------------------------------------------------------- */
+.sjhTravelThreadOutro {
+  position: relative;
+  width: 100%;
+  min-height: 100svh;
+  box-sizing: border-box;
+  text-align: center;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: clamp(32px, 5svh, 48px) 18px clamp(40px, 6svh, 56px);
+  color: #F4EFE6;
+}
+
+/* Atmospheric Sunset Background */
+.sjhTravelThreadOutro__bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: 1;
+  transform: scale(1.02);
+}
+
+.sjhTravelThreadOutro__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(17, 16, 14, 0.70) 0%,
+    rgba(17, 16, 14, 0.35) 35%,
+    rgba(17, 16, 14, 0.40) 65%,
+    rgba(17, 16, 14, 0.85) 100%
+  );
+  z-index: 2;
+}
+
+/* Floating Brand Bar (Top) */
+.sjhTravelThreadOutro__brandBar {
+  position: relative;
+  z-index: 5;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.sjhTravelThreadOutro__brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  opacity: 0.9;
+}
+
+.sjhTravelThreadOutro__logo {
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.5));
+}
+
+.sjhTravelThreadOutro__brandText {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.sjhTravelThreadOutro__brandName {
+  font: 700 8.5px/1.1 "Manrope", sans-serif;
+  letter-spacing: 0.22em;
+  color: #F4EFE6;
+}
+
+.sjhTravelThreadOutro__brandSub {
+  font: 600 7px/1 "Manrope", sans-serif;
+  letter-spacing: 0.26em;
+  color: var(--sjh-gold-antique, #B99455);
+}
+
+/* --------------------------------------------------------------------------
+   Winding Vertical Travel Route Map (Screen 06 Reference Design)
+   -------------------------------------------------------------------------- */
+.sjhTravelThreadOutro__routeMap {
+  position: relative;
+  z-index: 5;
+  width: 100%;
+  max-width: 360px;
+  height: clamp(380px, 52svh, 450px);
+  margin: 12px auto;
+}
+
+.sjhTravelThreadOutro__routeSvg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.sjhTravelThreadOutro__path {
+  stroke: #E5C158;
+  stroke-width: 2px;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  will-change: stroke-dashoffset;
+  filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.75)) drop-shadow(0 0 8px rgba(229, 193, 88, 0.4));
+}
+
+/* Waypoint Items along the Route */
+.sjhOutroWaypoint {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+  opacity: 0;
+  will-change: opacity, transform;
+}
+
+.sjhOutroWaypoint--left {
+  flex-direction: row-reverse;
+}
+
+.sjhOutroWaypoint--right {
+  flex-direction: row;
+}
+
+.sjhOutroWaypoint__marker {
+  position: relative;
+  width: 10px;
+  height: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+}
+
+.sjhOutroWaypoint__ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1.5px solid #F5D076;
+  background: rgba(14, 13, 11, 0.96);
+  box-shadow: 0 0 10px rgba(229, 193, 88, 0.7);
+}
+
+.sjhOutroWaypoint__dot {
+  position: relative;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #F5D076;
+}
+
+.sjhOutroWaypoint__card {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 8px;
+  padding: 4px 10px 4px 6px;
+  background: rgba(14, 13, 11, 0.85);
+  border: 1px solid rgba(229, 193, 88, 0.45);
+  border-radius: 999px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.55), 0 0 10px rgba(0, 0, 0, 0.35);
+  pointer-events: auto;
+}
+
+.sjhOutroWaypoint--left .sjhOutroWaypoint__card {
+  text-align: right;
+  flex-direction: row-reverse;
+  padding: 4px 6px 4px 10px;
+}
+
+.sjhOutroWaypoint--right .sjhOutroWaypoint__card {
+  text-align: left;
+  flex-direction: row;
+}
+
+.sjhOutroWaypoint__iconChip {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(40, 36, 28, 0.95) 0%, rgba(14, 13, 11, 0.98) 100%);
+  border: 1.2px solid rgba(229, 193, 88, 0.7);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5), 0 0 8px rgba(229, 193, 88, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #F5D076;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  flex-shrink: 0;
+}
+
+.sjhOutroWaypoint__meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.sjhOutroWaypoint__feeling {
+  font: 700 11.5px/1.2 "Manrope", sans-serif;
+  letter-spacing: 0.16em;
+  color: #FFFFFF;
+  text-transform: uppercase;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+}
+
+.sjhOutroWaypoint__location {
+  font: 600 12px/1.2 "Cormorant Garamond", Georgia, serif;
+  font-style: italic;
+  letter-spacing: 0.08em;
+  color: #F5D076;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+}
+
+/* Outro Final Node */
+.sjhOutroFinalNode {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 4;
+}
+
+.sjhOutroFinalNode__halo {
+  position: absolute;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(229, 193, 88, 0.55) 0%, transparent 70%);
+}
+
+.sjhOutroFinalNode__ring {
+  position: relative;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid #F5D076;
+  background: rgba(14, 13, 11, 0.98);
+  box-shadow: 0 0 14px rgba(229, 193, 88, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sjhOutroFinalNode__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #F5D076;
+}
+
+/* --------------------------------------------------------------------------
+   Screen 06 Narrative Outro Typography & Phase 7 Entry
+   -------------------------------------------------------------------------- */
+.sjhTravelThreadOutro__content {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 360px;
+  margin: 0 auto;
+}
+
+.sjhTravelThreadOutro__title {
+  margin: 0 0 6px;
+  font: 400 clamp(28px, 7.5vw, 38px)/1.08 "Cormorant Garamond", Georgia, serif;
+  letter-spacing: -0.015em;
+  color: #F4EFE6;
+  text-transform: uppercase;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.sjhTravelThreadOutro__subtitle {
+  margin: 0 auto 18px;
+  font: 400 clamp(13px, 3.4vw, 14.5px)/1.45 "Manrope", sans-serif;
+  color: rgba(244, 239, 230, 0.85);
+  text-wrap: balance;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6);
+}
+
+/* Phase 7 Entry Anchor with Circular Chevron Indicator */
+.sjhTravelThreadOutro__entryAnchor {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sjhTravelThreadOutro__chevronBtn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1.2px solid rgba(229, 193, 88, 0.6);
+  background: rgba(17, 16, 14, 0.8);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45), 0 0 12px rgba(229, 193, 88, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #F5D076;
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.25s cubic-bezier(0.2, 0.9, 0.3, 1),
+              background 0.25s ease,
+              border-color 0.25s ease,
+              box-shadow 0.25s ease,
+              color 0.25s ease;
+  animation: sjhChevronFloat 2.6s ease-in-out infinite;
+}
+
+.sjhTravelThreadOutro__chevronBtn:hover {
+  transform: translateY(3px) scale(1.08);
+  background: rgba(26, 23, 18, 0.95);
+  border-color: #F5D076;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6), 0 0 18px rgba(229, 193, 88, 0.5);
+  color: #FFFFFF;
+}
+
+.sjhTravelThreadOutro__chevronBtn:active {
+  transform: translateY(5px) scale(0.96);
+}
+
+.sjhTravelThreadOutro__chevronBtn:focus-visible {
+  outline: 2px solid #F5D076;
+  outline-offset: 3px;
+}
+
+@keyframes sjhChevronFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(5px);
+  }
+}
+
+.sjhTravelThreadOutro__guideStem {
+  width: 1.5px;
+  height: 44px;
+  margin-top: 10px;
+  background: linear-gradient(to bottom, rgba(229, 193, 88, 0.8), transparent);
+}
+
+/* --------------------------------------------------------------------------
+   Responsive Adjustments & Reduced Motion
+   -------------------------------------------------------------------------- */
+@media (max-width: 365px) {
+  .sjhThreadNode__iconChip {
+    width: 25px;
+    height: 25px;
+  }
+  .sjhTravelThreadOutro__title {
+    font-size: clamp(28px, 8.2vw, 34px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sjhTravelThread__path {
+    stroke-dashoffset: 0 !important;
+  }
+  .sjhThreadNode,
+  .sjhThreadFinalNode {
+    opacity: 1 !important;
+    transform: translate(-50%, -50%) scale(1) !important;
+    transition: none !important;
+  }
+}

@@ -1,0 +1,48 @@
+/* Global resets & typography */
+:root {
+  --sjh-ivory: #F4EFE6;
+  --sjh-black: #11100E;
+  --sjh-black-deep: #0B0A08;
+  --sjh-saffron: #D8652B;
+  --sjh-gold: #B99455;
+  --sjh-gold-hi: #EBC678;
+  --sjh-forest: #26382F;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  min-height: 100%;
+  background-color: var(--sjh-black-deep);
+  color: var(--sjh-ivory);
+  font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: clip;
+}
+
+/* Ensure #root takes full dimensions */
+#root {
+  width: 100%;
+  min-height: 100%;
+  position: relative;
+}
+
+/* Interactive reset */
+button {
+  background: none;
+  border: none;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}

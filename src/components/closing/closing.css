@@ -1,0 +1,438 @@
+/* ==========================================================================
+   SHREE JAGANNATH HOLIDAYS — CLOSING SEQUENCE (PHASE 11 & PHASE 12)
+   Palette: Temple Black #11100E, Deep Forest #26382F, Warm Ivory #F4EFE6, Antique Gold #B99455
+   ========================================================================== */
+
+/* --- PHASE 11: START YOUR JOURNEY FINAL CONVERSION --- */
+.sjhFinalCta {
+  position: relative;
+  width: 100%;
+  min-height: 88svh;
+  background-color: var(--sjh-black, #11100E);
+  color: var(--sjh-ivory, #F4EFE6);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 60px 24px 40px 24px;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* Warm Ivory to Temple Black gradual gradient transition boundary (~40-60svh) */
+.sjhFinalCta__boundaryTransition {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 90px;
+  background: linear-gradient(
+    to bottom,
+    var(--sjh-ivory, #F4EFE6) 0%,
+    #7d7260 25%,
+    #2c241c 55%,
+    var(--sjh-black, #11100E) 100%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Atmospheric subtle deep forest / warm undertone */
+.sjhFinalCta__bgGlow {
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 320px;
+  height: 320px;
+  background: radial-gradient(
+    circle,
+    rgba(38, 56, 47, 0.45) 0%,
+    rgba(185, 148, 85, 0.08) 45%,
+    transparent 70%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+.sjhFinalCta__container {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 440px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* Top: Thin Antique-Gold Journey Vertical Line & Node */
+.sjhFinalCta__lineTrack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.sjhFinalCta__goldLine {
+  width: 1.5px;
+  height: 48px;
+  background: var(--sjh-gold, #B99455);
+  transform-origin: top center;
+}
+
+.sjhFinalCta__journeyNode {
+  font-size: 9px;
+  line-height: 1;
+  color: var(--sjh-gold, #B99455);
+  margin-top: -2px;
+}
+
+/* Eyebrow */
+.sjhFinalCta__eyebrow {
+  font-family: 'Manrope', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--sjh-gold, #B99455);
+  margin-bottom: 20px;
+}
+
+/* Grand Display Serif Headline */
+.sjhFinalCta__title {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: clamp(40px, 11vw, 54px);
+  font-weight: 500;
+  line-height: 0.94;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: var(--sjh-ivory, #F4EFE6);
+  margin: 0 0 28px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sjhFinalCta__lineMask {
+  display: block;
+  overflow: hidden;
+}
+
+.sjhFinalCta__line {
+  display: block;
+  will-change: transform, opacity;
+}
+
+.sjhFinalCta__line--gold {
+  color: var(--sjh-gold, #B99455);
+}
+
+/* Support Copy & Button */
+.sjhFinalCta__actionWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+}
+
+.sjhFinalCta__copy {
+  font-family: 'Manrope', sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  color: rgba(244, 239, 230, 0.72);
+  margin: 0;
+  max-width: 260px;
+}
+
+.sjhFinalCta__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px 32px;
+  min-height: 52px;
+  background-color: var(--sjh-gold, #B99455);
+  color: var(--sjh-black, #11100E);
+  border: 1px solid var(--sjh-gold-hi, #EBC678);
+  border-radius: 2px;
+  font-family: 'Manrope', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(185, 148, 85, 0.22);
+  transition: transform 0.1s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+  width: 100%;
+  max-width: 290px;
+}
+
+.sjhFinalCta__btn:hover {
+  background-color: #c7a465;
+  box-shadow: 0 10px 30px rgba(185, 148, 85, 0.35);
+}
+
+.sjhFinalCta__btn:active,
+.sjhFinalCta__btn--pressed {
+  transform: scale(0.98);
+}
+
+.sjhFinalCta__btnArrow {
+  font-size: 16px;
+  transition: transform 0.2s ease;
+}
+
+.sjhFinalCta__btn:hover .sjhFinalCta__btnArrow {
+  transform: translateX(4px);
+}
+
+/* Bottom Handoff Rule into Footer */
+.sjhFinalCta__handoff {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 240px;
+  margin-top: 48px;
+  opacity: 0.5;
+}
+
+.sjhFinalCta__handoffLine {
+  flex: 1;
+  height: 1px;
+  background: var(--sjh-gold, #B99455);
+}
+
+.sjhFinalCta__handoffNode {
+  padding: 0 10px;
+  font-size: 8px;
+  color: var(--sjh-gold, #B99455);
+}
+
+/* --- PHASE 12: SITE FOOTER (COLOPHON) --- */
+.sjhFooter {
+  position: relative;
+  width: 100%;
+  background-color: var(--sjh-black, #11100E);
+  color: var(--sjh-ivory, #F4EFE6);
+  padding: 24px 20px 48px 20px;
+  border-top: 1px solid rgba(185, 148, 85, 0.15);
+  box-sizing: border-box;
+}
+
+/* Horizontal Footer Rule with Settled Node */
+.sjhFooter__divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 320px;
+  margin: 0 auto 36px auto;
+  opacity: 0.6;
+}
+
+.sjhFooter__dividerLine {
+  flex: 1;
+  height: 1px;
+  background: var(--sjh-gold, #B99455);
+}
+
+.sjhFooter__dividerNode {
+  padding: 0 10px;
+  font-size: 8px;
+  color: var(--sjh-gold, #B99455);
+}
+
+.sjhFooter__container {
+  width: 100%;
+  max-width: 440px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+}
+
+/* Brand Colophon Header */
+.sjhFooter__colophonHead {
+  text-align: left;
+  border-bottom: 1px solid rgba(185, 148, 85, 0.15);
+  padding-bottom: 24px;
+}
+
+.sjhFooter__monogram {
+  display: block;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  color: var(--sjh-gold, #B99455);
+  margin-bottom: 8px;
+}
+
+.sjhFooter__brandName {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--sjh-ivory, #F4EFE6);
+  margin: 0 0 6px 0;
+}
+
+.sjhFooter__tagline {
+  font-family: 'Manrope', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgba(244, 239, 230, 0.5);
+  margin: 0;
+}
+
+/* Navigation Columns Grid */
+.sjhFooter__navGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 28px 16px;
+}
+
+.sjhFooter__colTitle {
+  font-family: 'Manrope', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--sjh-gold, #B99455);
+  margin: 0 0 14px 0;
+}
+
+.sjhFooter__linkList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sjhFooter__linkItem {
+  margin: 0;
+}
+
+.sjhFooter__link {
+  font-family: 'Manrope', sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  color: rgba(244, 239, 230, 0.78);
+  text-decoration: none;
+  transition: color 0.2s ease;
+  display: inline-block;
+  min-height: 28px;
+  line-height: 28px;
+}
+
+.sjhFooter__link--btn {
+  background: none;
+  border: none;
+  padding: 0;
+  text-align: left;
+  cursor: pointer;
+  font-family: 'Manrope', sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  color: rgba(244, 239, 230, 0.78);
+}
+
+.sjhFooter__link:hover,
+.sjhFooter__link--btn:hover {
+  color: var(--sjh-gold, #B99455);
+}
+
+/* Contact Col (Verified only) */
+.sjhFooter__contactDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sjhFooter__location {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin: 0;
+}
+
+.sjhFooter__locLabel {
+  font-family: 'Manrope', sans-serif;
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  color: rgba(244, 239, 230, 0.45);
+  text-transform: uppercase;
+}
+
+.sjhFooter__locVal {
+  font-family: 'Manrope', sans-serif;
+  font-size: 13px;
+  color: rgba(244, 239, 230, 0.85);
+}
+
+/* Bottom Copyright & Final Mark */
+.sjhFooter__bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(185, 148, 85, 0.12);
+  text-align: center;
+}
+
+.sjhFooter__copyright {
+  font-family: 'Manrope', sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: rgba(244, 239, 230, 0.45);
+  margin: 0;
+}
+
+/* Final quiet gold node closing the journey line */
+.sjhFooter__finalMark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 180px;
+  opacity: 0.7;
+}
+
+.sjhFooter__finalLine {
+  flex: 1;
+  height: 1px;
+  background: var(--sjh-gold, #B99455);
+}
+
+.sjhFooter__finalNode {
+  padding: 0 8px;
+  font-size: 8px;
+  color: var(--sjh-gold, #B99455);
+}
+
+/* ==========================================================================
+   PREFERS-REDUCED-MOTION
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  .sjhFinalCta__line,
+  .sjhFinalCta__btn,
+  .sjhFinalCta__btnArrow,
+  .sjhFinalCta__goldLine,
+  .sjhFinalCta__journeyNode {
+    transition: none !important;
+    animation: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+}

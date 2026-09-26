@@ -1,0 +1,19 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="gold" x1="16" y1="18" x2="48" y2="46" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#F7DE98"/>
+      <stop offset="0.5" stop-color="#D6A64F"/>
+      <stop offset="1" stop-color="#9A6926"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Refined asymmetric menu -->
+  <path d="M16 21H48" stroke="url(#gold)" stroke-width="2.4" stroke-linecap="round"/>
+  <path d="M22 32H48" stroke="url(#gold)" stroke-width="2.4" stroke-linecap="round"/>
+  <path d="M16 43H48" stroke="url(#gold)" stroke-width="2.4" stroke-linecap="round"/>
+
+  <!-- subtle highlights -->
+  <path d="M17 20.35H47" stroke="#FFF3CE" stroke-width="0.55" stroke-linecap="round" opacity="0.45"/>
+  <path d="M23 31.35H47" stroke="#FFF3CE" stroke-width="0.55" stroke-linecap="round" opacity="0.38"/>
+  <path d="M17 42.35H47" stroke="#FFF3CE" stroke-width="0.55" stroke-linecap="round" opacity="0.42"/>
+</svg>

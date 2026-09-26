@@ -1,0 +1,31 @@
+{
+  "version": 2,
+  "status": "audited",
+  "targetViewport": "390x844",
+  "mobileBreakpointMax": 767,
+  "doorTopCropCss": "clamp(96px, 12svh, 118px)",
+  "doorBottomOverscanCss": "clamp(38px, 5svh, 50px)",
+  "assets": {
+    "hero": ["hero-puri.webp", "door-left.png", "door-right.png", "light-crack.png"],
+    "brand": ["sjh-logo.svg"],
+    "ui": ["compass.svg", "arrow-right.svg", "menu.svg"]
+  },
+  "timelineSeconds": {
+    "introBrandIn": 0.20,
+    "crackIn": 0.58,
+    "open": 1.08,
+    "introBrandOut": 1.08,
+    "headerIn": 2.05,
+    "openComplete": 2.20,
+    "dock": 3.08,
+    "idle": 3.68
+  },
+  "copy": {
+    "introPrompt": "EXPLORE",
+    "location": "PURI | ODISHA",
+    "title": "JOURNEYS OF FAITH.",
+    "subhead": "MEMORIES FOR LIFE.",
+    "dock": "Where do you want to go?",
+    "pagination": "01 / 05"
+  }
+}

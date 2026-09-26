@@ -1,0 +1,1619 @@
+/* Audited structural hero styles for Shree Jagannath Holidays — Real Hinged Gate Edition */
+.sjhHero {
+  --ivory: #F4EFE6;
+  --black: #11100E;
+  --black-deep: #080705;
+  --gold: #B99455;
+  --gold-hi: #EBC678;
+  --door-top-crop: clamp(96px, 12svh, 118px);
+  --door-bottom-overscan: clamp(38px, 5svh, 50px);
+
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+  isolation: isolate;
+  background: var(--black-deep);
+  color: var(--ivory);
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.sjhHero__bg,
+.sjhHero__destBase,
+.sjhHero__portalBloom,
+.sjhHero__shade,
+.sjhHero__doors,
+.sjhHero__ui {
+  position: absolute;
+  inset: 0;
+}
+
+/* Background revealed base image (Current Active Destination) */
+.sjhHero__bg,
+.sjhHero__destBase {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 52%;
+  z-index: 0;
+  transform: scale(var(--base-scale, 1.035));
+}
+
+/* Phase 2: Circular Portal Destination Layer (Reveals incoming destination inside circle) */
+.sjhHero__destPortal {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  clip-path: circle(var(--portal-r, 0px) at var(--portal-x, 50%) var(--portal-y, 50%));
+  -webkit-clip-path: circle(var(--portal-r, 0px) at var(--portal-x, 50%) var(--portal-y, 50%));
+  will-change: clip-path;
+  visibility: hidden;
+  opacity: 0;
+}
+
+.sjhHero__destPortal.is-active {
+  visibility: visible;
+  opacity: 1;
+}
+
+.sjhHero__destPortalImg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 50%;
+  will-change: transform;
+  transform: scale(var(--portal-scale, 1.05));
+}
+
+/* Subtle 1px warm ivory/gold edge ring with soft bloom (fades as portal reaches commit) */
+.sjhHero__portalRing {
+  position: absolute;
+  top: var(--portal-y, 50%);
+  left: var(--portal-x, 50%);
+  width: calc(var(--portal-r, 0px) * 2);
+  height: calc(var(--portal-r, 0px) * 2);
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 1px solid rgba(255, 233, 168, var(--portal-ring-opacity, 0.75));
+  box-shadow: 0 0 16px rgba(235, 198, 120, calc(var(--portal-ring-opacity, 0.75) * 0.45));
+  pointer-events: none;
+  z-index: 2;
+  opacity: var(--portal-ring-opacity, 0);
+  visibility: hidden;
+}
+
+.sjhHero__portalRing.is-active {
+  visibility: visible;
+}
+
+/* Sacred Portal Bloom: Overwhelming light burst peaking at 35%-45% gate openness */
+.sjhHero__portalBloom {
+  z-index: 2;
+  pointer-events: none;
+  background: radial-gradient(
+    circle at 50% 48%,
+    rgba(255, 245, 215, 0.92) 0%,
+    rgba(245, 215, 140, 0.65) 28%,
+    rgba(214, 166, 79, 0.28) 60%,
+    transparent 85%
+  );
+  mix-blend-mode: screen;
+  opacity: 0;
+  will-change: opacity;
+}
+
+/* Localized photographic contrast shade */
+.sjhHero__shade {
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(6, 5, 4, 0.36) 0%, rgba(6, 5, 4, 0.08) 52%, rgba(6, 5, 4, 0.04) 100%),
+    linear-gradient(180deg, rgba(6, 5, 4, 0.28) 0%, rgba(6, 5, 4, 0.03) 46%, rgba(6, 5, 4, 0.18) 70%, rgba(6, 5, 4, 0.64) 100%);
+}
+
+/* Three-Layer Synchronized Golden Seam */
+.sjhHero__seam {
+  position: absolute;
+  z-index: 5; /* Rendered over closed doors */
+  top: 6%;
+  bottom: 6%;
+  left: 50%;
+  width: 20px;
+  transform: translateX(-50%);
+  pointer-events: none;
+  overflow: visible;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Layer A: Razor-sharp 1px intense core line */
+.sjhHero__seamCore {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1.5px;
+  transform: translateX(-50%);
+  background: linear-gradient(180deg, transparent 0%, #FFF8E2 10%, #FFE9A8 50%, #FFF8E2 90%, transparent 100%);
+  box-shadow: 0 0 6px rgba(255, 233, 168, 0.95), 0 0 14px rgba(235, 198, 120, 0.65);
+  opacity: 0;
+  will-change: opacity, transform;
+}
+
+/* Layer B: Soft golden inner glow */
+.sjhHero__seamGlow {
+  position: absolute;
+  top: 4%;
+  bottom: 4%;
+  left: 50%;
+  width: 14px;
+  transform: translateX(-50%);
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(255, 225, 140, 0.5) 12%,
+    rgba(235, 198, 120, 0.8) 50%,
+    rgba(255, 225, 140, 0.5) 88%,
+    transparent 100%
+  );
+  filter: blur(6px);
+  mix-blend-mode: screen;
+  opacity: 0;
+  will-change: opacity, width;
+}
+
+/* Layer C: Narrow clipped bloom texture */
+.sjhHero__seamBloom {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 20px;
+  transform: translateX(-50%);
+  overflow: hidden;
+  mix-blend-mode: screen;
+  opacity: 0;
+  will-change: opacity, width;
+}
+
+.sjhHero__seamBloom img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  height: 112%;
+  width: auto;
+  max-width: none;
+  transform: translate(-50%, -50%);
+  opacity: 0.68;
+}
+
+/* 3D Perspective Gateway Scene */
+.sjhHero__doors {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  perspective: 1200px;
+  transform-style: preserve-3d;
+  will-change: filter;
+}
+
+.sjhHero__doorWrap {
+  position: absolute;
+  inset-block: 0;
+  width: 50%;
+  overflow: visible;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.sjhHero__doorWrap--left {
+  left: 0;
+  transform-origin: 0% 50%; /* Outer Left Hinge */
+}
+
+.sjhHero__doorWrap--right {
+  right: 0;
+  transform-origin: 100% 50%; /* Outer Right Hinge */
+}
+
+.sjhHero__door {
+  position: absolute;
+  top: calc(-1 * var(--door-top-crop));
+  height: calc(100% + var(--door-top-crop) + var(--door-bottom-overscan));
+  width: auto;
+  max-width: none;
+  user-select: none;
+  pointer-events: none;
+}
+
+.sjhHero__door--left {
+  right: -2px;
+}
+
+.sjhHero__door--right {
+  left: -2px;
+}
+
+/* Centered Illumination Overlay: Inner door edge warms up first */
+.sjhHero__doorGlow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  mix-blend-mode: screen;
+  will-change: opacity;
+}
+
+.sjhHero__doorGlow--left {
+  background: radial-gradient(
+    ellipse 90% 70% at 100% 50%,
+    rgba(255, 230, 160, 0.45) 0%,
+    rgba(214, 166, 79, 0.22) 35%,
+    rgba(154, 105, 38, 0.06) 65%,
+    transparent 85%
+  );
+}
+
+.sjhHero__doorGlow--right {
+  background: radial-gradient(
+    ellipse 90% 70% at 0% 50%,
+    rgba(255, 230, 160, 0.45) 0%,
+    rgba(214, 166, 79, 0.22) 35%,
+    rgba(154, 105, 38, 0.06) 65%,
+    transparent 85%
+  );
+}
+
+/* Real Door Depth / Thickness Edge (Projects along -Z into perspective) */
+.sjhHero__doorThickness {
+  position: absolute;
+  top: calc(-1 * var(--door-top-crop));
+  height: calc(100% + var(--door-top-crop) + var(--door-bottom-overscan));
+  width: 12px;
+  background: linear-gradient(90deg, #120B07 0%, #281B10 40%, #170E08 100%);
+  pointer-events: none;
+  box-shadow: inset 1px 0 2px rgba(235, 198, 120, 0.28);
+}
+
+.sjhHero__doorThickness--left {
+  right: -2px;
+  transform-origin: 100% 50%;
+  transform: rotateY(90deg);
+}
+
+.sjhHero__doorThickness--right {
+  left: -2px;
+  transform-origin: 0% 50%;
+  transform: rotateY(-90deg);
+}
+
+/* Center Seam Contact Shadow (Closed state dark junction) */
+.sjhHero__seamShadow {
+  position: absolute;
+  inset-block: 0;
+  left: 50%;
+  width: 28px;
+  transform: translateX(-50%);
+  background: linear-gradient(90deg, transparent 0%, rgba(4, 3, 2, 0.9) 50%, transparent 100%);
+  pointer-events: none;
+  z-index: 4;
+}
+
+/* Black Veil over doors for Pure Black Intro (0.00s - 0.72s) */
+.sjhHero__gateVeil {
+  position: absolute;
+  inset: 0;
+  background: #080705;
+  pointer-events: none;
+  z-index: 4;
+}
+
+/* UI layer */
+.sjhHero__ui {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+}
+
+/* Intro overlay */
+.sjhHero__intro {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.sjhHero__introBrandWrap {
+  position: absolute;
+  top: 32%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.sjhHero__introLogoSvg {
+  width: clamp(108px, 28vw, 126px);
+  height: auto;
+  overflow: visible;
+  filter: drop-shadow(0 4px 18px rgba(0, 0, 0, 0.6));
+}
+
+.sjhHero__introFlameStrokes path {
+  will-change: stroke-dashoffset, opacity;
+}
+
+.sjhHero__introPrompt {
+  position: absolute;
+  top: 57%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  font: 600 10px/1 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+  letter-spacing: 0.24em;
+  color: var(--ivory);
+}
+
+.sjhHero__introLine {
+  width: 1px;
+  height: clamp(84px, 14svh, 118px);
+  background: linear-gradient(180deg, var(--gold-hi), rgba(235, 198, 120, 0.18));
+}
+
+/* Settled Header - Fixed Viewport Navigation Bar across all sections */
+.sjhHero__header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: max(16px, env(safe-area-inset-top)) 24px 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 95;
+  pointer-events: none;
+  transition: background 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+              border-bottom 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+              color 0.3s ease;
+}
+
+.sjhHero__home,
+.sjhHero__menu {
+  pointer-events: auto;
+}
+
+.sjhHero__home {
+  display: inline-flex;
+  border-radius: 6px;
+}
+
+.sjhHero__home:focus-visible,
+.sjhHero__menu:focus-visible,
+.sjhHero__dock:focus-visible {
+  outline: 2px solid var(--gold-hi);
+  outline-offset: 3px;
+}
+
+.sjhHero__logo {
+  width: 82px;
+  height: auto;
+}
+
+.sjhHero__menu {
+  width: 48px;
+  height: 48px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(244, 239, 230, 0.72);
+  background: rgba(17, 16, 14, 0.2);
+  color: inherit;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.sjhHero__menu:hover {
+  border-color: var(--gold-hi);
+}
+
+.sjhHero__menu:active {
+  transform: scale(0.95);
+}
+
+.sjhHero__menu img {
+  width: 28px;
+  height: 28px;
+}
+
+/* Hero Typography */
+.sjhHero__copy {
+  position: absolute;
+  left: clamp(24px, 7.2vw, 34px);
+  right: 20px;
+  top: 21%;
+  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.38);
+}
+
+.sjhHero__location {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font: 600 clamp(10px, 2.8vw, 12px)/1.2 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+  letter-spacing: 0.28em;
+  color: rgba(244, 239, 230, 0.9);
+}
+
+.sjhHero__locationLine {
+  display: inline-block;
+  width: 52px;
+  height: 1px;
+  background: var(--gold-hi);
+  opacity: 0.72;
+}
+
+.sjhHero__title {
+  margin-top: 38px;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(50px, 14.3vw, 60px);
+  line-height: 0.90;
+  font-weight: 400;
+  letter-spacing: -0.025em;
+  color: var(--ivory);
+}
+
+.sjhHero__mask {
+  overflow: hidden;
+}
+
+.sjhHero__mask > span {
+  display: block;
+}
+
+.sjhHero__accent {
+  color: var(--gold-hi);
+}
+
+.sjhHero__sub {
+  margin-top: 22px;
+  font: 500 clamp(13px, 3.7vw, 16px)/1.75 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+  letter-spacing: 0.31em;
+  color: rgba(244, 239, 230, 0.88);
+}
+
+.sjhHero__rule {
+  width: 46px;
+  height: 2px;
+  margin: 18px 0 15px;
+  background: var(--gold-hi);
+}
+
+.sjhHero__support {
+  font: 400 clamp(15px, 4.1vw, 18px)/1.25 "Cormorant Garamond", Georgia, serif;
+  color: rgba(244, 239, 230, 0.82);
+}
+
+/* Journey Dock */
+/* Journey Dock & Morphing Planner Shell */
+.sjhHero__dock {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  max-width: 362px;
+  margin-left: auto;
+  margin-right: auto;
+  bottom: calc(max(18px, env(safe-area-inset-bottom)) + 52px);
+  height: 78px;
+  min-height: 74px;
+  padding: 0;
+  border: 1px solid rgba(185, 148, 85, 0.5);
+  border-radius: 999px;
+  background: rgba(17, 16, 14, 0.84);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+  color: inherit;
+  text-align: left;
+  z-index: 25;
+  overflow: hidden;
+  box-sizing: border-box;
+  will-change: height, border-radius, background-color;
+  transition: border-color 0.25s ease, box-shadow 0.3s ease;
+}
+
+@supports (backdrop-filter: blur(12px)) {
+  .sjhHero__dock {
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
+}
+
+.sjhHero__dock:hover {
+  border-color: rgba(235, 198, 120, 0.8);
+}
+
+/* Collapsed Resting Dock View */
+.sjhHero__dockCollapsed {
+  width: 100%;
+  height: 100%;
+  min-height: 76px;
+  padding: 8px 10px 8px 12px;
+  display: grid;
+  grid-template-columns: 52px 1fr 56px;
+  align-items: center;
+  gap: 12px;
+  background: transparent;
+  border: none;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: transform 0.2s ease, opacity 0.18s ease;
+}
+
+.sjhHero__dockCollapsed:active {
+  transform: scale(0.985);
+}
+
+.sjhHero__dockIcon {
+  width: 50px;
+  height: 50px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(185, 148, 85, 0.42);
+  border-radius: 50%;
+}
+
+.sjhHero__dockIcon img {
+  width: 32px;
+  height: 32px;
+}
+
+.sjhHero__dockLabel {
+  font: 400 17px/1.06 "Cormorant Garamond", Georgia, serif;
+  max-width: 155px;
+  color: var(--ivory);
+}
+
+.sjhHero__dockAction {
+  width: 54px;
+  height: 54px;
+  border: 1px solid rgba(255, 239, 195, 0.72);
+  border-radius: 50%;
+  background: linear-gradient(145deg, #E2B65F, #B98332);
+  display: grid;
+  place-items: center;
+  box-shadow: 0 4px 14px rgba(185, 131, 50, 0.35);
+  transition: transform 0.2s ease;
+}
+
+.sjhHero__dock:hover .sjhHero__dockAction {
+  transform: translateX(2px);
+}
+
+.sjhHero__dockAction img {
+  width: 28px;
+  height: 28px;
+  filter: brightness(1.8) saturate(0.5);
+}
+
+/* Phase 3: Visual Backdrop Veil */
+.sjhHero__veil {
+  position: absolute;
+  inset: 0;
+  background: rgba(5, 5, 4, 0.28);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 15;
+  transition: opacity 0.38s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.sjhHero__veil.is-active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Phase 3: Expanded Planner Shell View */
+.sjhHero__dockExpanded {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 18px 18px 16px;
+  box-sizing: border-box;
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+  z-index: 2;
+}
+
+/* Header */
+.sjhHero__plannerHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(185, 148, 85, 0.25);
+}
+
+.sjhHero__plannerTitle {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 18.5px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  color: var(--ivory);
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.sjhHero__plannerClose {
+  width: 40px;
+  height: 40px;
+  margin: -8px -8px -8px 0;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: rgba(244, 239, 230, 0.65);
+  font-size: 19px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s ease, transform 0.15s ease;
+}
+
+.sjhHero__plannerClose:hover {
+  color: var(--ivory);
+  transform: scale(1.08);
+}
+
+.sjhHero__plannerClose:focus-visible {
+  outline: 2px solid var(--gold-hi);
+  outline-offset: 2px;
+}
+
+/* Scrollable Form Body */
+.sjhHero__plannerBody {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  margin: 8px 0 10px;
+  padding-right: 4px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(185, 148, 85, 0.3) transparent;
+}
+
+/* Custom subtle scrollbar */
+.sjhHero__plannerBody::-webkit-scrollbar {
+  width: 3px;
+}
+.sjhHero__plannerBody::-webkit-scrollbar-thumb {
+  background: rgba(185, 148, 85, 0.35);
+  border-radius: 999px;
+}
+
+/* Form Row */
+.sjhHero__plannerRow {
+  padding: 6px 4px 8px;
+  border-bottom: 1px solid rgba(185, 148, 85, 0.20);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  position: relative;
+  transition: border-color 0.2s ease;
+}
+
+.sjhHero__plannerRow:last-child {
+  border-bottom: none;
+}
+
+.sjhHero__plannerRow.is-interactive {
+  cursor: pointer;
+}
+
+.sjhHero__plannerRow.is-interactive:hover {
+  border-color: rgba(235, 198, 120, 0.45);
+}
+
+.sjhHero__plannerRow.has-error {
+  border-bottom-color: rgba(248, 113, 113, 0.65);
+}
+
+.sjhHero__plannerLabel {
+  font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  color: rgba(244, 239, 230, 0.60);
+  text-transform: uppercase;
+}
+
+.sjhHero__plannerValueWrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sjhHero__plannerValue {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 19px;
+  line-height: 1.15;
+  color: var(--ivory);
+}
+
+.sjhHero__plannerInput {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 19px;
+  line-height: 1.15;
+  color: var(--ivory);
+  background: transparent;
+  border: none;
+  outline: none;
+  width: 100%;
+  padding: 0;
+}
+
+.sjhHero__plannerInput::placeholder {
+  color: rgba(244, 239, 230, 0.35);
+}
+
+.sjhHero__plannerRowChevron {
+  font-size: 18px;
+  color: rgba(235, 198, 120, 0.70);
+  margin-left: 8px;
+  transition: transform 0.2s ease;
+}
+
+.sjhHero__plannerRow.is-expanded .sjhHero__plannerRowChevron {
+  transform: rotate(90deg);
+}
+
+/* Inline Destination Selector */
+.sjhHero__destGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 8px;
+  padding-top: 4px;
+}
+
+.sjhHero__destOption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: rgba(26, 24, 20, 0.75);
+  border: 1px solid rgba(185, 148, 85, 0.28);
+  color: rgba(244, 239, 230, 0.85);
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 16px;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+
+.sjhHero__destOption:hover {
+  border-color: rgba(235, 198, 120, 0.6);
+  color: var(--ivory);
+}
+
+.sjhHero__destOption.is-selected {
+  background: rgba(235, 198, 120, 0.14);
+  border-color: var(--gold-hi);
+  color: var(--gold-hi);
+  font-weight: 600;
+}
+
+.sjhHero__destDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--gold-hi);
+  box-shadow: 0 0 6px rgba(235, 198, 120, 0.8);
+}
+
+/* When Selector (Flexible vs Specific) */
+.sjhHero__whenWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.sjhHero__whenPills {
+  display: flex;
+  background: rgba(26, 24, 20, 0.60);
+  border: 1px solid rgba(185, 148, 85, 0.25);
+  border-radius: 999px;
+  padding: 3px;
+  width: fit-content;
+}
+
+.sjhHero__whenPill {
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-family: 'Manrope', -apple-system, sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: rgba(244, 239, 230, 0.70);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sjhHero__whenPill.is-active {
+  background: rgba(235, 198, 120, 0.18);
+  color: var(--gold-hi);
+  font-weight: 600;
+}
+
+.sjhHero__dateInput {
+  background: rgba(26, 24, 20, 0.75);
+  border: 1px solid rgba(185, 148, 85, 0.40);
+  border-radius: 10px;
+  padding: 8px 12px;
+  color: var(--ivory);
+  font-family: 'Manrope', sans-serif;
+  font-size: 13px;
+  outline: none;
+  width: 100%;
+  max-width: 220px;
+  color-scheme: dark;
+}
+
+.sjhHero__dateInput:focus {
+  border-color: var(--gold-hi);
+}
+
+/* Travellers Steppers */
+.sjhHero__travellersGrid {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.sjhHero__stepperItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: 1;
+  min-width: 0;
+  background: rgba(26, 24, 20, 0.65);
+  border: 1px solid rgba(185, 148, 85, 0.25);
+  border-radius: 12px;
+  padding: 4px 6px;
+  box-sizing: border-box;
+}
+
+.sjhHero__stepperLabel {
+  font-family: 'Manrope', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(244, 239, 230, 0.75);
+  margin-left: 4px;
+  white-space: nowrap;
+}
+
+.sjhHero__stepperControls {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  flex-shrink: 0;
+}
+
+.sjhHero__stepperBtn {
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  font-size: 17px;
+  color: var(--ivory);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background 0.18s ease, opacity 0.18s ease;
+  touch-action: manipulation;
+}
+
+.sjhHero__stepperBtn:hover:not(:disabled) {
+  background: rgba(235, 198, 120, 0.15);
+  color: var(--gold-hi);
+}
+
+.sjhHero__stepperBtn:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+}
+
+.sjhHero__stepperCount {
+  min-width: 18px;
+  text-align: center;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--ivory);
+}
+
+/* Inline Restrained Error */
+.sjhHero__plannerError {
+  font-family: 'Manrope', sans-serif;
+  font-size: 11px;
+  color: #F87171;
+  margin-top: 2px;
+  letter-spacing: 0.02em;
+}
+
+/* CTA Button */
+.sjhHero__plannerCta {
+  width: 100%;
+  min-height: 52px;
+  height: 54px;
+  background: linear-gradient(145deg, #E2B65F, #B98332);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 239, 195, 0.60);
+  color: #11100E;
+  font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 13.5px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  box-shadow: 0 6px 20px rgba(185, 131, 50, 0.38);
+  cursor: pointer;
+  transition: transform 0.14s ease, filter 0.2s ease;
+  user-select: none;
+}
+
+.sjhHero__plannerCta:hover {
+  filter: brightness(1.05);
+}
+
+.sjhHero__plannerCta:active {
+  transform: scale(0.985);
+}
+
+.sjhHero__plannerCtaArrow {
+  font-size: 16px;
+  font-weight: 800;
+  transition: transform 0.2s ease;
+}
+
+.sjhHero__plannerCta:hover .sjhHero__plannerCtaArrow {
+  transform: translateX(3px);
+}
+
+/* Directional Portal Micro-Cue (Section 23: N KASHMIR, W RAJASTHAN, S KERALA, E PURI) */
+.sjhHero__portalCue {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.18s ease;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.85);
+}
+
+.sjhHero__portalCue.is-active {
+  visibility: visible;
+}
+
+.sjhHero__portalCueDir {
+  font: 700 12px/1 'Manrope', sans-serif;
+  letter-spacing: 0.22em;
+  color: var(--gold-hi);
+}
+
+.sjhHero__portalCueLabel {
+  font: 600 9.5px/1.2 'Manrope', sans-serif;
+  letter-spacing: 0.26em;
+  color: var(--ivory);
+  margin-top: 3px;
+}
+
+/* Spatial Cardinal Compass (Sections 29, 30, 31, 32 - Replaces sequential pagination) */
+.sjhHero__compassNav {
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  bottom: max(12px, env(safe-area-inset-bottom));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 10;
+}
+
+.sjhHero__compassRing {
+  position: relative;
+  width: 68px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sjhHero__compassPoint {
+  position: absolute;
+  background: transparent;
+  border: none;
+  padding: 2px 3px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2.5px;
+  color: rgba(244, 239, 230, 0.40);
+  transition: color 0.25s ease, transform 0.2s ease;
+}
+
+.sjhHero__compassPoint:hover {
+  color: var(--ivory);
+}
+
+.sjhHero__compassPoint:focus-visible {
+  outline: 2px solid var(--gold-hi);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.sjhHero__compassPoint--north {
+  top: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  flex-direction: column;
+}
+.sjhHero__compassPoint--north:hover {
+  transform: translateX(-50%) scale(1.08);
+}
+
+.sjhHero__compassPoint--south {
+  bottom: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  flex-direction: column;
+}
+.sjhHero__compassPoint--south:hover {
+  transform: translateX(-50%) scale(1.08);
+}
+
+.sjhHero__compassPoint--west {
+  left: -2px;
+  top: 50%;
+  transform: translateY(-50%);
+  flex-direction: row;
+}
+.sjhHero__compassPoint--west:hover {
+  transform: translateY(-50%) scale(1.08);
+}
+
+.sjhHero__compassPoint--east {
+  right: -2px;
+  top: 50%;
+  transform: translateY(-50%);
+  flex-direction: row;
+}
+.sjhHero__compassPoint--east:hover {
+  transform: translateY(-50%) scale(1.08);
+}
+
+.sjhHero__compassLabel {
+  font: 600 8.5px/1 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+  letter-spacing: 0.05em;
+}
+
+.sjhHero__compassDot {
+  width: 3.5px;
+  height: 3.5px;
+  border-radius: 50%;
+  background: currentColor;
+  transition: background-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+/* Active Compass Direction (Section 30: Antique gold) */
+.sjhHero__compassPoint.is-active {
+  color: var(--gold-hi);
+}
+
+.sjhHero__compassPoint.is-active .sjhHero__compassLabel {
+  font-weight: 700;
+}
+
+.sjhHero__compassPoint.is-active .sjhHero__compassDot {
+  width: 4.5px;
+  height: 4.5px;
+  background: var(--gold-hi);
+  box-shadow: 0 0 8px rgba(235, 198, 120, 0.85);
+}
+
+.sjhHero__compassCenter {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.sjhHero__compassJewel {
+  display: block;
+  width: 4.5px;
+  height: 4.5px;
+  border-radius: 50%;
+  border: 1px solid rgba(235, 198, 120, 0.7);
+  background: rgba(185, 148, 85, 0.35);
+}
+
+.sjhHero__compassInfo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font: 600 11px/1 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+  user-select: none;
+}
+
+.sjhHero__compassDirBadge {
+  padding: 3px 6px;
+  border-radius: 4px;
+  background: rgba(235, 198, 120, 0.12);
+  border: 1px solid rgba(235, 198, 120, 0.35);
+  color: var(--gold-hi);
+  letter-spacing: 0.18em;
+  font-size: 9.5px;
+}
+
+.sjhHero__compassWorldName {
+  letter-spacing: 0.24em;
+  color: rgba(244, 239, 230, 0.85);
+}
+
+/* Restrained Autoplay Slideshow Pause / Resume Control (Section 11) */
+.sjhHero__autoplayBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  background: transparent;
+  border: none;
+  color: rgba(244, 239, 230, 0.65);
+  cursor: pointer;
+  padding: 0;
+  margin-right: -4px;
+  transition: color 0.2s ease, transform 0.2s ease;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sjhHero__autoplayBtn:hover {
+  color: var(--gold-hi);
+  transform: scale(1.08);
+}
+
+.sjhHero__autoplayBtn:focus-visible {
+  outline: 2px solid var(--gold-hi);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.sjhHero__autoplayBtnIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid rgba(235, 198, 120, 0.30);
+  background: rgba(17, 16, 14, 0.55);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* Prevent first-paint UI flash under normal motion */
+@media (prefers-reduced-motion: no-preference) {
+  .sjhHero__intro,
+  .sjhHero__header,
+  .sjhHero__location,
+  .sjhHero__sub,
+  .sjhHero__support,
+  .sjhHero__dock,
+  .sjhHero__compassNav {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+/* Reduced Motion: Immediate calm settled state */
+@media (prefers-reduced-motion: reduce) {
+  .sjhHero__intro,
+  .sjhHero__seam,
+  .sjhHero__seamShadow,
+  .sjhHero__gateVeil,
+  .sjhHero__doorGlow,
+  .sjhHero__portalBloom {
+    display: none !important;
+  }
+  .sjhHero__doors {
+    filter: brightness(1) !important;
+    opacity: 1 !important;
+  }
+  .sjhHero__doorWrap--left {
+    transform: rotateY(-73.4deg) !important;
+  }
+  .sjhHero__doorWrap--right {
+    transform: rotateY(73.4deg) !important;
+  }
+  .sjhHero__bg {
+    transform: scale(1.035) !important;
+    filter: brightness(1) blur(0px) !important;
+  }
+  .sjhHero__header,
+  .sjhHero__location,
+  .sjhHero__sub,
+  .sjhHero__support,
+  .sjhHero__dock,
+  .sjhHero__compassNav {
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+  .sjhHero__mask > span {
+    transform: translateY(0%) !important;
+  }
+}
+
+/* Smaller viewport height adjustments */
+@media (max-height: 820px) {
+  .sjhHero__copy {
+    top: 18.5%;
+  }
+  .sjhHero__title {
+    margin-top: 28px;
+    font-size: clamp(47px, 13.8vw, 56px);
+  }
+  .sjhHero__sub {
+    margin-top: 16px;
+  }
+  .sjhHero__rule {
+    margin-top: 14px;
+  }
+  .sjhHero__dock {
+    min-height: 72px;
+    bottom: calc(max(14px, env(safe-area-inset-bottom)) + 38px);
+  }
+}
+
+@media (max-height: 720px) {
+  .sjhHero__copy {
+    top: 16%;
+  }
+  .sjhHero__title {
+    margin-top: 20px;
+    font-size: clamp(42px, 12vw, 48px);
+  }
+  .sjhHero__sub {
+    margin-top: 12px;
+  }
+  .sjhHero__rule {
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+}
+
+/* Phase 3: Responsive Planner adjustments for shorter viewports */
+@media (max-height: 820px) {
+  .sjhHero__dockExpanded {
+    padding: 18px 16px 16px;
+  }
+  .sjhHero__plannerBody {
+    gap: 8px;
+    margin: 8px 0 12px;
+  }
+  .sjhHero__plannerRow {
+    padding: 6px 2px 8px;
+  }
+  .sjhHero__plannerValue {
+    font-size: 17.5px;
+  }
+  .sjhHero__plannerInput {
+    font-size: 17.5px;
+  }
+  .sjhHero__plannerCta {
+    min-height: 48px;
+    height: 50px;
+    font-size: 13px;
+  }
+}
+
+@media (max-height: 720px) {
+  .sjhHero__dockExpanded {
+    padding: 16px 14px 14px;
+  }
+  .sjhHero__plannerBody {
+    gap: 6px;
+    margin: 6px 0 10px;
+  }
+  .sjhHero__plannerRow {
+    padding: 5px 2px 6px;
+  }
+  .sjhHero__plannerTitle {
+    font-size: 17px;
+  }
+  .sjhHero__plannerValue {
+    font-size: 16.5px;
+  }
+  .sjhHero__plannerInput {
+    font-size: 16.5px;
+  }
+  .sjhHero__plannerCta {
+    min-height: 46px;
+    height: 48px;
+    font-size: 12.5px;
+  }
+}
+
+/* Document body scroll lock when modal / planner is active */
+html.sjh-scroll-locked,
+body.sjh-scroll-locked {
+  overflow: hidden !important;
+  overscroll-behavior: none !important;
+  touch-action: none !important;
+}
+
+/* ==================================================
+   PHASE 4: CINEMA -> MAGAZINE EDITORIAL TRANSITION
+   ================================================== */
+
+.sjhHeroTrack {
+  position: relative;
+  width: 100%;
+  background-color: var(--sjh-black-deep, #080705);
+}
+
+/* Pinned Hero Stage */
+.sjhHeroPin {
+  position: relative;
+  width: 100%;
+  height: 100svh;
+  overflow: hidden;
+}
+
+/* Continuous Card Stage: holds the active photographic world */
+.sjhHero__cardStage {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+  overflow: hidden;
+  z-index: 1;
+  box-sizing: border-box;
+  will-change: width, height, border-radius, box-shadow, top;
+}
+
+/* Warm Ivory Canvas: emerges as gate recedes and card contracts */
+.sjhEditorial__canvas {
+  position: absolute;
+  inset: 0;
+  background-color: #F4EFE6;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Editorial Section Intro: arrives above the card */
+.sjhEditorial__intro {
+  position: absolute;
+  top: clamp(58px, 7.8svh, 70px);
+  left: 16px;
+  right: 16px;
+  text-align: center;
+  z-index: 12;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.sjhEditorial__introEyebrow {
+  display: block;
+  font-family: 'Manrope', sans-serif;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #9C7A3C;
+  margin-bottom: 3px;
+}
+
+.sjhEditorial__introTitle {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  margin: 0;
+  font-weight: 400;
+  line-height: 1.15;
+  color: #11100E;
+}
+
+.sjhEditorial__introSub {
+  display: inline-block;
+  font-size: clamp(17px, 4.6vw, 20px);
+  font-family: 'Manrope', sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.03em;
+  color: #555047;
+  margin-right: 6px;
+}
+
+.sjhEditorial__introMain {
+  display: inline-block;
+  font-size: clamp(22px, 6vw, 26px);
+  font-style: italic;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-weight: 500;
+  color: #11100E;
+}
+
+/* Editorial Feeling Details: arrives below the card */
+.sjhEditorial__meta {
+  position: absolute;
+  bottom: calc(max(24px, env(safe-area-inset-bottom)) + 30px);
+  left: 20px;
+  right: 20px;
+  text-align: center;
+  z-index: 12;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.sjhEditorial__metaEyebrow {
+  display: block;
+  font-family: 'Manrope', sans-serif;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.20em;
+  text-transform: uppercase;
+  color: #9C7A3C;
+  margin-bottom: 4px;
+}
+
+.sjhEditorial__metaTitle {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: clamp(20px, 5.5vw, 24px);
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: 0.02em;
+  color: #11100E;
+  margin: 0 0 5px;
+  text-transform: uppercase;
+}
+
+.sjhEditorial__metaDesc {
+  font-family: 'Manrope', sans-serif;
+  font-size: 12.5px;
+  font-weight: 400;
+  line-height: 1.45;
+  color: #555047;
+  max-width: 310px;
+  margin: 0 auto;
+}
+
+/* Header adaptation over ivory canvas */
+.sjhHero__header {
+  transition: color 0.3s ease, background 0.3s ease;
+}
+
+.sjhHero__header.is-editorial {
+  color: #11100E !important;
+}
+
+.sjhHero__header.is-editorial.is-scrolled {
+  background: linear-gradient(180deg, rgba(244, 239, 230, 0.94) 0%, rgba(244, 239, 230, 0.72) 75%, transparent 100%);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.sjhHero__header.is-editorial .sjhHero__menu {
+  border-color: rgba(17, 16, 14, 0.25) !important;
+  background: rgba(244, 239, 230, 0.85) !important;
+  color: #11100E !important;
+}
+
+.sjhHero__header.is-editorial .sjhHero__menu img {
+  filter: brightness(0.18) saturate(1.8) !important;
+}
+
+.sjhHero__header.is-editorial .sjhHero__logo {
+  filter: brightness(0.18) saturate(1.8) !important;
+}
+
+/* Header adaptation over dark sections (Phase 11 Start Your Journey & Phase 12 Footer) */
+.sjhHero__header.is-dark-theme {
+  color: #F4EFE6 !important;
+}
+
+.sjhHero__header.is-dark-theme.is-scrolled {
+  background: linear-gradient(180deg, rgba(17, 16, 14, 0.94) 0%, rgba(17, 16, 14, 0.72) 75%, transparent 100%) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.sjhHero__header.is-dark-theme .sjhHero__menu {
+  border-color: rgba(244, 239, 230, 0.5) !important;
+  background: rgba(17, 16, 14, 0.5) !important;
+  color: #F4EFE6 !important;
+}
+
+.sjhHero__header.is-dark-theme .sjhHero__menu img {
+  filter: none !important;
+}
+
+.sjhHero__header.is-dark-theme .sjhHero__logo {
+  filter: none !important;
+}
+
+/* Continuous Editorial Flow Section following pin release */
+.sjhEditorialSection {
+  position: relative;
+  width: 100%;
+  background-color: #F4EFE6;
+  color: #11100E;
+  padding: 48px 24px 80px;
+  box-sizing: border-box;
+  z-index: 10;
+}
+
+.sjhEditorialSection__inner {
+  max-width: 360px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.sjhEditorialSection__tag {
+  display: inline-block;
+  font-family: 'Manrope', sans-serif;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  color: #9C7A3C;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.sjhEditorialSection__heading {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: clamp(26px, 7vw, 32px);
+  font-weight: 500;
+  line-height: 1.15;
+  color: #11100E;
+  margin-bottom: 14px;
+}
+
+.sjhEditorialSection__lead {
+  font-family: 'Manrope', sans-serif;
+  font-size: 13.5px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: #555047;
+  margin: 0;
+}
+
