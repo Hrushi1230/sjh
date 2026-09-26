@@ -1,17 +1,7 @@
 /**
  * SHREE JAGANNATH HOLIDAYS — PHASE 9: SECTION INTRO VIEWPORT
- * PASS B: Signature Phase 8 -> Phase 9 Handoff & Editorial Atlas Entry
- * 
- * Handoff Specification (Section 2 & 3):
- * - STEP A (0.00-0.20): Horizontal ledger rule remains stable with "04 DETAILS, HANDLED."
- * - STEP B (0.20-0.42): Right end bends downward into vertical stem (~70-110px)
- * - STEP C (0.35-0.60): Phase 8 content recedes (opacity 1 -> 0.55, y 0 -> -12px)
- * - STEP D (0.48-0.74): Phase 9 eyebrow reveals ("JOURNEYS ACROSS INDIA")
- * - STEP E (0.58-0.90): Headline line masks reveal ("INDIA," / "IN MANY" / "WAYS.")
- * - STEP F (0.72-1.00): India outline softly appears (opacity 0 -> 0.12, scale 1.04 -> 1)
- * - Atlas marker arrival pulse (scale 0.85 -> 1, opacity 0 -> 1)
- * - As Intro exits: India outline drifts down 14px and fades behind Chapter 01
- * - Scrub: ~0.5. Reversible.
+ * Phase 8 -> Phase 9 Mobile Smoothness Hotfix
+ * Normal Document Flow, Triggered Timeline (No Scrub, No Pin, Under ~900ms)
  */
 
 import { useRef, useLayoutEffect } from "react";
@@ -26,14 +16,8 @@ interface SectionIntroProps {
 }
 
 export function SectionIntro({ onExploreChapters }: SectionIntroProps) {
-  const trackRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLElement>(null);
-
-  // Handoff refs
-  const handoffRowRef = useRef<HTMLDivElement>(null);
-  const handoffPathRef = useRef<SVGPathElement>(null);
-
-  // Intro text refs
+  const stemRef = useRef<HTMLSpanElement>(null);
   const eyebrowWrapRef = useRef<HTMLDivElement>(null);
   const headlineLineRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const copyWrapRef = useRef<HTMLDivElement>(null);
@@ -41,9 +25,8 @@ export function SectionIntro({ onExploreChapters }: SectionIntroProps) {
   const pinRingRef = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {
-    const track = trackRef.current;
     const stage = stageRef.current;
-    if (!track || !stage) return;
+    if (!stage) return;
 
     const prefersReducedMotion =
       typeof window !== "undefined" &&
@@ -52,86 +35,57 @@ export function SectionIntro({ onExploreChapters }: SectionIntroProps) {
     const ctx = gsap.context(() => {
       if (prefersReducedMotion) {
         // Immediate resolved state for reduced motion
-        gsap.set(handoffRowRef.current, { opacity: 0.55, y: -12 });
+        if (stemRef.current) gsap.set(stemRef.current, { scaleY: 1 });
         gsap.set(eyebrowWrapRef.current, { opacity: 1, y: 0 });
         headlineLineRefs.current.forEach((el) => {
           if (el) gsap.set(el, { y: "0%", opacity: 1 });
         });
         gsap.set(copyWrapRef.current, { opacity: 1, y: 0 });
-        gsap.set(outlineRef.current, { opacity: 0.12, scale: 1, y: 0 });
+        gsap.set(outlineRef.current, { opacity: 0.42, scale: 1, y: 0 });
         gsap.set(pinRingRef.current, { opacity: 1, scale: 1 });
         return;
       }
 
-      // Path length measurement for strokeDashoffset
-      // Path: M 0,2 L 334,2 Q 344,2 344,12 L 344,90 (total ~435px, horizontal ~334px)
-      const pathLength = 435;
-      const initialOffset = 95; // Only horizontal portion visible initially
-
-      // Initial state (Phase 8 end)
-      gsap.set(handoffRowRef.current, { opacity: 1, y: 0 });
-      gsap.set(handoffPathRef.current, {
-        strokeDasharray: pathLength,
-        strokeDashoffset: initialOffset,
-      });
+      // Initial dormant state
+      if (stemRef.current) gsap.set(stemRef.current, { scaleY: 0 });
       gsap.set(eyebrowWrapRef.current, { opacity: 0, y: 8 });
       headlineLineRefs.current.forEach((el) => {
         if (el) gsap.set(el, { y: "105%", opacity: 0 });
       });
       gsap.set(copyWrapRef.current, { opacity: 0, y: 8 });
-      gsap.set(outlineRef.current, { opacity: 0, scale: 1.04, y: 0 });
-      gsap.set(pinRingRef.current, { opacity: 0, scale: 0.85 });
+      gsap.set(outlineRef.current, { opacity: 0, scale: 1.025, y: 8 });
+      gsap.set(pinRingRef.current, { opacity: 0, scale: 0.8 });
 
-      // Master Intro Scrub Timeline
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: track,
-          start: "top top",
-          end: "bottom bottom",
-          scrub: 0.5,
-          invalidateOnRefresh: true,
-        },
-      });
+      // Normal triggered timeline (Completes in ~850ms, no scrub, no pin)
+      const tl = gsap.timeline({ paused: true });
 
-      // 0.00 - 0.20: Phase 8 final state holds
-      tl.to({}, { duration: 0.2 });
+      // 0.00: Gold vertical stem scaleY 0 -> 1
+      if (stemRef.current) {
+        tl.to(
+          stemRef.current,
+          {
+            scaleY: 1,
+            duration: 0.22,
+            ease: "power2.out",
+          },
+          0.00
+        );
+      }
 
-      // 0.20 - 0.42: Ledger rule bends downward into vertical stem
-      tl.to(
-        handoffPathRef.current,
-        {
-          strokeDashoffset: 0,
-          duration: 0.22,
-          ease: "none",
-        },
-        0.20
-      );
-
-      // 0.35 - 0.60: Phase 8 row recedes
-      tl.to(
-        handoffRowRef.current,
-        {
-          opacity: 0.55,
-          y: -12,
-          duration: 0.25,
-          ease: "power1.out",
-        },
-        0.35
-      );
-
-      // 0.48 - 0.74: Phase 9 eyebrow appears
+      // 0.08: JOURNEYS ACROSS INDIA reveal
       tl.to(
         eyebrowWrapRef.current,
         {
           opacity: 1,
           y: 0,
-          duration: 0.26,
+          duration: 0.24,
           ease: "power2.out",
         },
-        0.48
+        0.08
       );
 
-      // 0.58 - 0.90: Headline lines reveal with subtle vertical stagger
+      // 0.14 - 0.28: INDIA, / IN MANY / WAYS. line reveals
+      const lineDelays = [0.14, 0.21, 0.28];
       headlineLineRefs.current.forEach((line, idx) => {
         if (!line) return;
         tl.to(
@@ -139,72 +93,64 @@ export function SectionIntro({ onExploreChapters }: SectionIntroProps) {
           {
             y: "0%",
             opacity: 1,
-            duration: 0.22,
+            duration: 0.38,
             ease: "power3.out",
           },
-          0.58 + idx * 0.08
+          lineDelays[idx] || 0.14 + idx * 0.07
         );
       });
 
-      // 0.68 - 0.88: Supporting copy enters
+      // 0.35: Support copy enters
       tl.to(
         copyWrapRef.current,
         {
           opacity: 1,
           y: 0,
-          duration: 0.20,
+          duration: 0.32,
           ease: "power2.out",
         },
-        0.68
+        0.35
       );
 
-      // 0.72 - 1.00: India outline softly appears (crisp vector watermark)
+      // 0.42: India vector outline settles (clean and static after settling)
       tl.to(
         outlineRef.current,
         {
           opacity: 0.42,
           scale: 1.0,
-          duration: 0.28,
+          y: 0,
+          duration: 0.38,
           ease: "power2.out",
         },
-        0.72
+        0.42
       );
 
-      // Atlas marker single arrival pulse
+      // 0.60: Atlas marker settles
       tl.to(
         pinRingRef.current,
         {
           opacity: 1,
           scale: 1.0,
-          duration: 0.20,
+          duration: 0.25,
           ease: "back.out(1.5)",
         },
-        0.80
+        0.60
       );
 
-      // 0.90 - 1.00: As intro exits, outline drifts downward 14px
-      tl.to(
-        outlineRef.current,
-        {
-          y: 14,
-          duration: 0.10,
-          ease: "none",
-        },
-        0.90
-      );
+      // Triggered on scroll entry (normal document flow, no sticky lock)
+      ScrollTrigger.create({
+        trigger: stage,
+        start: "top 72%",
+        onEnter: () => tl.play(),
+        onLeaveBack: () => tl.reverse(),
+      });
+    }, stage);
 
-      // Register hook for testing
-      (window as any).__P9_INTRO_TL__ = tl;
-    }, track);
-
-    return () => {
-      delete (window as any).__P9_INTRO_TL__;
-      ctx.revert();
-    };
+    return () => ctx.revert();
   }, []);
 
   return (
-    <div ref={trackRef} className="p9-chapterTrack p9-chapterTrack--intro">
+    <div className="p9-chapterTrack p9-chapterTrack--intro">
       <header
         ref={stageRef}
         id="p9-intro"
@@ -214,27 +160,9 @@ export function SectionIntro({ onExploreChapters }: SectionIntroProps) {
         {/* Top Header Bar: SJH | ≡ */}
         <PhoneHeader />
 
-        {/* Phase 8 -> Phase 9 Handoff: Ledger Rule Continuation & Descent */}
-        <div className="p9-handoff" aria-label="Transition from Trust Ledger to Editorial Atlas">
-          <div ref={handoffRowRef} className="p9-handoff__row">
-            <span className="p9-handoff__num">04</span>
-            <span className="p9-handoff__title">DETAILS, HANDLED.</span>
-          </div>
-          <svg
-            className="p9-handoff__svg"
-            viewBox="0 0 346 100"
-            fill="none"
-            aria-hidden="true"
-          >
-            <path
-              ref={handoffPathRef}
-              d="M 0,2 L 334,2 Q 344,2 344,12 L 344,90"
-              stroke="#B99455"
-              strokeWidth="1.2"
-              fill="none"
-              strokeLinecap="round"
-            />
-          </svg>
+        {/* Phase 8 -> Phase 9 Handoff: Visual Continuity Vertical Gold Stem */}
+        <div className="p9-handoff-stem" aria-hidden="true">
+          <span ref={stemRef} className="p9-handoff-stem__line" />
         </div>
 
         {/* Eyebrow: Masked / Clipped */}
@@ -271,7 +199,7 @@ export function SectionIntro({ onExploreChapters }: SectionIntroProps) {
           </p>
         </div>
 
-        {/* Watermark Area: India Outline + Circular Anchor */}
+        {/* Watermark Area: Crisp India Vector Outline + Circular Anchor */}
         <div className="p9-intro__watermarkArea" aria-hidden="true">
           <div ref={pinRingRef} className="p9-intro__pinRing">
             <span className="p9-intro__pinRingOuter" />

@@ -35,27 +35,39 @@
 }
 
 .p9-chapterTrack--intro {
-  height: calc(100svh + 80svh);
+  height: auto;
+  min-height: clamp(75svh, 85svh, 90svh);
+}
+
+.p9-viewport.p9-intro.p9-chapterStage {
+  position: relative;
+  top: auto;
+  height: auto;
+  min-height: clamp(75svh, 85svh, 90svh);
+  max-height: none;
+  overflow: visible;
+  padding-top: clamp(16px, 3svh, 24px);
+  padding-bottom: clamp(24px, 4svh, 36px);
 }
 
 .p9-chapterTrack--odisha {
-  height: calc(100svh + 135svh);
+  height: calc(100svh + 110svh);
 }
 
 .p9-chapterTrack--chardham {
-  height: calc(100svh + 125svh);
+  height: calc(100svh + 110svh);
 }
 
 .p9-chapterTrack--south {
-  height: calc(100svh + 120svh);
+  height: calc(100svh + 100svh);
 }
 
 .p9-chapterTrack--north {
-  height: calc(100svh + 115svh);
+  height: calc(100svh + 100svh);
 }
 
 .p9-chapterTrack--east {
-  height: calc(100svh + 110svh);
+  height: calc(100svh + 95svh);
 }
 
 .p9-chapterTrack--west {
@@ -67,7 +79,7 @@
 }
 
 .p9-chapterTrack--custom {
-  height: calc(100svh + 120svh);
+  height: calc(100svh + 105svh);
 }
 
 .p9-chapterStage,
@@ -92,21 +104,23 @@
   will-change: transform, opacity;
 }
 
-/* Phase 8 -> Phase 9 Handoff */
-.p9-handoff {
+/* Phase 8 -> Phase 9 Handoff: Visual Continuity Vertical Gold Stem */
+.p9-handoff-stem {
   position: relative;
   width: 100%;
-  height: 90px;
-  margin-bottom: 4px;
-  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 36px;
+  margin-bottom: 8px;
 }
 
-.p9-handoff__row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  height: 18px;
-  margin-bottom: 2px;
+.p9-handoff-stem__line {
+  width: 1.5px;
+  height: 36px;
+  background-color: #B99455;
+  transform-origin: top center;
+  display: block;
 }
 
 .p9-handoff__num {
