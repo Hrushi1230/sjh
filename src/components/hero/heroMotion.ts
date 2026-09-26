@@ -359,7 +359,7 @@ export function createHeroIntro(
       3.48
     )
 
-    // Journey Dock enters (Where do you want to go?)
+    // Journey Dock enters (Book Now)
     .fromTo(
       r.dock,
       { autoAlpha: 0, y: 26, scale: 0.975 },

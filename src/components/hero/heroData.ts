@@ -127,7 +127,7 @@ export const destinations: Destination[] = [
 
 export const heroCopy = {
   introPrompt: "EXPLORE",
-  dock: "Where do you want to go?",
+  dock: "Book Now",
 } as const;
 
 export function getDestinationByDirection(dir: Direction): Destination {

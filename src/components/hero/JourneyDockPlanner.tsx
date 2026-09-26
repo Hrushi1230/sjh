@@ -459,7 +459,7 @@ export const JourneyDockPlanner = forwardRef<JourneyDockPlannerHandle, JourneyDo
           type="button"
           className="sjhHero__dockCollapsed"
           onClick={openPlanner}
-          aria-label="Plan your journey"
+          aria-label="Book now"
           tabIndex={isExpandedVisible ? -1 : 0}
           aria-hidden={isExpandedVisible}
         >
