@@ -88,7 +88,8 @@ export function JourneyDetailPage({
       <PlanJourneyModal
         isOpen={plannerOpen}
         onClose={() => setPlannerOpen(false)}
-        destination={journey.destinationId}
+        destination={journey.id}
+        source={journey.id}
         onCreateJourney={onCreateJourney}
       />
     </main>

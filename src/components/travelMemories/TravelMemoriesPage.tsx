@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { TravelMemory, travelMemoriesData } from "../../data/travelMemories";
 import { TravelMemoriesGallery } from "./TravelMemoriesGallery";
 import { TravelMemoryLightbox } from "./TravelMemoryLightbox";
+import { BUSINESS_INFO } from "../../config/business";
 
 interface TravelMemoriesPageProps {
   onBack: () => void;
@@ -93,6 +94,30 @@ export const TravelMemoriesPage: React.FC<TravelMemoriesPageProps> = ({
 
       {/* Page Ending Colophon */}
       <footer className="sjhMemoriesPage__footer">
+        {/* Restrained Social Continuation (Section 28) */}
+        <div className="sjhMemoriesPage__socialContinuation" style={{ margin: "16px 0 32px", textAlign: "center" }}>
+          <span style={{ fontSize: "11px", letterSpacing: "0.18em", color: "#B99455", textTransform: "uppercase", display: "block", marginBottom: "8px" }}>
+            MORE FROM THE ROAD
+          </span>
+          <a
+            href={BUSINESS_INFO.socials.instagram}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              fontFamily: "Cormorant Garamond, Georgia, serif",
+              fontSize: "20px",
+              color: "#F4EFE6",
+              textDecoration: "none",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "8px",
+            }}
+          >
+            <span>Follow our journeys on Instagram</span>
+            <span aria-hidden="true" style={{ color: "#B99455" }}>→</span>
+          </a>
+        </div>
+
         <button
           type="button"
           onClick={onBack}

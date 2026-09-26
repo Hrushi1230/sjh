@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useCallback, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SJH_EASE } from "../../constants/motionTokens";
+import { getDirectWhatsAppEnquiryUrl } from "../../utils/contact";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -194,6 +195,33 @@ export const FinalJourneyCTA: React.FC<FinalJourneyCTAProps> = ({ onOpenPlanner 
             <span className="sjhFinalCta__btnLabel">PLAN MY JOURNEY</span>
             <span className="sjhFinalCta__btnArrow" aria-hidden="true">→</span>
           </button>
+
+          {/* Quiet WhatsApp CTA (Section 22) */}
+          <div className="sjhFinalCta__whatsappWrap" style={{ marginTop: "20px", textAlign: "center" }}>
+            <span style={{ fontSize: "12px", color: "rgba(244, 239, 230, 0.6)", display: "block", marginBottom: "4px" }}>
+              Prefer WhatsApp?
+            </span>
+            <a
+              href={getDirectWhatsAppEnquiryUrl()}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="sjhFinalCta__whatsappLink"
+              style={{
+                color: "#B99455",
+                fontSize: "13px",
+                letterSpacing: "0.14em",
+                textTransform: "uppercase",
+                textDecoration: "none",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "6px",
+                fontWeight: 500,
+              }}
+            >
+              <span>Chat with us</span>
+              <span aria-hidden="true">→</span>
+            </a>
+          </div>
         </div>
 
         {/* Bottom route handoff into footer */}

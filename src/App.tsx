@@ -1,4 +1,4 @@
-import { useState, useCallback, useLayoutEffect } from "react";
+import { useState, useCallback, useLayoutEffect, useEffect } from "react";
 import { MobileCinematicHero } from "./components/hero/MobileCinematicHero";
 import { JourneyDraft } from "./components/hero/plannerData";
 import { EditorialExperience } from "./components/editorial/EditorialExperience";
@@ -13,6 +13,8 @@ import { TravelMemoriesPage } from "./components/travelMemories/TravelMemoriesPa
 import { FinalJourneyCTA } from "./components/closing/FinalJourneyCTA";
 import { SiteFooter } from "./components/closing/SiteFooter";
 import { useJourneyRouter } from "./hooks/useJourneyRouter";
+import { BUSINESS_INFO } from "./config/business";
+import { createPhoneUrl, createWhatsAppUrl } from "./utils/contact";
 
 import "./components/travelMemories/travelMemories.css";
 import "./components/closing/closing.css";
@@ -25,6 +27,9 @@ export function App() {
     "puri" | "kashmir" | "rajasthan" | "kerala"
   >("puri");
 
+  const [plannerDestination, setPlannerDestination] = useState<string>("puri");
+  const [plannerSource, setPlannerSource] = useState<string>("hero");
+
   const {
     activeJourney,
     navigateToJourney,
@@ -32,6 +37,8 @@ export function App() {
     navigateHome,
     isTravelMemories,
   } = useJourneyRouter();
+
+  const isInternalPageOpen = Boolean(activeJourney || isTravelMemories);
 
   const handleOpenMenu = useCallback(() => {
     setMenuOpen((prev) => !prev);
@@ -51,7 +58,7 @@ export function App() {
     navigateToJourney(journeyId, href, mapping[journeyId]);
   }, [navigateToJourney]);
 
-  // If returning to homepage, restore exact previous scroll position
+  // If returning to homepage without explicit section target, restore exact previous scroll position
   useLayoutEffect(() => {
     if (!activeJourney && !isTravelMemories) {
       const saved = sessionStorage.getItem("sjh_home_scroll");
@@ -65,11 +72,92 @@ export function App() {
     }
   }, [activeJourney, isTravelMemories]);
 
-  // Global planner hooks so down-page callers (Phase 11, Footer) can open planner seamlessly
+  // Navigate to sections seamlessly across homepage and internal pages
+  const handleNavigateSection = useCallback(
+    (targetId: string, route?: string) => {
+      setMenuOpen(false);
+
+      if (route === "/travel-memories") {
+        if (!isTravelMemories) {
+          navigateToMemories();
+        } else {
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+        return;
+      }
+
+      if (isInternalPageOpen) {
+        sessionStorage.removeItem("sjh_home_scroll");
+        navigateHome();
+        const executeScroll = () => {
+          const el = document.getElementById(targetId);
+          if (el) {
+            el.scrollIntoView({ behavior: "smooth", block: "start" });
+            window.history.pushState(null, "", `#${targetId}`);
+          }
+        };
+        setTimeout(executeScroll, 350);
+        setTimeout(executeScroll, 750);
+        return;
+      }
+
+      const el = document.getElementById(targetId);
+      if (el) {
+        setTimeout(() => {
+          el.scrollIntoView({ behavior: "smooth", block: "start" });
+          window.history.pushState(null, "", `#${targetId}`);
+        }, 60);
+      }
+    },
+    [isInternalPageOpen, isTravelMemories, navigateHome, navigateToMemories]
+  );
+
+  // Handle direct hash navigation on initial load or popstate
+  useEffect(() => {
+    const handleHash = () => {
+      const hash = window.location.hash.replace("#", "");
+      if (
+        hash &&
+        [
+          "destinations",
+          "journeys-across-india",
+          "sacred-journeys",
+          "pilgrimages",
+          "our-heritage",
+          "about",
+          "why-sjh",
+          "travel-memories",
+        ].includes(hash)
+      ) {
+        setTimeout(() => {
+          const el = document.getElementById(hash);
+          if (el) {
+            el.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
+        }, 500);
+      }
+    };
+
+    handleHash();
+    window.addEventListener("hashchange", handleHash);
+    return () => window.removeEventListener("hashchange", handleHash);
+  }, []);
+
+  // Global planner hooks so down-page callers (Phase 11, Footer, Menu) can open planner seamlessly
   useLayoutEffect(() => {
     const win = window as any;
     const heroOpen = win.__SJH_PLANNER_OPEN__;
     const heroClose = win.__SJH_PLANNER_CLOSE__;
+    const heroSetField = win.__SJH_PLANNER_SET_FIELD__;
+
+    win.__SJH_PLANNER_SET_FIELD__ = (field: string, val: any) => {
+      if (field === "destination") {
+        setPlannerDestination(val);
+      } else if (field === "source") {
+        setPlannerSource(val);
+      }
+      if (heroSetField) heroSetField(field, val);
+    };
 
     win.__SJH_PLANNER_OPEN__ = () => {
       if (window.scrollY > 800) {
@@ -89,10 +177,11 @@ export function App() {
     return () => {
       win.__SJH_PLANNER_OPEN__ = heroOpen;
       win.__SJH_PLANNER_CLOSE__ = heroClose;
+      win.__SJH_PLANNER_SET_FIELD__ = heroSetField;
     };
   }, []);
 
-  const isInternalPageOpen = Boolean(activeJourney || isTravelMemories);
+
 
   return (
     <>
@@ -105,33 +194,46 @@ export function App() {
         <MobileCinematicHero
           onOpenMenu={handleOpenMenu}
           onCreateJourney={handleCreateJourney}
-          onDestinationChange={setActiveDestination}
+          onDestinationChange={(dest) => {
+            setActiveDestination(dest);
+            setPlannerDestination(dest);
+          }}
           isInternalPageOpen={isInternalPageOpen}
         />
 
         {/* Phase 6: The Travel Thread connecting Phase 5 Editorial Chapters & Outro */}
-        <TravelThreadRegion activeDestination={activeDestination}>
-          <EditorialExperience
-            activeDestination={activeDestination}
-            assetBase="/assets/sjh-hero"
-            onJourneySelect={handleJourneySelect}
-          >
-            {/* Phase 6 Narrative Transition Bridge */}
-            <TravelThreadOutro activeDestination={activeDestination} />
-          </EditorialExperience>
-        </TravelThreadRegion>
+        <div id="sacred-journeys" style={{ scrollMarginTop: "80px" }}>
+          <span id="pilgrimages" style={{ display: "none" }} />
+          <TravelThreadRegion activeDestination={activeDestination}>
+            <EditorialExperience
+              activeDestination={activeDestination}
+              assetBase="/assets/sjh-hero"
+              onJourneySelect={handleJourneySelect}
+            >
+              {/* Phase 6 Narrative Transition Bridge */}
+              <TravelThreadOutro activeDestination={activeDestination} />
+            </EditorialExperience>
+          </TravelThreadRegion>
+        </div>
 
         {/* Phase 8: Section 05 — Why Shree Jagannath Holidays (The Trust Ledger) */}
-        <TrustLedgerSection />
+        <div id="our-heritage" style={{ scrollMarginTop: "80px" }}>
+          <span id="about" style={{ display: "none" }} />
+          <TrustLedgerSection />
+        </div>
 
         {/* Phase 9: Section 06 — Journeys Across India (Editorial Atlas) */}
-        <JourneysAcrossIndiaSection onJourneySelect={handleJourneySelect} />
+        <div id="destinations" style={{ scrollMarginTop: "80px" }}>
+          <JourneysAcrossIndiaSection onJourneySelect={handleJourneySelect} />
+        </div>
 
         {/* Phase 10: Real Travel Memories (ONE composed editorial viewport: 90svh-105svh) */}
-        <TravelMemoriesPreview
-          onNavigateToMemories={navigateToMemories}
-          onPhotoClick={navigateToMemories}
-        />
+        <div id="travel-memories" style={{ scrollMarginTop: "80px" }}>
+          <TravelMemoriesPreview
+            onNavigateToMemories={navigateToMemories}
+            onPhotoClick={navigateToMemories}
+          />
+        </div>
 
         {/* Phase 11: Start Your Journey (Final conversion moment, Temple Black) */}
         <FinalJourneyCTA
@@ -140,6 +242,7 @@ export function App() {
             if (win.__SJH_PLANNER_SET_FIELD__) {
               win.__SJH_PLANNER_SET_FIELD__("source", "final-home-cta");
             }
+            setPlannerSource("final-home-cta");
             setPlannerModalOpen(true);
           }}
         />
@@ -151,6 +254,7 @@ export function App() {
             if (win.__SJH_PLANNER_SET_FIELD__) {
               win.__SJH_PLANNER_SET_FIELD__("source", "footer");
             }
+            setPlannerSource("footer");
             setPlannerModalOpen(true);
           }}
           onNavigateRoute={(href) => {
@@ -162,8 +266,9 @@ export function App() {
             }
           }}
         />
+      </main>
 
-        {menuOpen && (
+      {menuOpen && (
           <div
             role="dialog"
             aria-modal="true"
@@ -172,13 +277,14 @@ export function App() {
               position: "fixed",
               inset: 0,
               zIndex: 100,
-              background: "rgba(11, 10, 8, 0.95)",
+              background: "rgba(11, 10, 8, 0.96)",
               display: "flex",
               flexDirection: "column",
               justifyContent: "space-between",
-              padding: "32px 24px",
-              color: "var(--sjh-ivory)",
-              backdropFilter: "blur(12px)",
+              padding: "28px 24px",
+              color: "var(--sjh-ivory, #F4EFE6)",
+              backdropFilter: "blur(14px)",
+              overflowY: "auto",
             }}
           >
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -195,44 +301,162 @@ export function App() {
                   fontSize: "20px",
                   display: "grid",
                   placeItems: "center",
+                  background: "transparent",
+                  color: "#F4EFE6",
+                  cursor: "pointer",
                 }}
               >
                 ✕
               </button>
             </div>
 
-            <nav style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
-              <a href="#destinations" onClick={() => setMenuOpen(false)} style={{ fontFamily: "Cormorant Garamond, serif", fontSize: "28px" }}>
+            {/* Navigation Links */}
+            <nav style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+              <a
+                href="#destinations"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleNavigateSection("destinations");
+                }}
+                style={{ fontFamily: "Cormorant Garamond, serif", fontSize: "28px", color: "#F4EFE6", textDecoration: "none" }}
+              >
                 Destinations
               </a>
-              <a href="#pilgrimages" onClick={() => setMenuOpen(false)} style={{ fontFamily: "Cormorant Garamond, serif", fontSize: "28px" }}>
+              <a
+                href="#sacred-journeys"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleNavigateSection("sacred-journeys");
+                }}
+                style={{ fontFamily: "Cormorant Garamond, serif", fontSize: "28px", color: "#F4EFE6", textDecoration: "none" }}
+              >
                 Sacred Journeys
               </a>
-              <a href="#about" onClick={() => setMenuOpen(false)} style={{ fontFamily: "Cormorant Garamond, serif", fontSize: "28px" }}>
+              <a
+                href="#our-heritage"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleNavigateSection("our-heritage");
+                }}
+                style={{ fontFamily: "Cormorant Garamond, serif", fontSize: "28px", color: "#F4EFE6", textDecoration: "none" }}
+              >
                 Our Heritage
               </a>
               <a
                 href="/travel-memories"
                 onClick={(e) => {
                   e.preventDefault();
-                  setMenuOpen(false);
-                  navigateToMemories();
+                  handleNavigateSection("travel-memories", "/travel-memories");
                 }}
-                style={{ fontFamily: "Cormorant Garamond, serif", fontSize: "28px" }}
+                style={{ fontFamily: "Cormorant Garamond, serif", fontSize: "28px", color: "#F4EFE6", textDecoration: "none" }}
               >
                 Travel Memories
               </a>
-              <a href="#contact" onClick={() => setMenuOpen(false)} style={{ fontFamily: "Cormorant Garamond, serif", fontSize: "28px" }}>
-                Contact Concierge
-              </a>
             </nav>
 
-            <div style={{ fontSize: "11px", letterSpacing: "0.2em", color: "rgba(244, 239, 230, 0.6)", textTransform: "uppercase" }}>
-              Shree Jagannath Holidays · Puri
+            {/* Direct Contact Actions (Section 23) */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "10px", borderTop: "1px solid rgba(185, 148, 85, 0.25)", paddingTop: "18px" }}>
+              <button
+                type="button"
+                onClick={() => {
+                  setMenuOpen(false);
+                  const win = window as any;
+                  if (win.__SJH_PLANNER_SET_FIELD__) {
+                    win.__SJH_PLANNER_SET_FIELD__("source", "mobile-menu");
+                  }
+                  setPlannerSource("mobile-menu");
+                  setPlannerModalOpen(true);
+                }}
+                style={{
+                  background: "rgba(185, 148, 85, 0.15)",
+                  border: "1px solid #B99455",
+                  color: "#F4EFE6",
+                  padding: "12px 18px",
+                  borderRadius: "999px",
+                  fontSize: "12px",
+                  letterSpacing: "0.14em",
+                  textTransform: "uppercase",
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  textAlign: "center",
+                }}
+              >
+                PLAN A JOURNEY →
+              </button>
+
+              <a
+                href={createWhatsAppUrl("Hello Shree Jagannath Holidays,\n\nI would like to enquire about a journey.\n\nPlease help me with the details.")}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setMenuOpen(false)}
+                style={{
+                  background: "transparent",
+                  border: "1px solid rgba(244, 239, 230, 0.25)",
+                  color: "#F4EFE6",
+                  padding: "11px 18px",
+                  borderRadius: "999px",
+                  fontSize: "12px",
+                  letterSpacing: "0.14em",
+                  textTransform: "uppercase",
+                  textDecoration: "none",
+                  textAlign: "center",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "8px",
+                }}
+              >
+                <span style={{ color: "#25D366" }}>●</span> WHATSAPP US
+              </a>
+
+              <a
+                href={createPhoneUrl()}
+                onClick={() => setMenuOpen(false)}
+                aria-label="Call Shree Jagannath Holidays"
+                style={{
+                  background: "transparent",
+                  border: "1px solid rgba(244, 239, 230, 0.25)",
+                  color: "#F4EFE6",
+                  padding: "11px 18px",
+                  borderRadius: "999px",
+                  fontSize: "12px",
+                  letterSpacing: "0.14em",
+                  textTransform: "uppercase",
+                  textDecoration: "none",
+                  textAlign: "center",
+                }}
+              >
+                CALL US · {BUSINESS_INFO.phone.display}
+              </a>
+            </div>
+
+            {/* Social Links & Location */}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid rgba(185, 148, 85, 0.15)", paddingTop: "14px", marginTop: "8px" }}>
+              <div style={{ display: "flex", gap: "16px" }}>
+                <a
+                  href={BUSINESS_INFO.socials.instagram}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: "#B99455", fontSize: "12px", letterSpacing: "0.12em", textDecoration: "none", textTransform: "uppercase" }}
+                >
+                  Instagram ↗
+                </a>
+                <a
+                  href={BUSINESS_INFO.socials.facebook}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: "#B99455", fontSize: "12px", letterSpacing: "0.12em", textDecoration: "none", textTransform: "uppercase" }}
+                >
+                  Facebook ↗
+                </a>
+              </div>
+
+              <div style={{ fontSize: "10px", letterSpacing: "0.16em", color: "rgba(244, 239, 230, 0.55)", textTransform: "uppercase" }}>
+                {BUSINESS_INFO.location}
+              </div>
             </div>
           </div>
         )}
-      </main>
 
       {/* Internal Travel Memories Archive Page */}
       {isTravelMemories && (
@@ -251,11 +475,12 @@ export function App() {
         />
       )}
 
-      {/* Plan Journey Modal for down-page triggers (Phase 11 CTA, Footer, etc.) */}
+      {/* Plan Journey Modal for down-page triggers (Phase 11 CTA, Footer, Menu, Phase 9, etc.) */}
       <PlanJourneyModal
         isOpen={plannerModalOpen}
         onClose={() => setPlannerModalOpen(false)}
-        destination={activeDestination}
+        destination={plannerDestination || activeDestination}
+        source={plannerSource}
         onCreateJourney={handleCreateJourney}
       />
     </>

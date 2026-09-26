@@ -1,5 +1,6 @@
 import React, { useCallback } from "react";
-import { FOOTER_NAVIGATION, FOOTER_CONTACT, FOOTER_COPYRIGHT } from "../../data/footerNavigation";
+import { FOOTER_NAVIGATION, FOOTER_CONTACT, FOOTER_COPYRIGHT, FooterLink } from "../../data/footerNavigation";
+import { createWhatsAppUrl } from "../../utils/contact";
 
 interface SiteFooterProps {
   onOpenPlanner: () => void;
@@ -11,12 +12,15 @@ export const SiteFooter: React.FC<SiteFooterProps> = ({
   onNavigateRoute,
 }) => {
   const handleLinkClick = useCallback(
-    (e: React.MouseEvent, item: { href?: string; action?: string; isRoute?: boolean }) => {
+    (e: React.MouseEvent, item: FooterLink) => {
       if (item.action === "open-planner") {
         e.preventDefault();
         const win = window as any;
         if (win.__SJH_PLANNER_SET_FIELD__) {
           win.__SJH_PLANNER_SET_FIELD__("source", "footer");
+          if (item.destinationHint) {
+            win.__SJH_PLANNER_SET_FIELD__("destination", item.destinationHint);
+          }
         }
         onOpenPlanner();
       } else if (item.href && item.isRoute && onNavigateRoute) {
@@ -79,11 +83,77 @@ export const SiteFooter: React.FC<SiteFooterProps> = ({
           <div className="sjhFooter__col">
             <h4 className="sjhFooter__colTitle">CONTACT</h4>
             <div className="sjhFooter__contactDetails">
-              <p className="sjhFooter__location">
+              {/* Phone */}
+              <div className="sjhFooter__location">
+                <span className="sjhFooter__locLabel">PHONE / BOOKING</span>
+                <a
+                  href={`tel:+${FOOTER_CONTACT.phone.raw}`}
+                  className="sjhFooter__locVal sjhFooter__link"
+                  aria-label="Call Shree Jagannath Holidays"
+                  style={{ textDecoration: "none" }}
+                >
+                  {FOOTER_CONTACT.phone.display}
+                </a>
+              </div>
+
+              {/* WhatsApp */}
+              <div className="sjhFooter__location">
+                <span className="sjhFooter__locLabel">WHATSAPP</span>
+                <a
+                  href={createWhatsAppUrl("Hello Shree Jagannath Holidays,\n\nI would like to enquire about a journey.\n\nPlease help me with the details.")}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="sjhFooter__locVal sjhFooter__link"
+                  aria-label="Chat with Shree Jagannath Holidays on WhatsApp"
+                  style={{ textDecoration: "none" }}
+                >
+                  {FOOTER_CONTACT.whatsapp.display} ↗
+                </a>
+              </div>
+
+              {/* Email */}
+              <div className="sjhFooter__location">
+                <span className="sjhFooter__locLabel">EMAIL</span>
+                <a
+                  href={`mailto:${FOOTER_CONTACT.email}`}
+                  className="sjhFooter__locVal sjhFooter__link"
+                  aria-label="Email Shree Jagannath Holidays"
+                  style={{ textDecoration: "none", wordBreak: "break-all" }}
+                >
+                  {FOOTER_CONTACT.email}
+                </a>
+              </div>
+
+              {/* Location */}
+              <div className="sjhFooter__location">
                 <span className="sjhFooter__locLabel">LOCATION</span>
                 <span className="sjhFooter__locVal">{FOOTER_CONTACT.location}</span>
-              </p>
-              {/* Note: Unverified contact rows (phone/email/social) are omitted completely to adhere to data safety rules */}
+              </div>
+
+              {/* Social Follow */}
+              <div className="sjhFooter__location" style={{ marginTop: "4px" }}>
+                <span className="sjhFooter__locLabel">FOLLOW</span>
+                <div style={{ display: "flex", gap: "12px", marginTop: "4px" }}>
+                  <a
+                    href={FOOTER_CONTACT.socials.instagram}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="sjhFooter__link"
+                    style={{ fontSize: "12px" }}
+                  >
+                    Instagram ↗
+                  </a>
+                  <a
+                    href={FOOTER_CONTACT.socials.facebook}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="sjhFooter__link"
+                    style={{ fontSize: "12px" }}
+                  >
+                    Facebook ↗
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
         </div>

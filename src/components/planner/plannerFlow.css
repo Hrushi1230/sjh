@@ -1,0 +1,539 @@
+/**
+ * SHREE JAGANNATH HOLIDAYS — PLANNER 5-STEP FLOW STYLES
+ * Mobile-first, calm, editorial design system adhering to:
+ * - Temple Black (#0B0A08 / #11100E)
+ * - Warm Ivory (#F4EFE6)
+ * - Antique Gold (#B99455 / #EBC678)
+ */
+
+/* Step Header & Progress */
+.sjhFlow__stepBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(185, 148, 85, 0.2);
+}
+
+.sjhFlow__stepInfo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sjhFlow__stepBadge {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #B99455;
+  font-weight: 600;
+}
+
+.sjhFlow__stepTitle {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 15px;
+  color: #F4EFE6;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+}
+
+.sjhFlow__backBtn {
+  background: transparent;
+  border: none;
+  color: rgba(244, 239, 230, 0.65);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 6px 8px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: color 0.2s ease;
+}
+
+.sjhFlow__backBtn:hover,
+.sjhFlow__backBtn:focus-visible {
+  color: #F4EFE6;
+  outline: none;
+}
+
+/* Step 1: Destination 2-Column Grid (390x844 mobile composition) */
+.sjhFlow__destGrid2Col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 10px;
+  margin-top: 10px;
+  margin-bottom: 6px;
+}
+
+.sjhFlow__destChip {
+  background: rgba(244, 239, 230, 0.04);
+  border: 1px solid rgba(185, 148, 85, 0.28);
+  border-radius: 999px;
+  padding: 8px 10px;
+  font-size: 12.5px;
+  color: rgba(244, 239, 230, 0.88);
+  cursor: pointer;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.sjhFlow__destChip:hover {
+  border-color: rgba(235, 198, 120, 0.6);
+  background: rgba(185, 148, 85, 0.12);
+  color: #F4EFE6;
+}
+
+.sjhFlow__destChip.is-active {
+  background: rgba(185, 148, 85, 0.24);
+  border-color: #EBC678;
+  color: #EBC678;
+  font-weight: 600;
+  box-shadow: 0 2px 10px rgba(185, 148, 85, 0.2);
+}
+
+.sjhFlow__destPills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+  margin-bottom: 4px;
+}
+
+.sjhFlow__destPill {
+  background: rgba(244, 239, 230, 0.04);
+  border: 1px solid rgba(185, 148, 85, 0.25);
+  border-radius: 999px;
+  padding: 5px 12px;
+  font-size: 12px;
+  color: rgba(244, 239, 230, 0.85);
+  cursor: pointer;
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+  transition: all 0.2s ease;
+}
+
+.sjhFlow__destPill:hover {
+  border-color: rgba(235, 198, 120, 0.55);
+  background: rgba(185, 148, 85, 0.1);
+  color: #F4EFE6;
+}
+
+.sjhFlow__destPill.is-active {
+  background: rgba(185, 148, 85, 0.22);
+  border-color: #B99455;
+  color: #EBC678;
+  font-weight: 500;
+}
+
+/* Date Grid for Exact Dates */
+.sjhFlow__dateGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.sjhFlow__dateCol {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sjhFlow__dateLabel {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: rgba(244, 239, 230, 0.55);
+  text-transform: uppercase;
+}
+
+/* Flexible Month & Duration Chips */
+.sjhFlow__flexibleWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.sjhFlow__durationChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.sjhFlow__chip {
+  background: rgba(244, 239, 230, 0.04);
+  border: 1px solid rgba(185, 148, 85, 0.22);
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 11.5px;
+  color: rgba(244, 239, 230, 0.8);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sjhFlow__chip:hover {
+  border-color: rgba(235, 198, 120, 0.5);
+  color: #F4EFE6;
+}
+
+.sjhFlow__chip.is-active {
+  background: rgba(185, 148, 85, 0.2);
+  border-color: #B99455;
+  color: #EBC678;
+  font-weight: 500;
+}
+
+/* Step 3: Travellers Steppers - Clean Vertical Column */
+.sjhHero__travellersGrid {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+  margin-top: 8px !important;
+  width: 100% !important;
+}
+
+.sjhHero__travellersGrid .sjhHero__stepperItem {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  padding: 8px 12px !important;
+  background: rgba(26, 24, 20, 0.65) !important;
+  border: 1px solid rgba(185, 148, 85, 0.25) !important;
+  border-radius: 10px !important;
+}
+
+.sjhHero__travellersGrid .sjhHero__stepperLabel {
+  font-family: 'Manrope', sans-serif !important;
+  font-size: 12.5px !important;
+  font-weight: 500 !important;
+  color: rgba(244, 239, 230, 0.85) !important;
+  margin-left: 0 !important;
+  white-space: nowrap !important;
+}
+
+.sjhHero__travellersGrid .sjhHero__stepperControls {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  flex-shrink: 0 !important;
+}
+
+.sjhHero__travellersGrid .sjhHero__stepperBtn {
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  border-radius: 50% !important;
+  border: 1px solid rgba(185, 148, 85, 0.35) !important;
+  background: rgba(244, 239, 230, 0.05) !important;
+  color: #F4EFE6 !important;
+  font-size: 16px !important;
+  display: grid !important;
+  place-items: center !important;
+  cursor: pointer !important;
+  transition: all 0.18s ease !important;
+}
+
+.sjhHero__travellersGrid .sjhHero__stepperBtn:hover:not(:disabled) {
+  background: rgba(185, 148, 85, 0.25) !important;
+  border-color: #B99455 !important;
+  color: #EBC678 !important;
+}
+
+.sjhHero__travellersGrid .sjhHero__stepperBtn:disabled {
+  opacity: 0.25 !important;
+  cursor: not-allowed !important;
+}
+
+.sjhHero__travellersGrid .sjhHero__stepperCount {
+  min-width: 20px !important;
+  text-align: center !important;
+  font-family: "Cormorant Garamond", Georgia, serif !important;
+  font-size: 18px !important;
+  font-weight: 600 !important;
+  color: #F4EFE6 !important;
+}
+
+/* Step 2: Journey Type Compact List */
+.sjhFlow__typeList {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 5px;
+  margin-top: 6px;
+}
+
+.sjhFlow__typeRow {
+  background: rgba(244, 239, 230, 0.03);
+  border: 1px solid rgba(185, 148, 85, 0.18);
+  border-radius: 8px;
+  padding: 8px 12px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s ease;
+}
+
+.sjhFlow__typeRow:hover {
+  background: rgba(185, 148, 85, 0.08);
+  border-color: rgba(235, 198, 120, 0.45);
+}
+
+.sjhFlow__typeRow.is-selected {
+  background: rgba(185, 148, 85, 0.16);
+  border-color: #B99455;
+}
+
+.sjhFlow__typeLabel {
+  font-size: 12.5px;
+  color: #F4EFE6;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.sjhFlow__typeDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #B99455;
+  box-shadow: 0 0 6px rgba(185, 148, 85, 0.6);
+}
+
+/* Step 3: Contact Inputs */
+.sjhFlow__textarea {
+  width: 100%;
+  background: rgba(244, 239, 230, 0.04);
+  border: 1px solid rgba(185, 148, 85, 0.25);
+  border-radius: 8px;
+  padding: 8px 10px;
+  color: #F4EFE6;
+  font-family: inherit;
+  font-size: 12.5px;
+  line-height: 1.45;
+  resize: vertical;
+  min-height: 64px;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease;
+}
+
+.sjhFlow__textarea:focus {
+  outline: none;
+  border-color: #B99455;
+  background: rgba(244, 239, 230, 0.07);
+}
+
+.sjhFlow__textarea::placeholder {
+  color: rgba(244, 239, 230, 0.35);
+  font-size: 11.5px;
+}
+
+/* Step 4: Review Itinerary Card */
+.sjhReviewCard {
+  background: rgba(244, 239, 230, 0.025);
+  border: 1px solid rgba(185, 148, 85, 0.35);
+  border-radius: 14px;
+  padding: 16px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: relative;
+  margin-top: 4px;
+  margin-bottom: 8px;
+}
+
+.sjhReviewCard__route {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(185, 148, 85, 0.2);
+}
+
+.sjhReviewCard__city {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: #F4EFE6;
+  text-transform: uppercase;
+}
+
+.sjhReviewCard__arrow {
+  color: #B99455;
+  font-size: 14px;
+}
+
+.sjhReviewCard__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px 14px;
+}
+
+.sjhReviewCard__cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sjhReviewCard__cell--full {
+  grid-column: 1 / -1;
+}
+
+.sjhReviewCard__label {
+  font-size: 9.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #B99455;
+  font-weight: 600;
+}
+
+.sjhReviewCard__val {
+  font-size: 12.5px;
+  color: #F4EFE6;
+  line-height: 1.35;
+}
+
+.sjhReviewCard__notes {
+  font-style: italic;
+  font-size: 11.5px;
+  color: rgba(244, 239, 230, 0.75);
+  background: rgba(185, 148, 85, 0.06);
+  padding: 8px 10px;
+  border-left: 2px solid #B99455;
+  border-radius: 0 4px 4px 0;
+}
+
+/* Actions in Review & Steps */
+.sjhFlow__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.sjhFlow__actionsRow {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.sjhFlow__secondaryBtn {
+  background: transparent;
+  border: 1px solid rgba(185, 148, 85, 0.4);
+  color: rgba(244, 239, 230, 0.85);
+  border-radius: 999px;
+  padding: 10px 16px;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.sjhFlow__secondaryBtn:hover {
+  border-color: #B99455;
+  color: #F4EFE6;
+  background: rgba(185, 148, 85, 0.08);
+}
+
+.sjhFlow__whatsappBtn {
+  background: linear-gradient(135deg, #1C1914 0%, #26211A 100%);
+  border: 1px solid #B99455;
+  color: #F4EFE6;
+  border-radius: 999px;
+  padding: 12px 20px;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4);
+  transition: transform 0.15s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.sjhFlow__whatsappBtn:hover {
+  border-color: #EBC678;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 22px rgba(185, 148, 85, 0.25);
+}
+
+.sjhFlow__whatsappBtn:active {
+  transform: translateY(1px);
+}
+
+.sjhFlow__whatsappIcon {
+  width: 17px;
+  height: 17px;
+  color: #25D366;
+  flex-shrink: 0;
+}
+
+/* Step 5: WhatsApp Handoff Feedback */
+.sjhHandoff {
+  text-align: center;
+  padding: 24px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.sjhHandoff__iconRing {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 1px solid rgba(185, 148, 85, 0.5);
+  background: rgba(185, 148, 85, 0.08);
+  display: grid;
+  place-items: center;
+  color: #EBC678;
+}
+
+.sjhHandoff__title {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 22px;
+  font-weight: 500;
+  color: #F4EFE6;
+  margin: 0;
+}
+
+.sjhHandoff__desc {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: rgba(244, 239, 230, 0.75);
+  max-width: 320px;
+  margin: 0;
+}
+
+.sjhHandoff__note {
+  font-size: 11px;
+  color: #B99455;
+  letter-spacing: 0.04em;
+  background: rgba(185, 148, 85, 0.08);
+  padding: 6px 12px;
+  border-radius: 6px;
+}
