@@ -34,20 +34,43 @@
   box-sizing: border-box;
 }
 
-.p9-chapterTrack--intro {
+/* --------------------------------------------------------------------------
+   Sibling A: Phase 9 Intro (100% Normal Document Flow — Zero Sticky, Zero Pin)
+   -------------------------------------------------------------------------- */
+.phase9Intro {
+  position: relative;
+  width: 100%;
+  min-height: clamp(75svh, 82svh, 90svh);
   height: auto;
-  min-height: clamp(75svh, 85svh, 90svh);
+  overflow: clip;
+  box-sizing: border-box;
 }
 
-.p9-viewport.p9-intro.p9-chapterStage {
+.phase9Intro__stage {
   position: relative;
+  inset: auto;
   top: auto;
+  width: 100%;
+  max-width: 440px;
+  margin: 0 auto;
   height: auto;
-  min-height: clamp(75svh, 85svh, 90svh);
-  max-height: none;
+  min-height: inherit;
+  box-sizing: border-box;
+  padding: clamp(16px, 3svh, 24px) clamp(20px, 5vw, 28px) clamp(28px, 4.5svh, 40px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
   overflow: visible;
-  padding-top: clamp(16px, 3svh, 24px);
-  padding-bottom: clamp(24px, 4svh, 36px);
+}
+
+/* --------------------------------------------------------------------------
+   Sibling B: Journey Atlas Chapters Subtree (Sticky begins from Chapter 01 Odisha)
+   -------------------------------------------------------------------------- */
+.journeyAtlasChapters {
+  position: relative;
+  width: 100%;
+  height: auto;
 }
 
 .p9-chapterTrack--odisha {

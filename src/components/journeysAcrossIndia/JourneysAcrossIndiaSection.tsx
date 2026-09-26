@@ -170,75 +170,78 @@ export function JourneysAcrossIndiaSection({
       aria-label="Phase 9: Journeys Across India Editorial Atlas"
     >
       <div ref={containerRef} className="sjhJourneysAcrossIndia__container">
-        {/* Section Intro Viewport with Phase 8->9 Signature Handoff */}
+        {/* Sibling A: Phase 9 Intro (Normal Document Flow) */}
         <SectionIntro
           onExploreChapters={() => scrollToChapter(0)}
         />
 
-        {/* Chapter 01 — Odisha & Jagannath Pilgrimage (Atlas Route) */}
-        <Chapter01Odisha
-          data={journeyAtlasData[0]}
-          allData={journeyAtlasData}
-          onSelectIndex={scrollToChapter}
-          onNavigateRoute={onJourneySelect}
-        />
+        {/* Sibling B: Journey Atlas Chapters (Sticky behavior begins from Chapter 01 Odisha) */}
+        <div className="journeyAtlasChapters" aria-label="Journey Atlas Chapters">
+          {/* Chapter 01 — Odisha & Jagannath Pilgrimage (Atlas Route) */}
+          <Chapter01Odisha
+            data={journeyAtlasData[0]}
+            allData={journeyAtlasData}
+            onSelectIndex={scrollToChapter}
+            onNavigateRoute={onJourneySelect}
+          />
 
-        {/* Chapter 02 — Char Dham Yatra (Vertical Ascent) */}
-        <Chapter02CharDham
-          data={journeyAtlasData[1]}
-          allData={journeyAtlasData}
-          onSelectIndex={scrollToChapter}
-          onOpenPlanner={handleOpenPlanner}
-        />
+          {/* Chapter 02 — Char Dham Yatra (Vertical Ascent) */}
+          <Chapter02CharDham
+            data={journeyAtlasData[1]}
+            allData={journeyAtlasData}
+            onSelectIndex={scrollToChapter}
+            onOpenPlanner={handleOpenPlanner}
+          />
 
-        {/* Chapter 03 — South India Tours (Flowing Ribbon) */}
-        <Chapter03SouthIndia
-          data={journeyAtlasData[2]}
-          allData={journeyAtlasData}
-          onSelectIndex={scrollToChapter}
-          onOpenPlanner={handleOpenPlanner}
-        />
+          {/* Chapter 03 — South India Tours (Flowing Ribbon) */}
+          <Chapter03SouthIndia
+            data={journeyAtlasData[2]}
+            allData={journeyAtlasData}
+            onSelectIndex={scrollToChapter}
+            onOpenPlanner={handleOpenPlanner}
+          />
 
-        {/* Chapter 04 — North India Tours (Stacked Horizons) */}
-        <Chapter04NorthIndia
-          data={journeyAtlasData[3]}
-          allData={journeyAtlasData}
-          onSelectIndex={scrollToChapter}
-          onOpenPlanner={handleOpenPlanner}
-        />
+          {/* Chapter 04 — North India Tours (Stacked Horizons) */}
+          <Chapter04NorthIndia
+            data={journeyAtlasData[3]}
+            allData={journeyAtlasData}
+            onSelectIndex={scrollToChapter}
+            onOpenPlanner={handleOpenPlanner}
+          />
 
-        {/* Chapter 05 — East India Tours (Layered Planes) */}
-        <Chapter05EastIndia
-          data={journeyAtlasData[4]}
-          allData={journeyAtlasData}
-          onSelectIndex={scrollToChapter}
-          onOpenPlanner={handleOpenPlanner}
-        />
+          {/* Chapter 05 — East India Tours (Layered Planes) */}
+          <Chapter05EastIndia
+            data={journeyAtlasData[4]}
+            allData={journeyAtlasData}
+            onSelectIndex={scrollToChapter}
+            onOpenPlanner={handleOpenPlanner}
+          />
 
-        {/* Chapter 06 — West India Tours (Restrained Heritage) */}
-        <Chapter06WestIndia
-          data={journeyAtlasData[5]}
-          allData={journeyAtlasData}
-          onSelectIndex={scrollToChapter}
-          onOpenPlanner={handleOpenPlanner}
-        />
+          {/* Chapter 06 — West India Tours (Restrained Heritage) */}
+          <Chapter06WestIndia
+            data={journeyAtlasData[5]}
+            allData={journeyAtlasData}
+            onSelectIndex={scrollToChapter}
+            onOpenPlanner={handleOpenPlanner}
+          />
 
-        {/* Chapter 07 — Central India Tours (Grounded Earth) */}
-        <Chapter07CentralIndia
-          data={journeyAtlasData[6]}
-          allData={journeyAtlasData}
-          onSelectIndex={scrollToChapter}
-          onOpenPlanner={handleOpenPlanner}
-        />
+          {/* Chapter 07 — Central India Tours (Grounded Earth) */}
+          <Chapter07CentralIndia
+            data={journeyAtlasData[6]}
+            allData={journeyAtlasData}
+            onSelectIndex={scrollToChapter}
+            onOpenPlanner={handleOpenPlanner}
+          />
 
-        {/* Chapter 08 — Customised Planning (Human Planning Finale) */}
-        <Chapter08CustomPlanning
-          data={journeyAtlasData[7]}
-          allData={journeyAtlasData}
-          onSelectIndex={scrollToChapter}
-          onOpenPlanner={() => handleOpenPlanner()}
-          isPlannerReadyState={plannerReadyState}
-        />
+          {/* Chapter 08 — Customised Planning (Human Planning Finale) */}
+          <Chapter08CustomPlanning
+            data={journeyAtlasData[7]}
+            allData={journeyAtlasData}
+            onSelectIndex={scrollToChapter}
+            onOpenPlanner={() => handleOpenPlanner()}
+            isPlannerReadyState={plannerReadyState}
+          />
+        </div>
       </div>
     </section>
   );

@@ -150,11 +150,11 @@ export function SectionIntro({ onExploreChapters }: SectionIntroProps) {
   }, []);
 
   return (
-    <div className="p9-chapterTrack p9-chapterTrack--intro">
+    <div className="phase9Intro">
       <header
         ref={stageRef}
         id="p9-intro"
-        className="p9-viewport p9-intro p9-chapterStage"
+        className="phase9Intro__stage"
         aria-label="Journeys Across India Introduction"
       >
         {/* Top Header Bar: SJH | ≡ */}
