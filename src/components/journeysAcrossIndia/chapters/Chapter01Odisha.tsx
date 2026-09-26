@@ -51,6 +51,7 @@ export function Chapter01Odisha({
   const labelRefs = useRef<(SVGTextElement | null)[]>([]);
 
   // Photo & CTA refs
+  const photoStageRef = useRef<HTMLDivElement>(null);
   const photoImgRef = useRef<HTMLImageElement>(null);
   const ctaRef = useRef<HTMLAnchorElement>(null);
 
@@ -125,24 +126,28 @@ export function Chapter01Odisha({
         gsap.set(label, { opacity: 0, x: offset });
       });
 
+      // Photo initial state: container curtain inset and image scale/opacity
+      const photoStage = photoStageRef.current;
+      if (photoStage) {
+        gsap.set(photoStage, { clipPath: "inset(0% 0% 100% 0%)" });
+      }
       gsap.set(photoImgRef.current, {
-        y: 16,
-        scale: 1.025,
-        opacity: 0.75,
-        clipPath: "inset(12% 0% 0% 0%)",
+        y: 20,
+        scale: 1.08,
+        opacity: 0.2,
       });
-      gsap.set(ctaRef.current, { opacity: 0, x: -6 });
+      gsap.set(ctaRef.current, { opacity: 0, x: -8 });
 
-      // Triggered timeline (Zero Sticky, Zero Pin, Zero Exit Fade)
-      const tl = gsap.timeline({ paused: true });
+      // 1. Chapter Header & Route Animation (triggers when chapter reaches middle of viewport)
+      const headerTl = gsap.timeline({ paused: true });
 
       // 0.00 - 0.22: 01 number reveals
-      tl.to(numRef.current, { opacity: 1, y: 0, duration: 0.22, ease: "power2.out" }, 0.00);
+      headerTl.to(numRef.current, { opacity: 1, y: 0, duration: 0.22, ease: "power2.out" }, 0.00);
 
       // 0.08 - 0.36: Title mask reveal
       titleLineRefs.current.forEach((line, idx) => {
         if (!line) return;
-        tl.to(
+        headerTl.to(
           line,
           { y: "0%", opacity: 1, duration: 0.32, ease: "power3.out" },
           0.08 + idx * 0.08
@@ -150,10 +155,10 @@ export function Chapter01Odisha({
       });
 
       // 0.22 - 0.44: Support copy enters
-      tl.to(copyRef.current, { opacity: 1, y: 0, duration: 0.24, ease: "power2.out" }, 0.22);
+      headerTl.to(copyRef.current, { opacity: 1, y: 0, duration: 0.24, ease: "power2.out" }, 0.22);
 
       // 0.26 - 0.80: Progressive sacred atlas route drawing
-      tl.to(
+      headerTl.to(
         routePathRef.current,
         {
           strokeDashoffset: 0,
@@ -171,49 +176,72 @@ export function Chapter01Odisha({
         const label = labelRefs.current[idx];
 
         if (node) {
-          tl.to(node, { scale: 1, opacity: 1, duration: 0.16, ease: "back.out(1.8)" }, t);
+          headerTl.to(node, { scale: 1, opacity: 1, duration: 0.16, ease: "back.out(1.8)" }, t);
         }
         if (label) {
-          tl.to(label, { opacity: 1, x: 0, duration: 0.18, ease: "power2.out" }, t + 0.02);
+          headerTl.to(label, { opacity: 1, x: 0, duration: 0.18, ease: "power2.out" }, t + 0.02);
         }
       });
 
-      // 0.30 - 0.85: Photo resolves smoothly
-      tl.to(
+      ScrollTrigger.create({
+        trigger: stage,
+        start: "top 55%",
+        once: true,
+        onEnter: () => headerTl.play(),
+        onEnterBack: () => headerTl.play(),
+      });
+
+      // 2. Photo Stage Dramatic Curtain Reveal (triggers directly when the photo enters view)
+      const photoTl = gsap.timeline({ paused: true });
+
+      if (photoStage) {
+        photoTl.to(
+          photoStage,
+          {
+            clipPath: "inset(0% 0% 0% 0%)",
+            duration: 0.75,
+            ease: "power2.out",
+          },
+          0.00
+        );
+      }
+
+      photoTl.to(
         photoImgRef.current,
         {
           y: 0,
           scale: 1.0,
           opacity: 1,
-          clipPath: "inset(0% 0% 0% 0%)",
-          duration: 0.55,
+          duration: 0.75,
           ease: "power2.out",
         },
-        0.30
+        0.00
       );
 
-      // 0.82 - 1.05: Understated CTA reveals
-      tl.to(
+      photoTl.to(
         ctaRef.current,
         {
           opacity: 1,
           x: 0,
-          duration: 0.24,
+          duration: 0.30,
           ease: "power2.out",
         },
-        0.82
+        0.35
       );
 
-      ScrollTrigger.create({
-        trigger: stage,
-        start: "top 65%",
-        once: true,
-        onEnter: () => tl.play(),
-        onEnterBack: () => tl.play(),
-      });
+      if (photoStage) {
+        ScrollTrigger.create({
+          trigger: photoStage,
+          start: "top 78%",
+          once: true,
+          onEnter: () => photoTl.play(),
+          onEnterBack: () => photoTl.play(),
+        });
+      }
 
-      // Register hook for testing
-      (window as any).__P9_ODISHA_TL__ = tl;
+      // Register hooks for testing
+      (window as any).__P9_ODISHA_TL__ = headerTl;
+      (window as any).__P9_ODISHA_PHOTO_TL__ = photoTl;
     }, stage);
 
     return () => {
@@ -318,7 +346,7 @@ export function Chapter01Odisha({
         </div>
 
         {/* Lower Photo: p9-odisha-pilgrimage.png with soft upward blend */}
-        <div className="p9-chapter__photoStage">
+        <div ref={photoStageRef} className="p9-chapter__photoStage">
           <div className="p9-chapter__photoBlend" aria-hidden="true" />
           <img
             ref={photoImgRef}

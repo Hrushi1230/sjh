@@ -47,6 +47,7 @@ export function Chapter08CustomPlanning({
   const dashRefs = useRef<(HTMLSpanElement | null)[]>([]);
 
   // Photo & CTA refs
+  const photoStageRef = useRef<HTMLDivElement>(null);
   const photoImgRef = useRef<HTMLImageElement>(null);
   const ctaBtnRef = useRef<HTMLButtonElement>(null);
 
@@ -96,7 +97,8 @@ export function Chapter08CustomPlanning({
         dashRefs.current.forEach((el) => {
           if (el) gsap.set(el, { scaleX: 1 });
         });
-        gsap.set(photoImgRef.current, { translateY: 0, scale: 1, opacity: 1 });
+        if (photoStageRef.current) gsap.set(photoStageRef.current, { clipPath: "inset(0% 0% 0% 0%)" });
+        gsap.set(photoImgRef.current, { clipPath: "inset(0% 0% 0% 0%)", translateY: 0, scale: 1, opacity: 1 });
         gsap.set(ctaBtnRef.current, { opacity: 1, y: 0, scale: 1 });
         return;
       }
@@ -115,23 +117,28 @@ export function Chapter08CustomPlanning({
         if (el) gsap.set(el, { scaleX: 0, transformOrigin: "left center" });
       });
 
+      // Photo initial state: container curtain inset and image scale/opacity
+      const photoStage = photoStageRef.current;
+      if (photoStage) {
+        gsap.set(photoStage, { clipPath: "inset(0% 0% 100% 0%)" });
+      }
       gsap.set(photoImgRef.current, {
-        y: 16,
-        scale: 1.025,
-        opacity: 0.80,
+        y: 20,
+        scale: 1.08,
+        opacity: 0.2,
       });
       gsap.set(ctaBtnRef.current, { opacity: 0, y: 8, scale: 0.98 });
 
-      // Triggered timeline (Zero Sticky, Zero Pin, Zero Exit Fade)
-      const tl = gsap.timeline({ paused: true });
+      // 1. Chapter Header & Planning Dimensions Animation (triggers when chapter reaches middle of viewport)
+      const headerTl = gsap.timeline({ paused: true });
 
       // 0.00 - 0.22: 08 number reveals
-      tl.to(numRef.current, { opacity: 1, y: 0, duration: 0.22, ease: "power2.out" }, 0.00);
+      headerTl.to(numRef.current, { opacity: 1, y: 0, duration: 0.22, ease: "power2.out" }, 0.00);
 
       // 0.08 - 0.36: Headline reveals line by line
       headlineLineRefs.current.forEach((line, idx) => {
         if (!line) return;
-        tl.to(
+        headerTl.to(
           line,
           { y: "0%", opacity: 1, duration: 0.32, ease: "power3.out" },
           0.08 + idx * 0.08
@@ -139,7 +146,7 @@ export function Chapter08CustomPlanning({
       });
 
       // 0.20 - 0.42: Subheading enters
-      tl.to(subheadingRef.current, { opacity: 1, y: 0, duration: 0.22, ease: "power2.out" }, 0.20);
+      headerTl.to(subheadingRef.current, { opacity: 1, y: 0, duration: 0.22, ease: "power2.out" }, 0.20);
 
       // 0.26 - 0.74: Four planning lines resolve sequentially
       const dimensionTimings = [0.26, 0.38, 0.50, 0.62];
@@ -149,52 +156,77 @@ export function Chapter08CustomPlanning({
         const dash = dashRefs.current[idx];
 
         if (dim) {
-          tl.to(dim, { opacity: 1, x: 0, duration: 0.18, ease: "power2.out" }, t);
+          headerTl.to(dim, { opacity: 1, x: 0, duration: 0.18, ease: "power2.out" }, t);
         }
         if (dash) {
-          tl.to(dash, { scaleX: 1, duration: 0.16, ease: "power2.out" }, t + 0.02);
+          headerTl.to(dash, { scaleX: 1, duration: 0.16, ease: "power2.out" }, t + 0.02);
         }
       });
 
-      // 0.28 - 0.80: Human image reveals smoothly
-      tl.to(
+      ScrollTrigger.create({
+        trigger: stage,
+        start: "top 55%",
+        once: true,
+        onEnter: () => headerTl.play(),
+        onEnterBack: () => headerTl.play(),
+      });
+
+      // 2. Photo Stage Dramatic Curtain Reveal (triggers directly when the photo enters view)
+      const photoTl = gsap.timeline({ paused: true });
+
+      if (photoStage) {
+        photoTl.to(
+          photoStage,
+          {
+            clipPath: "inset(0% 0% 0% 0%)",
+            duration: 0.75,
+            ease: "power2.out",
+          },
+          0.00
+        );
+      }
+
+      photoTl.to(
         photoImgRef.current,
         {
           y: 0,
           scale: 1.0,
           opacity: 1,
-          duration: 0.52,
-          ease: "power3.out",
+          duration: 0.75,
+          ease: "power2.out",
         },
-        0.28
+        0.00
       );
 
-      // 0.76 - 1.02: Prominent PLAN MY JOURNEY button enters
-      tl.to(
+      photoTl.to(
         ctaBtnRef.current,
         {
           opacity: 1,
           y: 0,
           scale: 1.0,
-          duration: 0.26,
+          duration: 0.30,
           ease: "back.out(1.5)",
         },
-        0.76
+        0.35
       );
 
-      ScrollTrigger.create({
-        trigger: stage,
-        start: "top 65%",
-        once: true,
-        onEnter: () => tl.play(),
-        onEnterBack: () => tl.play(),
-      });
+      if (photoStage) {
+        ScrollTrigger.create({
+          trigger: photoStage,
+          start: "top 78%",
+          once: true,
+          onEnter: () => photoTl.play(),
+          onEnterBack: () => photoTl.play(),
+        });
+      }
 
-      (window as any).__P9_CUSTOM_TL__ = tl;
+      (window as any).__P9_CUSTOM_TL__ = headerTl;
+      (window as any).__P9_CUSTOM_PHOTO_TL__ = photoTl;
     }, stage);
 
     return () => {
       delete (window as any).__P9_CUSTOM_TL__;
+      delete (window as any).__P9_CUSTOM_PHOTO_TL__;
       ctx.revert();
     };
   }, []);
@@ -256,7 +288,7 @@ export function Chapter08CustomPlanning({
         </div>
 
         {/* Lower Photo: p9-custom-planning.png with soft upward blend */}
-        <div className="p9-chapter__photoStage">
+        <div ref={photoStageRef} className="p9-chapter__photoStage">
           <div className="p9-chapter__photoBlend" aria-hidden="true" />
           <img
             ref={photoImgRef}

@@ -49,6 +49,7 @@ export function Chapter05EastIndia({
   const panelRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   // Photo & CTA refs
+  const photoStageRef = useRef<HTMLDivElement>(null);
   const photoImgRef = useRef<HTMLImageElement>(null);
   const ctaRef = useRef<HTMLAnchorElement>(null);
 
@@ -83,6 +84,7 @@ export function Chapter05EastIndia({
         panelRefs.current.forEach((el) => {
           if (el) gsap.set(el, { opacity: 1, x: 0 });
         });
+        if (photoStageRef.current) gsap.set(photoStageRef.current, { clipPath: "inset(0% 0% 0% 0%)" });
         gsap.set(photoImgRef.current, { clipPath: "inset(0% 0% 0% 0%)", opacity: 1 });
         gsap.set(ctaRef.current, { opacity: 1, x: 0 });
         return;
@@ -99,22 +101,26 @@ export function Chapter05EastIndia({
         if (el) gsap.set(el, { opacity: 0, x: 18 });
       });
 
+      // Photo initial state: container curtain inset and image scale/opacity
+      const photoStage = photoStageRef.current;
+      if (photoStage) {
+        gsap.set(photoStage, { clipPath: "inset(0% 0% 100% 0%)" });
+      }
       gsap.set(photoImgRef.current, {
-        y: 16,
-        scale: 1.025,
-        opacity: 0.75,
-        clipPath: "inset(10% 0% 0% 0%)",
+        y: 20,
+        scale: 1.08,
+        opacity: 0.2,
       });
-      gsap.set(ctaRef.current, { opacity: 0, x: -6 });
+      gsap.set(ctaRef.current, { opacity: 0, x: -8 });
 
-      // Triggered timeline (Zero Sticky, Zero Pin, Zero Exit Fade)
-      const tl = gsap.timeline({ paused: true });
+      // 1. Chapter Header & Layers Animation (triggers when chapter reaches middle of viewport)
+      const headerTl = gsap.timeline({ paused: true });
 
       // 0.00 - 0.22: 05 + title reveal
-      tl.to(numRef.current, { opacity: 1, y: 0, duration: 0.22, ease: "power2.out" }, 0.00);
+      headerTl.to(numRef.current, { opacity: 1, y: 0, duration: 0.22, ease: "power2.out" }, 0.00);
       titleLineRefs.current.forEach((line, idx) => {
         if (!line) return;
-        tl.to(
+        headerTl.to(
           line,
           { y: "0%", opacity: 1, duration: 0.32, ease: "power3.out" },
           0.08 + idx * 0.08
@@ -122,7 +128,7 @@ export function Chapter05EastIndia({
       });
 
       // 0.20 - 0.44: Support copy enters
-      tl.to(copyRef.current, { opacity: 1, y: 0, duration: 0.24, ease: "power2.out" }, 0.20);
+      headerTl.to(copyRef.current, { opacity: 1, y: 0, duration: 0.24, ease: "power2.out" }, 0.20);
 
       // 4 Planes resolve with subtle overlap
       const layerTimings = [0.24, 0.36, 0.48, 0.60];
@@ -130,7 +136,7 @@ export function Chapter05EastIndia({
         const t = layerTimings[idx];
         const panel = panelRefs.current[idx];
         if (panel) {
-          tl.to(
+          headerTl.to(
             panel,
             { opacity: 1, x: 0, duration: 0.22, ease: "power2.out" },
             t
@@ -138,45 +144,69 @@ export function Chapter05EastIndia({
         }
       });
 
-      // 0.28 - 0.83: Photo combines into full image
-      tl.to(
+      ScrollTrigger.create({
+        trigger: stage,
+        start: "top 55%",
+        once: true,
+        onEnter: () => headerTl.play(),
+        onEnterBack: () => headerTl.play(),
+      });
+
+      // 2. Photo Stage Dramatic Curtain Reveal (triggers directly when the photo enters view)
+      const photoTl = gsap.timeline({ paused: true });
+
+      if (photoStage) {
+        photoTl.to(
+          photoStage,
+          {
+            clipPath: "inset(0% 0% 0% 0%)",
+            duration: 0.75,
+            ease: "power2.out",
+          },
+          0.00
+        );
+      }
+
+      photoTl.to(
         photoImgRef.current,
         {
           y: 0,
           scale: 1.0,
           opacity: 1.0,
-          clipPath: "inset(0% 0% 0% 0%)",
-          duration: 0.55,
-          ease: "power3.out",
+          duration: 0.75,
+          ease: "power2.out",
         },
-        0.28
+        0.00
       );
 
-      // 0.76 - 1.00: Understated CTA enters
-      tl.to(
+      photoTl.to(
         ctaRef.current,
         {
           opacity: 1,
           x: 0,
-          duration: 0.24,
+          duration: 0.30,
           ease: "power2.out",
         },
-        0.76
+        0.35
       );
 
-      ScrollTrigger.create({
-        trigger: stage,
-        start: "top 65%",
-        once: true,
-        onEnter: () => tl.play(),
-        onEnterBack: () => tl.play(),
-      });
+      if (photoStage) {
+        ScrollTrigger.create({
+          trigger: photoStage,
+          start: "top 78%",
+          once: true,
+          onEnter: () => photoTl.play(),
+          onEnterBack: () => photoTl.play(),
+        });
+      }
 
-      (window as any).__P9_EAST_TL__ = tl;
+      (window as any).__P9_EAST_TL__ = headerTl;
+      (window as any).__P9_EAST_PHOTO_TL__ = photoTl;
     }, stage);
 
     return () => {
       delete (window as any).__P9_EAST_TL__;
+      delete (window as any).__P9_EAST_PHOTO_TL__;
       ctx.revert();
     };
   }, []);
@@ -238,7 +268,7 @@ export function Chapter05EastIndia({
         </div>
 
         {/* Lower Photo: p9-east-india.png with soft upward blend */}
-        <div className="p9-chapter__photoStage">
+        <div ref={photoStageRef} className="p9-chapter__photoStage">
           <div className="p9-chapter__photoBlend" aria-hidden="true" />
           <img
             ref={photoImgRef}
