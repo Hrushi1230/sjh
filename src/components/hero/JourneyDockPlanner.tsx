@@ -78,9 +78,82 @@ export const JourneyDockPlanner = forwardRef<JourneyDockPlannerHandle, JourneyDo
     // After traveller selects/edits destination, planner destination is user-owned.
     const destinationTouchedByUserRef = useRef(false);
 
-    // Keyboard state & lift on mobile
+    // Keyboard state, locked scroll anchoring & lift on mobile (Requirements 5, 7, 9, 11)
     const [isKeyboardActive, setIsKeyboardActive] = useState(false);
     const [keyboardLiftPx, setKeyboardLiftPx] = useState(0);
+    const lockedScrollYRef = useRef<number | null>(null);
+    const isKeyboardActiveRef = useRef(false);
+    isKeyboardActiveRef.current = isKeyboardActive;
+
+    const handleKeyboardChange = useCallback((isOpen: boolean) => {
+      if (isOpen) {
+        if (lockedScrollYRef.current === null) {
+          lockedScrollYRef.current = typeof window !== "undefined" ? window.scrollY : 0;
+        }
+        (window as any).__SJH_HERO_KEYBOARD_ACTIVE__ = true;
+        setIsKeyboardActive(true);
+        onFormTouch?.();
+      } else {
+        setIsKeyboardActive(false);
+        setKeyboardLiftPx(0);
+        const lockedY = lockedScrollYRef.current;
+        lockedScrollYRef.current = null;
+        (window as any).__SJH_HERO_KEYBOARD_ACTIVE__ = false;
+        if (lockedY !== null && typeof window !== "undefined" && Math.abs(window.scrollY - lockedY) > 0.5) {
+          window.scrollTo(0, lockedY);
+        }
+      }
+    }, [onFormTouch]);
+
+    // Requirement 7 & 8: Visual viewport & mobile keyboard lift without ScrollTrigger refresh
+    useEffect(() => {
+      const handleVV = () => {
+        const vv = window.visualViewport;
+        if (!vv) return;
+        const reduction = window.innerHeight - vv.height;
+        if (reduction > 100 && isKeyboardActiveRef.current) {
+          setKeyboardLiftPx(Math.min(reduction, 320));
+        } else if (reduction <= 100 && isKeyboardActiveRef.current) {
+          setKeyboardLiftPx(0);
+          handleKeyboardChange(false);
+        }
+      };
+
+      const vv = window.visualViewport;
+      if (vv) {
+        vv.addEventListener("resize", handleVV);
+        vv.addEventListener("scroll", handleVV);
+      }
+      return () => {
+        if (vv) {
+          vv.removeEventListener("resize", handleVV);
+          vv.removeEventListener("scroll", handleVV);
+        }
+      };
+    }, [handleKeyboardChange]);
+
+    // Requirement 5 & 11: Bounded scroll anchoring during keyboard mode (no body { position: fixed })
+    useEffect(() => {
+      if (!isKeyboardActive) return;
+
+      const handleScrollCorrection = () => {
+        const lockedY = lockedScrollYRef.current;
+        if (lockedY !== null && Math.abs(window.scrollY - lockedY) > 0.5) {
+          window.scrollTo(0, lockedY);
+        }
+      };
+
+      window.addEventListener("scroll", handleScrollCorrection, { passive: true });
+      return () => {
+        window.removeEventListener("scroll", handleScrollCorrection);
+      };
+    }, [isKeyboardActive]);
+
+    useEffect(() => {
+      return () => {
+        (window as any).__SJH_HERO_KEYBOARD_ACTIVE__ = false;
+      };
+    }, []);
 
     // Journey draft data
     const [draft, setDraft] = useState<JourneyDraft>(() => ({
@@ -186,58 +259,6 @@ export const JourneyDockPlanner = forwardRef<JourneyDockPlannerHandle, JourneyDo
       }
     }, [isCardOpen]);
 
-    // Requirement 12: Visual viewport & mobile keyboard lift
-    useEffect(() => {
-      const handleVV = () => {
-        const vv = window.visualViewport;
-        if (!vv) return;
-        const reduction = window.innerHeight - vv.height;
-        if (reduction > 130 && isKeyboardActive) {
-          setKeyboardLiftPx(Math.min(reduction, 320));
-        } else if (reduction <= 130) {
-          setKeyboardLiftPx(0);
-          setIsKeyboardActive(false);
-        }
-      };
-
-      const vv = window.visualViewport;
-      if (vv) {
-        vv.addEventListener("resize", handleVV);
-        vv.addEventListener("scroll", handleVV);
-      }
-      return () => {
-        if (vv) {
-          vv.removeEventListener("resize", handleVV);
-          vv.removeEventListener("scroll", handleVV);
-        }
-      };
-    }, [isKeyboardActive]);
-
-    // Freeze body scroll while mobile keyboard is active in hero
-    useEffect(() => {
-      if (isKeyboardActive && keyboardLiftPx > 0) {
-        const scrollY = window.scrollY;
-        document.body.style.position = "fixed";
-        document.body.style.width = "100%";
-        document.body.style.top = `-${scrollY}px`;
-        document.body.style.overflow = "hidden";
-        return () => {
-          document.body.style.position = "";
-          document.body.style.width = "";
-          document.body.style.top = "";
-          document.body.style.overflow = "";
-          window.scrollTo(0, scrollY);
-        };
-      }
-    }, [isKeyboardActive, keyboardLiftPx]);
-
-    const handleKeyboardChange = useCallback((isOpen: boolean) => {
-      setIsKeyboardActive(isOpen);
-      if (!isOpen) {
-        setKeyboardLiftPx(0);
-      }
-    }, []);
-
     // Manual open action if ever triggered externally
     const openPlanner = useCallback(() => {
       onFormTouch?.();
@@ -274,8 +295,13 @@ export const JourneyDockPlanner = forwardRef<JourneyDockPlannerHandle, JourneyDo
         ref={setShellRef}
         className={`sjhHero__dock ${isVisible ? "is-open" : ""}`}
         data-keyboard-open={isKeyboardActive}
+        onPointerDown={(e) => e.stopPropagation()}
+        onPointerUp={(e) => e.stopPropagation()}
+        onTouchStart={(e) => e.stopPropagation()}
+        onTouchEnd={(e) => e.stopPropagation()}
+        onClick={(e) => e.stopPropagation()}
         style={{
-          transform: isKeyboardActive && keyboardLiftPx > 0 ? `translateY(-${keyboardLiftPx}px)` : undefined,
+          transform: isKeyboardActive && keyboardLiftPx > 0 ? `translate3d(0, -${keyboardLiftPx}px, 0)` : undefined,
           transition: isKeyboardActive ? "transform 0.25s cubic-bezier(0.16, 1, 0.3, 1)" : undefined,
         }}
       >

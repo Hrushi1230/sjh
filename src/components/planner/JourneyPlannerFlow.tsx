@@ -121,15 +121,19 @@ export const JourneyPlannerFlow: React.FC<JourneyPlannerFlowProps> = ({
     }
   };
 
-  // Conservative input focus scroll into view (Requirement 17 & 18)
-  const handleInputFocus = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const target = e.target;
-    setTimeout(() => {
-      target.scrollIntoView?.({
-        block: "nearest",
-        behavior: "smooth",
-      });
-    }, 280);
+  // Prevent focus auto-scroll on mobile / touch interaction (Requirement 3 & 4)
+  const handlePointerDownInput = (e: React.PointerEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    e.stopPropagation();
+    onFormTouch?.();
+    onKeyboardStateChange?.(true);
+    e.currentTarget.focus({ preventScroll: true });
+  };
+
+  const handleTouchStartInput = (e: React.TouchEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    e.stopPropagation();
+    onFormTouch?.();
+    onKeyboardStateChange?.(true);
+    e.currentTarget.focus({ preventScroll: true });
   };
 
   // Step 1: Journey (From + Destination)
@@ -221,7 +225,14 @@ export const JourneyPlannerFlow: React.FC<JourneyPlannerFlowProps> = ({
   };
 
   return (
-    <div className={`sjhFlow ${variant === "hero" ? "sjhFlow--hero" : ""}`}>
+    <div
+      className={`sjhFlow ${variant === "hero" ? "sjhFlow--hero" : ""}`}
+      onPointerDown={(e) => e.stopPropagation()}
+      onPointerUp={(e) => e.stopPropagation()}
+      onTouchStart={(e) => e.stopPropagation()}
+      onTouchEnd={(e) => e.stopPropagation()}
+      onClick={(e) => e.stopPropagation()}
+    >
       {/* Step Header & Progress (1 OF 7 through 7 OF 7) */}
       {!isHandoffDone && (
         variant === "hero" ? (
@@ -310,14 +321,17 @@ export const JourneyPlannerFlow: React.FC<JourneyPlannerFlowProps> = ({
                     onFormTouch?.();
                     setField("from", e.target.value);
                   }}
+                  onPointerDown={handlePointerDownInput}
+                  onTouchStart={handleTouchStartInput}
                   placeholder="e.g. Bhubaneswar"
                   autoComplete="address-level2"
                   onFocus={(e) => {
-                    handleInputFocus(e);
+                    e.stopPropagation();
                     onFormTouch?.();
                     onKeyboardStateChange?.(true);
                   }}
-                  onBlur={() => {
+                  onBlur={(e) => {
+                    e.stopPropagation();
                     onKeyboardStateChange?.(false);
                   }}
                   onKeyDown={(e) => {
@@ -347,7 +361,12 @@ export const JourneyPlannerFlow: React.FC<JourneyPlannerFlowProps> = ({
                   <button
                     type="button"
                     className="sjhHeroCard__destSelectBtn"
-                    onClick={() => {
+                    onPointerDown={(e) => {
+                      e.stopPropagation();
+                      onFormTouch?.();
+                    }}
+                    onClick={(e) => {
+                      e.stopPropagation();
                       onFormTouch?.();
                       setIsDestDropdownOpen((prev) => !prev);
                     }}
@@ -371,7 +390,12 @@ export const JourneyPlannerFlow: React.FC<JourneyPlannerFlowProps> = ({
                           role="option"
                           aria-selected={draft.destination === dest}
                           className={`sjhHeroCard__destDropdownItem ${draft.destination === dest ? "is-active" : ""}`}
-                          onClick={() => {
+                          onPointerDown={(e) => {
+                            e.stopPropagation();
+                            onFormTouch?.();
+                          }}
+                          onClick={(e) => {
+                            e.stopPropagation();
                             onFormTouch?.();
                             onDestinationTouch?.();
                             if (dest === "Customized Journey") {
@@ -433,13 +457,16 @@ export const JourneyPlannerFlow: React.FC<JourneyPlannerFlowProps> = ({
                       onDestinationTouch?.();
                       setField("destination", e.target.value);
                     }}
+                    onPointerDown={handlePointerDownInput}
+                    onTouchStart={handleTouchStartInput}
                     placeholder="Specify destination or region"
                     onFocus={(e) => {
-                      handleInputFocus(e);
+                      e.stopPropagation();
                       onFormTouch?.();
                       onKeyboardStateChange?.(true);
                     }}
-                    onBlur={() => {
+                    onBlur={(e) => {
+                      e.stopPropagation();
                       onKeyboardStateChange?.(false);
                     }}
                     onKeyDown={(e) => {
@@ -465,7 +492,11 @@ export const JourneyPlannerFlow: React.FC<JourneyPlannerFlowProps> = ({
             <button
               type="submit"
               className="sjhHero__plannerCta"
-              onClick={() => onFormTouch?.()}
+              onPointerDown={(e) => e.stopPropagation()}
+              onClick={(e) => {
+                e.stopPropagation();
+                onFormTouch?.();
+              }}
             >
               <span>CONTINUE</span>
               <span className="sjhHero__plannerCtaArrow" aria-hidden="true">→</span>
@@ -516,7 +547,18 @@ export const JourneyPlannerFlow: React.FC<JourneyPlannerFlowProps> = ({
                       className="sjhHero__dateInput"
                       min={todayStr}
                       value={draft.date || ""}
+                      onPointerDown={handlePointerDownInput}
+                      onTouchStart={handleTouchStartInput}
                       onChange={(e) => setField("date", e.target.value)}
+                      onFocus={(e) => {
+                        e.stopPropagation();
+                        onFormTouch?.();
+                        onKeyboardStateChange?.(true);
+                      }}
+                      onBlur={(e) => {
+                        e.stopPropagation();
+                        onKeyboardStateChange?.(false);
+                      }}
                     />
                     {errors.date && (
                       <span className="sjhHero__plannerError" role="alert">
@@ -535,7 +577,18 @@ export const JourneyPlannerFlow: React.FC<JourneyPlannerFlowProps> = ({
                       className="sjhHero__dateInput"
                       min={draft.date || todayStr}
                       value={draft.returnDate || ""}
+                      onPointerDown={handlePointerDownInput}
+                      onTouchStart={handleTouchStartInput}
                       onChange={(e) => setField("returnDate", e.target.value)}
+                      onFocus={(e) => {
+                        e.stopPropagation();
+                        onFormTouch?.();
+                        onKeyboardStateChange?.(true);
+                      }}
+                      onBlur={(e) => {
+                        e.stopPropagation();
+                        onKeyboardStateChange?.(false);
+                      }}
                     />
                     {errors.returnDate && (
                       <span className="sjhHero__plannerError" role="alert">
@@ -762,9 +815,19 @@ export const JourneyPlannerFlow: React.FC<JourneyPlannerFlowProps> = ({
                   type="text"
                   value={draft.name}
                   onChange={(e) => setField("name", e.target.value)}
+                  onPointerDown={handlePointerDownInput}
+                  onTouchStart={handleTouchStartInput}
                   placeholder="Enter your full name"
                   autoComplete="name"
-                  onFocus={handleInputFocus}
+                  onFocus={(e) => {
+                    e.stopPropagation();
+                    onFormTouch?.();
+                    onKeyboardStateChange?.(true);
+                  }}
+                  onBlur={(e) => {
+                    e.stopPropagation();
+                    onKeyboardStateChange?.(false);
+                  }}
                 />
               </div>
               {errors.name && (
@@ -787,9 +850,19 @@ export const JourneyPlannerFlow: React.FC<JourneyPlannerFlowProps> = ({
                   inputMode="tel"
                   value={draft.phone}
                   onChange={(e) => setField("phone", e.target.value)}
+                  onPointerDown={handlePointerDownInput}
+                  onTouchStart={handleTouchStartInput}
                   placeholder="+91 XXXXX XXXXX"
                   autoComplete="tel"
-                  onFocus={handleInputFocus}
+                  onFocus={(e) => {
+                    e.stopPropagation();
+                    onFormTouch?.();
+                    onKeyboardStateChange?.(true);
+                  }}
+                  onBlur={(e) => {
+                    e.stopPropagation();
+                    onKeyboardStateChange?.(false);
+                  }}
                 />
               </div>
               {errors.phone && (
@@ -812,9 +885,19 @@ export const JourneyPlannerFlow: React.FC<JourneyPlannerFlowProps> = ({
                   inputMode="email"
                   value={draft.email || ""}
                   onChange={(e) => setField("email", e.target.value)}
+                  onPointerDown={handlePointerDownInput}
+                  onTouchStart={handleTouchStartInput}
                   placeholder="example@email.com"
                   autoComplete="email"
-                  onFocus={handleInputFocus}
+                  onFocus={(e) => {
+                    e.stopPropagation();
+                    onFormTouch?.();
+                    onKeyboardStateChange?.(true);
+                  }}
+                  onBlur={(e) => {
+                    e.stopPropagation();
+                    onKeyboardStateChange?.(false);
+                  }}
                 />
               </div>
               {errors.email && (
@@ -850,8 +933,18 @@ export const JourneyPlannerFlow: React.FC<JourneyPlannerFlowProps> = ({
                 rows={4}
                 value={draft.notes || ""}
                 onChange={(e) => setField("notes", e.target.value)}
+                onPointerDown={handlePointerDownInput}
+                onTouchStart={handleTouchStartInput}
                 placeholder="Hotel preference, senior citizens, pickup requirements, special pilgrimage needs, coach preference, etc."
-                onFocus={handleInputFocus}
+                onFocus={(e) => {
+                  e.stopPropagation();
+                  onFormTouch?.();
+                  onKeyboardStateChange?.(true);
+                }}
+                onBlur={(e) => {
+                  e.stopPropagation();
+                  onKeyboardStateChange?.(false);
+                }}
               />
             </div>
           </div>

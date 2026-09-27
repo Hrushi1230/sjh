@@ -4,6 +4,12 @@ import { getScrub } from "../../constants/motionTokens";
 
 gsap.registerPlugin(ScrollTrigger);
 
+// Configure ScrollTrigger to ignore mobile viewport resize (Requirement 6 & 7)
+ScrollTrigger.config({
+  ignoreMobileResize: true,
+  autoRefreshEvents: "visibilitychange,DOMContentLoaded,load",
+});
+
 export interface ScrollTransitionRefs {
   track: HTMLElement;
   pinTarget: HTMLElement;
@@ -243,6 +249,17 @@ export function createHeroScrollTransition(
     scrub: getScrub("heroToMagazine"),
     animation: tl,
     onUpdate: (self) => {
+      // Prevent Hero ScrollTrigger progression caused solely by focus / mobile keyboard viewport resize (Requirements 2, 6, 7)
+      if (typeof window !== "undefined" && (window as any).__SJH_HERO_KEYBOARD_ACTIVE__) {
+        const scrubTween = (st as any)?.getTween?.();
+        if (scrubTween) {
+          scrubTween.kill();
+        }
+        tl.progress(0);
+        callbacks?.onProgress?.(0);
+        return;
+      }
+
       const p = self.progress;
       callbacks?.onProgress?.(p);
 
