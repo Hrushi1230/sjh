@@ -53,49 +53,50 @@ export function createPlannerOpenTimeline(
   );
 
   // 3. Shell expands upward physically (0.04 - 0.52s)
-  // Height increases, radius drops from pill (999px) to tablet corner (28px), background density deepens
+  // Height increases, radius drops from pill (999px) to tablet corner (24px), background stays transparent frosted glass
   tl.to(
     refs.shell,
     {
       height: expandedHeight,
-      borderRadius: "28px",
-      backgroundColor: "rgba(17, 16, 14, 0.97)",
-      borderColor: "rgba(185, 148, 85, 0.65)",
-      boxShadow: "0 24px 70px rgba(0, 0, 0, 0.75)",
-      duration: 0.48,
+      maxWidth: 440,
+      borderRadius: "20px",
+      backgroundColor: "transparent",
+      borderColor: "transparent",
+      boxShadow: "none",
+      duration: 0.44,
       ease: "power3.inOut",
     },
     0.04
   );
 
-  // 4. Background stage world response: softens, deepens, calm subtle zoom (0.04 - 0.50s)
+  // 4. Background stage world response: stays luminous and clear without heavy dimming (0.04 - 0.50s)
   tl.to(
     refs.backgroundImg,
     {
-      scale: 1.035,
-      filter: "brightness(0.60) saturate(0.92) blur(4.5px)",
+      scale: 1.025,
+      filter: "brightness(0.92) saturate(1.0) blur(0px)",
       duration: 0.46,
       ease: "power3.inOut",
     },
     0.04
   );
 
-  // 5. Veil emerges behind planner (0.04 - 0.44s)
+  // 5. Veil emerges very subtly behind planner so temple photography is visible (0.04 - 0.44s)
   tl.to(
     refs.veil,
     {
-      opacity: 1,
+      opacity: 0.15,
       duration: 0.40,
       ease: "power2.out",
     },
     0.04
   );
 
-  // 6. Non-planner hero UI subdues (header & compass)
+  // 6. Non-planner hero UI subdues gently (header & compass)
   tl.to(
     refs.heroHeader,
     {
-      opacity: 0.60,
+      opacity: 0.90,
       duration: 0.32,
       ease: "power2.out",
     },
@@ -104,7 +105,7 @@ export function createPlannerOpenTimeline(
   tl.to(
     refs.compassNav,
     {
-      opacity: 0.35,
+      opacity: 0.85,
       duration: 0.32,
       ease: "power2.out",
     },
@@ -214,6 +215,7 @@ export function createPlannerCloseTimeline(
     refs.shell,
     {
       height: collapsedHeight,
+      maxWidth: 362,
       borderRadius: "999px",
       backgroundColor: "rgba(17, 16, 14, 0.84)",
       borderColor: "rgba(185, 148, 85, 0.5)",
@@ -292,17 +294,18 @@ export function setPlannerOpenReducedMotion(
   gsap.set(refs.dockCollapsed, { opacity: 0, pointerEvents: "none" });
   gsap.set(refs.shell, {
     height: expandedHeight,
-    borderRadius: "28px",
-    backgroundColor: "rgba(17, 16, 14, 0.97)",
-    borderColor: "rgba(185, 148, 85, 0.65)",
-    boxShadow: "0 24px 70px rgba(0, 0, 0, 0.75)",
+    maxWidth: 440,
+    borderRadius: "20px",
+    backgroundColor: "transparent",
+    borderColor: "transparent",
+    boxShadow: "none",
   });
   gsap.set(refs.backgroundImg, {
-    filter: "brightness(0.60) blur(4px)",
+    filter: "brightness(0.92) blur(0px)",
   });
-  gsap.set(refs.veil, { opacity: 1 });
-  gsap.set(refs.heroHeader, { opacity: 0.60 });
-  gsap.set(refs.compassNav, { opacity: 0.35 });
+  gsap.set(refs.veil, { opacity: 0.15 });
+  gsap.set(refs.heroHeader, { opacity: 0.90 });
+  gsap.set(refs.compassNav, { opacity: 0.85 });
   gsap.set(refs.dockExpanded, {
     autoAlpha: 1,
     visibility: "visible",
@@ -325,6 +328,7 @@ export function setPlannerClosedReducedMotion(
   });
   gsap.set(refs.shell, {
     height: collapsedHeight,
+    maxWidth: 362,
     borderRadius: "999px",
     backgroundColor: "rgba(17, 16, 14, 0.84)",
     borderColor: "rgba(185, 148, 85, 0.5)",

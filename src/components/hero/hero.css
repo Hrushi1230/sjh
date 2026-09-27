@@ -438,34 +438,35 @@
 /* Hero Typography */
 .sjhHero__copy {
   position: absolute;
-  left: clamp(24px, 7.2vw, 34px);
+  left: clamp(20px, 6vw, 34px);
   right: 20px;
-  top: 21%;
-  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.38);
+  top: clamp(75px, 10.5vh, 96px);
+  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.45);
+  z-index: 5;
 }
 
 .sjhHero__location {
   display: flex;
   align-items: center;
-  gap: 14px;
-  font: 600 clamp(10px, 2.8vw, 12px)/1.2 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+  gap: 12px;
+  font: 600 clamp(9.5px, 2.5vw, 11px)/1.2 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
   letter-spacing: 0.28em;
-  color: rgba(244, 239, 230, 0.9);
+  color: rgba(244, 239, 230, 0.92);
 }
 
 .sjhHero__locationLine {
   display: inline-block;
-  width: 52px;
+  width: 42px;
   height: 1px;
   background: var(--gold-hi);
   opacity: 0.72;
 }
 
 .sjhHero__title {
-  margin-top: 38px;
+  margin-top: 10px;
   font-family: "Cormorant Garamond", Georgia, serif;
-  font-size: clamp(50px, 14.3vw, 60px);
-  line-height: 0.90;
+  font-size: clamp(36px, 9.8vw, 48px);
+  line-height: 0.92;
   font-weight: 400;
   letter-spacing: -0.025em;
   color: var(--ivory);
@@ -484,21 +485,21 @@
 }
 
 .sjhHero__sub {
-  margin-top: 22px;
-  font: 500 clamp(13px, 3.7vw, 16px)/1.75 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
-  letter-spacing: 0.31em;
+  margin-top: 10px;
+  font: 500 clamp(11.5px, 3.2vw, 13.5px)/1.45 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+  letter-spacing: 0.24em;
   color: rgba(244, 239, 230, 0.88);
 }
 
 .sjhHero__rule {
-  width: 46px;
+  width: 36px;
   height: 2px;
-  margin: 18px 0 15px;
+  margin: 10px 0 8px;
   background: var(--gold-hi);
 }
 
 .sjhHero__support {
-  font: 400 clamp(15px, 4.1vw, 18px)/1.25 "Cormorant Garamond", Georgia, serif;
+  font: 400 clamp(13px, 3.5vw, 15px)/1.25 "Cormorant Garamond", Georgia, serif;
   color: rgba(244, 239, 230, 0.82);
 }
 
@@ -511,9 +512,9 @@
   max-width: 362px;
   margin-left: auto;
   margin-right: auto;
-  bottom: calc(max(18px, env(safe-area-inset-bottom)) + 52px);
-  height: 78px;
-  min-height: 74px;
+  bottom: calc(max(10px, env(safe-area-inset-bottom)) + 6px);
+  height: 74px;
+  min-height: 70px;
   padding: 0;
   border: 1px solid rgba(185, 148, 85, 0.5);
   border-radius: 999px;
@@ -620,19 +621,675 @@
   pointer-events: auto;
 }
 
-/* Phase 3: Expanded Planner Shell View */
+/* Phase 3: Expanded Planner Shell View: Luxury Transparent Travel Enquiry Card */
+.sjhHero__dock.is-open {
+  max-width: 440px;
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  overflow: visible !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  bottom: calc(max(10px, env(safe-area-inset-bottom)) + 6px);
+}
+
 .sjhHero__dockExpanded {
   position: absolute;
   inset: 0;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  padding: 18px 18px 16px;
+  justify-content: flex-end;
+  padding: 0;
   box-sizing: border-box;
   opacity: 0;
   pointer-events: none;
   visibility: hidden;
   z-index: 2;
+  overflow: visible;
+}
+
+.sjhHero__dock.is-open .sjhHero__dockExpanded {
+  opacity: 1;
+  pointer-events: auto;
+  visibility: visible;
+}
+
+/* ==================================================
+   TRANSPARENT HERO ENQUIRY BOOKING CARD
+   ================================================== */
+
+.sjhEnquiryCardWrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+/* Top Navigation Tabs (Explore Journeys / Plan My Trip) */
+.sjhEnquiry__topTabs {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding-left: 2px;
+  margin-bottom: 2px;
+}
+
+.sjhEnquiry__tabBtn {
+  font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  padding: 6px 15px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+  white-space: nowrap;
+}
+
+/* Explore Journeys (Solid Blue) */
+.sjhEnquiry__tabBtn--solid,
+.sjhEnquiry__tabBtn--active {
+  background: #155dfc;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 4px 14px rgba(21, 93, 252, 0.38);
+}
+
+.sjhEnquiry__tabBtn--solid:hover,
+.sjhEnquiry__tabBtn--active:hover {
+  background: #1d4ed8;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(21, 93, 252, 0.50);
+}
+
+.sjhEnquiry__tabBtn--solid:active,
+.sjhEnquiry__tabBtn--active:active {
+  transform: scale(0.97);
+}
+
+/* Plan My Trip (Frosted Glass Tab) */
+.sjhEnquiry__tabBtn--ghost,
+.sjhEnquiry__tabBtn--ghostActive {
+  background: rgba(255, 255, 255, 0.14);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.40);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.sjhEnquiry__tabBtn--ghost:hover,
+.sjhEnquiry__tabBtn--ghostActive:hover {
+  background: rgba(255, 255, 255, 0.24);
+  border-color: rgba(255, 255, 255, 0.65);
+  transform: translateY(-1px);
+}
+
+/* Main Transparent Enquiry Card */
+.sjhEnquiryCard {
+  width: 100%;
+  background: rgba(17, 16, 14, 0.76);
+  backdrop-filter: blur(22px) saturate(180%);
+  -webkit-backdrop-filter: blur(22px) saturate(180%);
+  border: 1px solid rgba(185, 148, 85, 0.42);
+  border-radius: 20px;
+  box-shadow: 0 22px 55px rgba(0, 0, 0, 0.60), inset 0 1px 0 rgba(235, 198, 120, 0.25);
+  padding: 13px 16px 13px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+/* Header */
+.sjhEnquiry__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2px;
+}
+
+.sjhEnquiry__titleWrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sjhEnquiry__backBtn {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.10);
+  border: 1px solid rgba(244, 239, 230, 0.22);
+  border-radius: 50%;
+  color: rgba(244, 239, 230, 0.85);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+}
+
+.sjhEnquiry__backBtn:hover {
+  background: rgba(255, 255, 255, 0.22);
+  color: #F4EFE6;
+  border-color: #EBC678;
+  transform: translateX(-1px);
+}
+
+.sjhEnquiry__sparkleIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 0 6px rgba(235, 198, 120, 0.65));
+}
+
+.sjhEnquiry__title {
+  margin: 0;
+  font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14.5px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: #F4EFE6;
+}
+
+.sjhEnquiry__headerActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 3-Step Storyboard Indicator */
+.sjhEnquiry__stepIndicator {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.sjhEnquiry__stepDot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(244, 239, 230, 0.25);
+  transition: all 0.25s ease;
+}
+
+.sjhEnquiry__stepDot.is-active {
+  width: 14px;
+  border-radius: 999px;
+  background: #EBC678;
+  box-shadow: 0 0 8px rgba(235, 198, 120, 0.65);
+}
+
+.sjhEnquiry__minimizeBtn {
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.10);
+  border: 1px solid rgba(244, 239, 230, 0.22);
+  border-radius: 50%;
+  color: rgba(244, 239, 230, 0.80);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sjhEnquiry__minimizeBtn:hover {
+  background: rgba(255, 255, 255, 0.20);
+  color: #F4EFE6;
+  border-color: #EBC678;
+  transform: scale(1.08);
+}
+
+/* Animated Storyboard Step Slide */
+.sjhEnquiry__stepContent {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sjhEnquiry__stepContent--next {
+  animation: sjhStepInRight 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.sjhEnquiry__stepContent--back {
+  animation: sjhStepInLeft 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes sjhStepInRight {
+  from {
+    opacity: 0;
+    transform: translateX(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes sjhStepInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Form */
+.sjhEnquiry__form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* 2x2 Grid */
+.sjhEnquiry__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 10px;
+}
+
+.sjhEnquiry__field {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.sjhEnquiry__label {
+  font-family: 'Manrope', sans-serif;
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: rgba(244, 239, 230, 0.78);
+}
+
+.sjhEnquiry__inputWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(244, 239, 230, 0.24);
+  border-radius: 10px;
+  height: 38px;
+  padding: 0 10px;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.sjhEnquiry__inputWrap:focus-within {
+  background: rgba(255, 255, 255, 0.13);
+  border-color: #EBC678;
+  box-shadow: 0 0 12px rgba(235, 198, 120, 0.32);
+}
+
+.sjhEnquiry__input {
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: #F4EFE6;
+  padding: 0 18px 0 0;
+  margin: 0;
+}
+
+.sjhEnquiry__input::placeholder {
+  color: rgba(244, 239, 230, 0.48);
+}
+
+.sjhEnquiry__dateInput {
+  color-scheme: dark;
+}
+
+.sjhEnquiry__dateInput::-webkit-calendar-picker-indicator {
+  opacity: 0;
+  cursor: pointer;
+  position: absolute;
+  right: 4px;
+  width: 22px;
+  height: 22px;
+}
+
+.sjhEnquiry__selectWrap {
+  padding-right: 20px;
+  cursor: pointer;
+}
+
+.sjhEnquiry__select {
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  background: transparent;
+}
+
+.sjhEnquiry__select option {
+  background: #1a1814;
+  color: #F4EFE6;
+  padding: 8px;
+}
+
+.sjhEnquiry__icon {
+  position: absolute;
+  right: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #3b82f6;
+  pointer-events: none;
+}
+
+.sjhEnquiry__chevronIcon {
+  color: #3b82f6;
+}
+
+/* Submit Button */
+.sjhEnquiry__submitBtn {
+  width: 100%;
+  height: 40px;
+  border-radius: 10px;
+  background: #155dfc;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  color: #ffffff;
+  font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 13.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(21, 93, 252, 0.42);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+}
+
+.sjhEnquiry__submitBtn:hover {
+  background: #1d4ed8;
+  box-shadow: 0 8px 24px rgba(21, 93, 252, 0.58);
+  transform: translateY(-1px);
+}
+
+.sjhEnquiry__submitBtn:active {
+  transform: scale(0.985);
+}
+
+.sjhEnquiry__submitArrow {
+  display: inline-flex;
+  transition: transform 0.2s ease;
+}
+
+.sjhEnquiry__submitBtn:hover .sjhEnquiry__submitArrow {
+  transform: translateX(3px);
+}
+
+.sjhEnquiry__submitBtn--flex {
+  flex: 1;
+}
+
+/* Stepper Controls in Step 2 */
+.sjhEnquiry__stepperWrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+  padding: 0 4px;
+}
+
+.sjhEnquiry__stepperBtn {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  border: 1px solid rgba(244, 239, 230, 0.25);
+  background: rgba(255, 255, 255, 0.08);
+  color: #F4EFE6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.sjhEnquiry__stepperBtn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.22);
+  border-color: #EBC678;
+}
+
+.sjhEnquiry__stepperBtn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.sjhEnquiry__stepperVal {
+  font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #F4EFE6;
+  white-space: nowrap;
+}
+
+/* Step 2 & 3 Button Groups */
+.sjhEnquiry__btnGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sjhEnquiry__backStepBtn {
+  height: 40px;
+  padding: 0 14px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.10);
+  border: 1px solid rgba(244, 239, 230, 0.24);
+  color: #F4EFE6;
+  font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 12.5px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.sjhEnquiry__backStepBtn:hover {
+  background: rgba(255, 255, 255, 0.20);
+  border-color: #EBC678;
+  transform: translateX(-1px);
+}
+
+/* Step 3: Review Summary Box */
+.sjhEnquiry__summaryBox {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(235, 198, 120, 0.28);
+  border-radius: 12px;
+  padding: 10px 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sjhEnquiry__summaryRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 11.5px;
+  line-height: 1.35;
+  color: rgba(244, 239, 230, 0.88);
+}
+
+.sjhEnquiry__summaryLabel {
+  color: rgba(244, 239, 230, 0.60);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+.sjhEnquiry__summaryVal {
+  font-weight: 600;
+  color: #F4EFE6;
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 60%;
+}
+
+/* WhatsApp CTA Button */
+.sjhEnquiry__submitBtn--whatsapp {
+  background: linear-gradient(135deg, #25D366 0%, #128C7E 100%) !important;
+  border-color: rgba(255, 255, 255, 0.35) !important;
+  box-shadow: 0 6px 20px rgba(37, 211, 102, 0.45) !important;
+  color: #ffffff !important;
+}
+
+.sjhEnquiry__submitBtn--whatsapp:hover {
+  background: linear-gradient(135deg, #2ae06c 0%, #159b8b 100%) !important;
+  box-shadow: 0 8px 25px rgba(37, 211, 102, 0.58) !important;
+}
+
+/* Quick Contact Bar */
+.sjhEnquiry__contactBar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-top: 0;
+}
+
+.sjhEnquiry__contactBtn {
+  flex: 1;
+  height: 36px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s ease;
+}
+
+.sjhEnquiry__contactBtn--phone {
+  background: #155dfc;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 0 4px 14px rgba(21, 93, 252, 0.38);
+}
+
+.sjhEnquiry__contactBtn--phone:hover {
+  background: #1d4ed8;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(21, 93, 252, 0.48);
+}
+
+.sjhEnquiry__contactBtn--whatsapp {
+  background: rgba(255, 255, 255, 0.09);
+  color: #F4EFE6;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.sjhEnquiry__contactBtn--whatsapp:hover {
+  background: rgba(37, 211, 102, 0.20);
+  border-color: #25D366;
+  color: #25D366;
+  transform: translateY(-1px);
+}
+
+.sjhEnquiry__contactIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Responsive adjustments for smaller viewports */
+@media (max-width: 480px) {
+  .sjhHero__dock.is-open {
+    left: 12px;
+    right: 12px;
+    max-width: none;
+    bottom: calc(max(8px, env(safe-area-inset-bottom)) + 4px);
+  }
+  .sjhEnquiryCard {
+    padding: 12px 14px 12px;
+    gap: 8px;
+    border-radius: 18px;
+  }
+  .sjhEnquiry__grid {
+    gap: 7px 8px;
+  }
+  .sjhEnquiry__inputWrap {
+    height: 36px;
+    padding: 0 9px;
+  }
+  .sjhEnquiry__submitBtn {
+    height: 38px;
+  }
+  .sjhEnquiry__contactBtn {
+    height: 34px;
+  }
+}
+
+/* Responsive adjustments for shorter viewports (e.g. 667px - 740px heights) */
+@media (max-height: 740px) {
+  .sjhHero__copy {
+    top: 60px;
+  }
+  .sjhHero__title {
+    font-size: clamp(28px, 8.5vw, 36px);
+    margin-top: 5px;
+  }
+  .sjhHero__sub {
+    margin-top: 5px;
+    font-size: 11px;
+  }
+  .sjhHero__rule {
+    margin: 5px 0 5px;
+  }
+  .sjhHero__support {
+    font-size: 12.5px;
+  }
+  .sjhHero__dock.is-open {
+    bottom: calc(max(6px, env(safe-area-inset-bottom)) + 2px);
+  }
+  .sjhEnquiryCard {
+    padding: 10px 12px 9px;
+    gap: 6px;
+  }
+  .sjhEnquiry__grid {
+    gap: 6px 8px;
+  }
+  .sjhEnquiry__inputWrap {
+    height: 33px;
+  }
+  .sjhEnquiry__submitBtn {
+    height: 35px;
+  }
+  .sjhEnquiry__contactBtn {
+    height: 32px;
+  }
 }
 
 /* Header */
@@ -1032,16 +1689,9 @@
   margin-top: 3px;
 }
 
-/* Spatial Cardinal Compass (Sections 29, 30, 31, 32 - Replaces sequential pagination) */
+/* Spatial Cardinal Compass (Removed per user request: "isko remove karke") */
 .sjhHero__compassNav {
-  position: absolute;
-  left: 24px;
-  right: 24px;
-  bottom: max(12px, env(safe-area-inset-bottom));
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  z-index: 10;
+  display: none !important;
 }
 
 .sjhHero__compassRing {

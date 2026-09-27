@@ -12,7 +12,7 @@ import {
   PlannerMotionRefs,
 } from "./plannerMotion";
 import { heroCopy } from "./heroData";
-import { JourneyPlannerFlow } from "../planner/JourneyPlannerFlow";
+import { TransparentEnquiryCard } from "./TransparentEnquiryCard";
 
 export interface JourneyDockPlannerHandle {
   open: () => void;
@@ -83,8 +83,12 @@ export const JourneyDockPlanner = forwardRef<JourneyDockPlannerHandle, JourneyDo
     // Track user edits
     const isDirtyRef = useRef(false);
 
-    // Journey draft data
-    const [draft, setDraft] = useState<JourneyDraft>(() => createDefaultDraft(activeDestination));
+    // Journey draft data: destination is not auto-filled so user can choose or leave optional
+    const [draft, setDraft] = useState<JourneyDraft>(() => ({
+      ...createDefaultDraft(activeDestination),
+      from: "",
+      destination: "",
+    }));
     const draftRef = useRef<JourneyDraft>(draft);
     draftRef.current = draft;
 
@@ -97,44 +101,13 @@ export const JourneyDockPlanner = forwardRef<JourneyDockPlannerHandle, JourneyDo
       [onOpenStateChange]
     );
 
-    // Synchronize destination with hero when untouched
-    useEffect(() => {
-      if (!isDirtyRef.current) {
-        setDraft((prev) => ({
-          ...prev,
-          destination: activeDestination,
-        }));
-      }
-    }, [activeDestination]);
-
-    // Body scroll locking
-    const unlockBodyScroll = useCallback(() => {
-      if (typeof document !== "undefined") {
-        document.documentElement.classList.remove("sjh-scroll-locked");
-        document.body.classList.remove("sjh-scroll-locked");
-      }
-    }, []);
-
-    useEffect(() => {
-      const isLocked = plannerState === "open" || plannerState === "opening";
-      if (typeof document !== "undefined") {
-        if (isLocked) {
-          document.documentElement.classList.add("sjh-scroll-locked");
-          document.body.classList.add("sjh-scroll-locked");
-        } else {
-          unlockBodyScroll();
-        }
-      }
-      return () => {
-        unlockBodyScroll();
-      };
-    }, [plannerState, unlockBodyScroll]);
-
-    // Responsive height target
+    // Responsive height target for Transparent Enquiry Card
     const calculateExpandedHeight = useCallback(() => {
       const vh = window.innerHeight || 844;
-      const target = Math.round(vh * 0.74);
-      return Math.min(Math.max(480, target), 620);
+      if (vh <= 700) {
+        return Math.min(Math.max(285, Math.round(vh * 0.42)), 315);
+      }
+      return Math.min(Math.max(320, Math.round(vh * 0.40)), 355);
     }, []);
 
     // Motion refs for GSAP
@@ -198,7 +171,7 @@ export const JourneyDockPlanner = forwardRef<JourneyDockPlannerHandle, JourneyDo
       activeTimelineRef.current = tl;
     }, [isIntroComplete, isPortalActive, updateState, getMotionRefs, calculateExpandedHeight]);
 
-    // Close Reverse Morph Action
+    // Close Reverse Morph Action (minimizes card back to "Book Now" pill)
     const closePlanner = useCallback(() => {
       if (
         plannerStateRef.current === "closed" ||
@@ -209,7 +182,6 @@ export const JourneyDockPlanner = forwardRef<JourneyDockPlannerHandle, JourneyDo
 
       activeTimelineRef.current?.kill();
       updateState("closing");
-      unlockBodyScroll();
 
       const refs = getMotionRefs();
       if (!refs) {
@@ -233,7 +205,20 @@ export const JourneyDockPlanner = forwardRef<JourneyDockPlannerHandle, JourneyDo
         dockCollapsedRef.current?.focus();
       });
       activeTimelineRef.current = tl;
-    }, [updateState, getMotionRefs, unlockBodyScroll]);
+    }, [updateState, getMotionRefs]);
+
+    // Auto-transition when hero intro animation completes:
+    // Morph the "Book Now" pill smoothly into the Transparent Enquiry Card!
+    const hasAutoOpenedRef = useRef(false);
+    useEffect(() => {
+      if (isIntroComplete && !hasAutoOpenedRef.current && plannerStateRef.current === "closed") {
+        hasAutoOpenedRef.current = true;
+        const timer = setTimeout(() => {
+          openPlanner();
+        }, 450);
+        return () => clearTimeout(timer);
+      }
+    }, [isIntroComplete, openPlanner]);
 
     // Keyboard and window cleanup listeners
     useEffect(() => {
@@ -241,31 +226,16 @@ export const JourneyDockPlanner = forwardRef<JourneyDockPlannerHandle, JourneyDo
         if (e.key === "Escape" && plannerStateRef.current !== "closed") {
           e.preventDefault();
           closePlanner();
-          unlockBodyScroll();
-        }
-      };
-
-      const handleWindowCleanup = () => {
-        if (plannerStateRef.current === "closed") {
-          unlockBodyScroll();
         }
       };
 
       window.addEventListener("keydown", handleGlobalKeyDown);
-      window.addEventListener("resize", handleWindowCleanup);
-      window.addEventListener("pagehide", unlockBodyScroll);
-      window.addEventListener("orientationchange", handleWindowCleanup);
-
       return () => {
-        unlockBodyScroll();
         window.removeEventListener("keydown", handleGlobalKeyDown);
-        window.removeEventListener("resize", handleWindowCleanup);
-        window.removeEventListener("pagehide", unlockBodyScroll);
-        window.removeEventListener("orientationchange", handleWindowCleanup);
       };
-    }, [closePlanner, unlockBodyScroll]);
+    }, [closePlanner]);
 
-    // Imperative API for Pass B / testing hooks & parent components
+    // Imperative API for testing hooks & parent components
     useImperativeHandle(
       ref,
       () => ({
@@ -301,7 +271,7 @@ export const JourneyDockPlanner = forwardRef<JourneyDockPlannerHandle, JourneyDo
         ref={setShellRef}
         className={`sjhHero__dock ${isExpandedVisible ? "is-open" : ""}`}
       >
-        {/* Collapsed Resting Dock View */}
+        {/* Collapsed Resting Dock View: "Book Now" pill with compass & gold arrow */}
         <button
           ref={dockCollapsedRef}
           type="button"
@@ -320,49 +290,42 @@ export const JourneyDockPlanner = forwardRef<JourneyDockPlannerHandle, JourneyDo
           </span>
         </button>
 
-        {/* Expanded Morph Planner View */}
+        {/* Expanded Morph View: Luxury Transparent Enquiry Card */}
         <div
           ref={dockExpandedRef}
           className="sjhHero__dockExpanded"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="sjh-planner-title"
+          role="region"
+          aria-label="Travel enquiry card"
           aria-hidden={!isExpandedVisible}
-          style={{ overflowY: "auto" }}
         >
-          {/* Header */}
-          <div ref={plannerHeaderRef} className="sjhHero__plannerHeader">
-            <div>
-              <h2 id="sjh-planner-title" className="sjhHero__plannerTitle">
-                PLAN YOUR JOURNEY
-              </h2>
-              <div style={{ fontSize: "11px", letterSpacing: "0.14em", color: "#B99455", textTransform: "uppercase", marginTop: "2px" }}>
-                Enquiry Concierge
-              </div>
-            </div>
-
-            <button
-              ref={closeBtnRef}
-              type="button"
-              className="sjhHero__plannerClose"
-              onClick={closePlanner}
-              aria-label="Close journey planner"
-              tabIndex={isExpandedVisible ? 0 : -1}
-            >
-              <span aria-hidden="true">✕</span>
-            </button>
-          </div>
-
-          {/* Upgraded 5-Step Flow Body */}
-          <div ref={flowContainerRef} style={{ flex: 1, display: "flex", flexDirection: "column", minHeight: 0 }}>
-            <JourneyPlannerFlow
+          <div ref={plannerHeaderRef} style={{ width: "100%", height: "100%" }}>
+            <TransparentEnquiryCard
               draft={draft}
               onDraftChange={(newDraft) => {
                 isDirtyRef.current = true;
                 setDraft(newDraft);
               }}
               onClose={closePlanner}
-              onComplete={onCreateJourney}
+              onExploreJourneys={() => {
+                const el = document.getElementById("sacred-journeys") || document.getElementById("destinations");
+                if (el) {
+                  el.scrollIntoView({ behavior: "smooth", block: "start" });
+                }
+              }}
+              onPlanMyTrip={(submittedDraft) => {
+                isDirtyRef.current = true;
+                setDraft(submittedDraft);
+                onCreateJourney?.(submittedDraft);
+                const win = window as any;
+                if (win.__SJH_PLANNER_SET_FIELD__) {
+                  win.__SJH_PLANNER_SET_FIELD__("destination", submittedDraft.destination);
+                  win.__SJH_PLANNER_SET_FIELD__("from", submittedDraft.from);
+                  win.__SJH_PLANNER_SET_FIELD__("source", "hero-enquiry-card");
+                }
+                if (win.__SJH_PLANNER_OPEN__) {
+                  win.__SJH_PLANNER_OPEN__();
+                }
+              }}
             />
           </div>
 

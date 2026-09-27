@@ -275,9 +275,15 @@ export function MobileCinematicHero({
   // Check if conditions allow starting an autoplay transition
   const canAutoplay = useCallback(() => {
     if (!isIntroCompleteRef.current) return false;
-    if (heroMotionStateRef.current !== "settled" && heroMotionStateRef.current !== "auto-wait") return false;
+    if (
+      heroMotionStateRef.current !== "settled" &&
+      heroMotionStateRef.current !== "auto-wait" &&
+      heroMotionStateRef.current !== "planner-open"
+    ) {
+      return false;
+    }
     if (isSuspendedRef.current) return false;
-    if (plannerStateRef.current !== "closed") return false;
+    // Allow background auto-slide even when transparent enquiry card is open/animating
     if (isUserInteractingRef.current) return false;
     if (typeof document !== "undefined" && document.hidden) return false;
     if (prefersReducedMotionRef.current) return false;
@@ -294,7 +300,8 @@ export function MobileCinematicHero({
     (targetIndex: number, source: HeroTransitionSource, fromDirection?: Direction) => {
       if (!isIntroCompleteRef.current) return;
       if (isScrollLockedRef.current) return;
-      if (plannerStateRef.current !== "closed") return;
+      // Allow auto slideshow transitions even when planner card is open
+      if (plannerStateRef.current !== "closed" && source !== "auto") return;
       if (heroMotionStateRef.current === "transitioning" || heroMotionStateRef.current === "leaving-hero") return;
       if (targetIndex === activeDestIndexRef.current && source !== "swipe") return;
 
@@ -360,7 +367,7 @@ export function MobileCinematicHero({
                 support: support.current!,
               },
               () => {
-                heroMotionStateRef.current = "settled";
+                heroMotionStateRef.current = plannerStateRef.current !== "closed" ? "planner-open" : "settled";
                 scheduleAutoplayRef.current(AUTOPLAY_DWELL_SECONDS);
               }
             );
@@ -1441,9 +1448,9 @@ export function MobileCinematicHero({
               onOpenStateChange={(st) => {
                 setPlannerState(st);
                 if (st === "open" || st === "opening") {
-                  killAutoplayTimer();
                   heroMotionStateRef.current = "planner-open";
                   onPlanJourney?.();
+                  scheduleAutoplay(AUTOPLAY_DWELL_SECONDS);
                 } else if (st === "closed") {
                   if (heroMotionStateRef.current === "planner-open") {
                     heroMotionStateRef.current = "settled";
