@@ -1,6 +1,32 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import { JourneyDraft } from "./plannerData";
 import { createWhatsAppUrl, createPhoneUrl, buildJourneyWhatsAppMessage } from "../../utils/contact";
+
+const POPULAR_CITIES = [
+  "Bhubaneswar",
+  "Cuttack",
+  "Puri",
+  "Kolkata",
+  "Delhi / NCR",
+  "Mumbai",
+  "Bengaluru",
+  "Hyderabad",
+  "Raipur",
+  "Visakhapatnam",
+  "Rourkela",
+  "Sambalpur",
+];
+
+const POPULAR_DESTINATIONS = [
+  "Puri Jagannath Dham",
+  "Konark Sun Temple & Beach",
+  "Chilika Lake & Mangalajodi",
+  "Golden Triangle Odisha",
+  "Kashmir Valley",
+  "Royal Rajasthan",
+  "Kerala Backwaters",
+  "Customized Odisha Tour",
+];
 
 interface TransparentEnquiryCardProps {
   draft: JourneyDraft;
@@ -8,6 +34,7 @@ interface TransparentEnquiryCardProps {
   onClose: () => void;
   onExploreJourneys?: () => void;
   onPlanMyTrip?: (draft: JourneyDraft) => void;
+  onFormTouch?: () => void;
 }
 
 export function TransparentEnquiryCard({
@@ -16,12 +43,63 @@ export function TransparentEnquiryCard({
   onClose,
   onExploreJourneys,
   onPlanMyTrip,
+  onFormTouch,
 }: TransparentEnquiryCardProps) {
   const [activeTab, setActiveTab] = useState<"explore" | "plan">("plan");
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3>(1);
   const [stepDir, setStepDir] = useState<"next" | "back">("next");
+  const [isFromPickerOpen, setIsFromPickerOpen] = useState(false);
+  const [isDestPickerOpen, setIsDestPickerOpen] = useState(false);
+  const [isTypingFrom, setIsTypingFrom] = useState(false);
+  const [isTypingDest, setIsTypingDest] = useState(false);
+
+  const cardRef = useRef<HTMLDivElement>(null);
+  const fromInputRef = useRef<HTMLInputElement>(null);
+  const destInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const handleOutside = (e: MouseEvent | TouchEvent | PointerEvent) => {
+      if (cardRef.current && !cardRef.current.contains(e.target as Node)) {
+        setIsFromPickerOpen(false);
+        setIsDestPickerOpen(false);
+        setIsTypingFrom(false);
+        setIsTypingDest(false);
+      }
+    };
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setIsFromPickerOpen(false);
+        setIsDestPickerOpen(false);
+        setIsTypingFrom(false);
+        setIsTypingDest(false);
+      }
+    };
+    document.addEventListener("pointerdown", handleOutside);
+    document.addEventListener("keydown", handleKey);
+    return () => {
+      document.removeEventListener("pointerdown", handleOutside);
+      document.removeEventListener("keydown", handleKey);
+    };
+  }, []);
+
+  const filteredCities = useMemo(() => {
+    if (!isTypingFrom) return POPULAR_CITIES;
+    const query = (draft.from || "").trim().toLowerCase();
+    if (!query) return POPULAR_CITIES;
+    const matched = POPULAR_CITIES.filter((c) => c.toLowerCase().includes(query));
+    return matched.length > 0 ? matched : POPULAR_CITIES;
+  }, [draft.from, isTypingFrom]);
+
+  const filteredDestinations = useMemo(() => {
+    if (!isTypingDest) return POPULAR_DESTINATIONS;
+    const query = (draft.destination || "").trim().toLowerCase();
+    if (!query) return POPULAR_DESTINATIONS;
+    const matched = POPULAR_DESTINATIONS.filter((d) => d.toLowerCase().includes(query));
+    return matched.length > 0 ? matched : POPULAR_DESTINATIONS;
+  }, [draft.destination, isTypingDest]);
 
   const handleFieldChange = (field: keyof JourneyDraft, value: any) => {
+    onFormTouch?.();
     onDraftChange({
       ...draft,
       [field]: value,
@@ -105,7 +183,23 @@ export function TransparentEnquiryCard({
   };
 
   return (
-    <div className="sjhEnquiryCardWrapper">
+    <div
+      ref={cardRef}
+      className="sjhEnquiryCardWrapper"
+      onPointerDownCapture={() => onFormTouch?.()}
+      onTouchStartCapture={() => onFormTouch?.()}
+      onClickCapture={() => onFormTouch?.()}
+      onFocusCapture={() => onFormTouch?.()}
+      onKeyDownCapture={() => onFormTouch?.()}
+      onPointerDown={(e) => {
+        e.stopPropagation();
+        onFormTouch?.();
+      }}
+      onTouchStart={(e) => {
+        e.stopPropagation();
+        onFormTouch?.();
+      }}
+    >
       {/* Top Navigation Tabs */}
       <div className="sjhEnquiry__topTabs" role="tablist" aria-label="Journey actions">
         <button
@@ -203,27 +297,164 @@ export function TransparentEnquiryCard({
             ============================================== */}
         {currentStep === 1 && (
           <div className={`sjhEnquiry__stepContent sjhEnquiry__stepContent--${stepDir}`}>
+            {/* Quick City Suggestions Popover */}
+            {isFromPickerOpen && (
+              <div
+                className="sjhEnquiry__popover"
+                onPointerDown={(e) => {
+                  e.stopPropagation();
+                  onFormTouch?.();
+                }}
+                onTouchStart={(e) => {
+                  e.stopPropagation();
+                  onFormTouch?.();
+                }}
+              >
+                <div className="sjhEnquiry__popoverHeader">
+                  <span className="sjhEnquiry__popoverTitle">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#EBC678" strokeWidth="2.5">
+                      <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+                      <circle cx="12" cy="10" r="3" />
+                    </svg>
+                    POPULAR DEPARTURE CITIES
+                  </span>
+                  <button
+                    type="button"
+                    className="sjhEnquiry__popoverClose"
+                    onClick={() => setIsFromPickerOpen(false)}
+                    aria-label="Close city suggestions"
+                  >
+                    ✕
+                  </button>
+                </div>
+                <div className="sjhEnquiry__chipsGrid">
+                  {filteredCities.map((city) => (
+                    <button
+                      key={city}
+                      type="button"
+                      className={`sjhEnquiry__chipBtn ${draft.from?.toLowerCase() === city.toLowerCase() ? "is-selected" : ""}`}
+                      onClick={() => {
+                        handleFieldChange("from", city);
+                        setIsTypingFrom(false);
+                        setIsFromPickerOpen(false);
+                      }}
+                    >
+                      {city}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Quick Destination Suggestions Popover */}
+            {isDestPickerOpen && (
+              <div
+                className="sjhEnquiry__popover"
+                onPointerDown={(e) => {
+                  e.stopPropagation();
+                  onFormTouch?.();
+                }}
+                onTouchStart={(e) => {
+                  e.stopPropagation();
+                  onFormTouch?.();
+                }}
+              >
+                <div className="sjhEnquiry__popoverHeader">
+                  <span className="sjhEnquiry__popoverTitle">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#EBC678" strokeWidth="2.5">
+                      <circle cx="12" cy="12" r="10" />
+                      <polygon points="12 8 8 12 12 16 16 12 12 8" />
+                    </svg>
+                    POPULAR DESTINATIONS
+                  </span>
+                  <button
+                    type="button"
+                    className="sjhEnquiry__popoverClose"
+                    onClick={() => setIsDestPickerOpen(false)}
+                    aria-label="Close destination suggestions"
+                  >
+                    ✕
+                  </button>
+                </div>
+                <div className="sjhEnquiry__chipsGrid">
+                  {filteredDestinations.map((dest) => (
+                    <button
+                      key={dest}
+                      type="button"
+                      className={`sjhEnquiry__chipBtn ${draft.destination?.toLowerCase() === dest.toLowerCase() ? "is-selected" : ""}`}
+                      onClick={() => {
+                        handleFieldChange("destination", dest);
+                        setIsTypingDest(false);
+                        setIsDestPickerOpen(false);
+                      }}
+                    >
+                      {dest}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <div className="sjhEnquiry__grid">
               {/* Field 1: Travelling From */}
               <div className="sjhEnquiry__field">
                 <label htmlFor="sjh-enquiry-from" className="sjhEnquiry__label">
                   TRAVELLING FROM
                 </label>
-                <div className="sjhEnquiry__inputWrap">
+                <div
+                  className="sjhEnquiry__inputWrap"
+                  onClick={() => {
+                    fromInputRef.current?.focus();
+                    setIsTypingFrom(false);
+                    setIsFromPickerOpen(true);
+                    setIsDestPickerOpen(false);
+                  }}
+                >
                   <input
+                    ref={fromInputRef}
                     id="sjh-enquiry-from"
                     type="text"
                     className="sjhEnquiry__input"
                     placeholder="Enter city"
                     value={draft.from}
-                    onChange={(e) => handleFieldChange("from", e.target.value)}
+                    onChange={(e) => {
+                      handleFieldChange("from", e.target.value);
+                      setIsTypingFrom(true);
+                      setIsFromPickerOpen(true);
+                    }}
+                    onFocus={() => {
+                      setIsTypingFrom(false);
+                      setIsFromPickerOpen(true);
+                      setIsDestPickerOpen(false);
+                    }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsTypingFrom(false);
+                      setIsFromPickerOpen(true);
+                      setIsDestPickerOpen(false);
+                    }}
+                    onPointerDown={(e) => e.stopPropagation()}
+                    onTouchStart={(e) => e.stopPropagation()}
+                    autoComplete="off"
                   />
-                  <span className="sjhEnquiry__icon" aria-hidden="true">
+                  <button
+                    type="button"
+                    className="sjhEnquiry__icon sjhEnquiry__iconBtn"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      fromInputRef.current?.focus();
+                      setIsTypingFrom(false);
+                      setIsFromPickerOpen((prev) => !prev);
+                      setIsDestPickerOpen(false);
+                    }}
+                    title="Select departure city"
+                    aria-label="Select departure city"
+                  >
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
                       <circle cx="12" cy="10" r="3" />
                     </svg>
-                  </span>
+                  </button>
                 </div>
               </div>
 
@@ -232,21 +463,60 @@ export function TransparentEnquiryCard({
                 <label htmlFor="sjh-enquiry-dest" className="sjhEnquiry__label">
                   DESTINATION INTEREST
                 </label>
-                <div className="sjhEnquiry__inputWrap">
+                <div
+                  className="sjhEnquiry__inputWrap"
+                  onClick={() => {
+                    destInputRef.current?.focus();
+                    setIsTypingDest(false);
+                    setIsDestPickerOpen(true);
+                    setIsFromPickerOpen(false);
+                  }}
+                >
                   <input
+                    ref={destInputRef}
                     id="sjh-enquiry-dest"
                     type="text"
                     className="sjhEnquiry__input"
                     placeholder="Where to? (optional)"
                     value={draft.destination}
-                    onChange={(e) => handleFieldChange("destination", e.target.value)}
+                    onChange={(e) => {
+                      handleFieldChange("destination", e.target.value);
+                      setIsTypingDest(true);
+                      setIsDestPickerOpen(true);
+                    }}
+                    onFocus={() => {
+                      setIsTypingDest(false);
+                      setIsDestPickerOpen(true);
+                      setIsFromPickerOpen(false);
+                    }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsTypingDest(false);
+                      setIsDestPickerOpen(true);
+                      setIsFromPickerOpen(false);
+                    }}
+                    onPointerDown={(e) => e.stopPropagation()}
+                    onTouchStart={(e) => e.stopPropagation()}
+                    autoComplete="off"
                   />
-                  <span className="sjhEnquiry__icon" aria-hidden="true">
+                  <button
+                    type="button"
+                    className="sjhEnquiry__icon sjhEnquiry__iconBtn"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      destInputRef.current?.focus();
+                      setIsTypingDest(false);
+                      setIsDestPickerOpen((prev) => !prev);
+                      setIsFromPickerOpen(false);
+                    }}
+                    title="Select destination"
+                    aria-label="Select destination"
+                  >
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
-                      <circle cx="12" cy="10" r="3" />
+                      <circle cx="12" cy="12" r="10" />
+                      <polygon points="12 8 8 12 12 16 16 12 12 8" />
                     </svg>
-                  </span>
+                  </button>
                 </div>
               </div>
 
@@ -262,6 +532,13 @@ export function TransparentEnquiryCard({
                     className="sjhEnquiry__input sjhEnquiry__dateInput"
                     value={draft.date || ""}
                     onChange={(e) => handleFieldChange("date", e.target.value)}
+                    onClick={(e) => {
+                      try {
+                        (e.target as HTMLInputElement).showPicker?.();
+                      } catch {}
+                    }}
+                    onPointerDown={(e) => e.stopPropagation()}
+                    onTouchStart={(e) => e.stopPropagation()}
                   />
                   <span className="sjhEnquiry__icon" aria-hidden="true">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -279,12 +556,18 @@ export function TransparentEnquiryCard({
                 <label htmlFor="sjh-enquiry-type" className="sjhEnquiry__label">
                   JOURNEY TYPE
                 </label>
-                <div className="sjhEnquiry__inputWrap sjhEnquiry__selectWrap">
+                <div
+                  className="sjhEnquiry__inputWrap sjhEnquiry__selectWrap"
+                  onPointerDown={(e) => e.stopPropagation()}
+                  onTouchStart={(e) => e.stopPropagation()}
+                >
                   <select
                     id="sjh-enquiry-type"
                     className="sjhEnquiry__input sjhEnquiry__select"
                     value={draft.journeyType || "Not Sure Yet"}
                     onChange={(e) => handleFieldChange("journeyType", e.target.value)}
+                    onPointerDown={(e) => e.stopPropagation()}
+                    onTouchStart={(e) => e.stopPropagation()}
                   >
                     <option value="Not Sure Yet">Not Sure Yet</option>
                     <option value="Pilgrimage & Temple Darshan">Pilgrimage & Temple Darshan</option>
@@ -307,6 +590,8 @@ export function TransparentEnquiryCard({
               type="button"
               className="sjhEnquiry__submitBtn"
               onClick={() => goToStep(2, "next")}
+              onPointerDown={(e) => e.stopPropagation()}
+              onTouchStart={(e) => e.stopPropagation()}
             >
               <span>Next: Travellers & Contact</span>
               <span className="sjhEnquiry__submitArrow" aria-hidden="true">
@@ -318,11 +603,17 @@ export function TransparentEnquiryCard({
             </button>
 
             {/* Bottom Quick Contact Bar */}
-            <div className="sjhEnquiry__contactBar">
+            <div
+              className="sjhEnquiry__contactBar"
+              onPointerDown={(e) => e.stopPropagation()}
+              onTouchStart={(e) => e.stopPropagation()}
+            >
               <a
                 href={createPhoneUrl()}
                 className="sjhEnquiry__contactBtn sjhEnquiry__contactBtn--phone"
                 aria-label="Direct Phone Call with Concierge"
+                onPointerDown={(e) => e.stopPropagation()}
+                onTouchStart={(e) => e.stopPropagation()}
               >
                 <span className="sjhEnquiry__contactIcon" aria-hidden="true">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -338,6 +629,8 @@ export function TransparentEnquiryCard({
                 rel="noopener noreferrer"
                 className="sjhEnquiry__contactBtn sjhEnquiry__contactBtn--whatsapp"
                 aria-label="Continue Travel Enquiry on WhatsApp"
+                onPointerDown={(e) => e.stopPropagation()}
+                onTouchStart={(e) => e.stopPropagation()}
               >
                 <span className="sjhEnquiry__contactIcon" aria-hidden="true">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -361,13 +654,19 @@ export function TransparentEnquiryCard({
                 <label className="sjhEnquiry__label">
                   TRAVELLERS
                 </label>
-                <div className="sjhEnquiry__inputWrap sjhEnquiry__stepperWrap">
+                <div
+                  className="sjhEnquiry__inputWrap sjhEnquiry__stepperWrap"
+                  onPointerDown={(e) => e.stopPropagation()}
+                  onTouchStart={(e) => e.stopPropagation()}
+                >
                   <button
                     type="button"
                     className="sjhEnquiry__stepperBtn"
                     onClick={() => handleAdultsChange(-1)}
                     disabled={draft.adults <= 1}
                     aria-label="Decrease adults"
+                    onPointerDown={(e) => e.stopPropagation()}
+                    onTouchStart={(e) => e.stopPropagation()}
                   >
                     −
                   </button>
@@ -380,6 +679,8 @@ export function TransparentEnquiryCard({
                     onClick={() => handleAdultsChange(1)}
                     disabled={draft.adults >= 8}
                     aria-label="Increase adults"
+                    onPointerDown={(e) => e.stopPropagation()}
+                    onTouchStart={(e) => e.stopPropagation()}
                   >
                     +
                   </button>
@@ -389,6 +690,8 @@ export function TransparentEnquiryCard({
                     style={{ width: "auto", padding: "0 6px", fontSize: "10px" }}
                     onClick={() => handleChildrenChange(draft.children > 0 ? -1 : 1)}
                     title="Add or remove children"
+                    onPointerDown={(e) => e.stopPropagation()}
+                    onTouchStart={(e) => e.stopPropagation()}
                   >
                     {draft.children > 0 ? `${draft.children}K` : "+Kids"}
                   </button>
@@ -400,12 +703,18 @@ export function TransparentEnquiryCard({
                 <label htmlFor="sjh-enquiry-duration" className="sjhEnquiry__label">
                   DURATION
                 </label>
-                <div className="sjhEnquiry__inputWrap sjhEnquiry__selectWrap">
+                <div
+                  className="sjhEnquiry__inputWrap sjhEnquiry__selectWrap"
+                  onPointerDown={(e) => e.stopPropagation()}
+                  onTouchStart={(e) => e.stopPropagation()}
+                >
                   <select
                     id="sjh-enquiry-duration"
                     className="sjhEnquiry__input sjhEnquiry__select"
                     value={draft.approximateDuration || "5–7 days"}
                     onChange={(e) => handleFieldChange("approximateDuration", e.target.value)}
+                    onPointerDown={(e) => e.stopPropagation()}
+                    onTouchStart={(e) => e.stopPropagation()}
                   >
                     <option value="2–3 days">2–3 Days (Weekend)</option>
                     <option value="4–6 days">4–6 Days (Recommended)</option>
@@ -425,7 +734,11 @@ export function TransparentEnquiryCard({
                 <label htmlFor="sjh-enquiry-name" className="sjhEnquiry__label">
                   YOUR NAME
                 </label>
-                <div className="sjhEnquiry__inputWrap">
+                <div
+                  className="sjhEnquiry__inputWrap"
+                  onPointerDown={(e) => e.stopPropagation()}
+                  onTouchStart={(e) => e.stopPropagation()}
+                >
                   <input
                     id="sjh-enquiry-name"
                     type="text"
@@ -433,6 +746,9 @@ export function TransparentEnquiryCard({
                     placeholder="Enter your name"
                     value={draft.name || ""}
                     onChange={(e) => handleFieldChange("name", e.target.value)}
+                    onPointerDown={(e) => e.stopPropagation()}
+                    onTouchStart={(e) => e.stopPropagation()}
+                    autoComplete="name"
                   />
                   <span className="sjhEnquiry__icon" aria-hidden="true">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -448,7 +764,11 @@ export function TransparentEnquiryCard({
                 <label htmlFor="sjh-enquiry-phone" className="sjhEnquiry__label">
                   PHONE / WHATSAPP
                 </label>
-                <div className="sjhEnquiry__inputWrap">
+                <div
+                  className="sjhEnquiry__inputWrap"
+                  onPointerDown={(e) => e.stopPropagation()}
+                  onTouchStart={(e) => e.stopPropagation()}
+                >
                   <input
                     id="sjh-enquiry-phone"
                     type="tel"
@@ -456,6 +776,9 @@ export function TransparentEnquiryCard({
                     placeholder="Mobile number"
                     value={draft.phone || ""}
                     onChange={(e) => handleFieldChange("phone", e.target.value)}
+                    onPointerDown={(e) => e.stopPropagation()}
+                    onTouchStart={(e) => e.stopPropagation()}
+                    autoComplete="tel"
                   />
                   <span className="sjhEnquiry__icon" aria-hidden="true">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -467,11 +790,17 @@ export function TransparentEnquiryCard({
             </div>
 
             {/* Advance to Step 3 CTA */}
-            <div className="sjhEnquiry__btnGroup">
+            <div
+              className="sjhEnquiry__btnGroup"
+              onPointerDown={(e) => e.stopPropagation()}
+              onTouchStart={(e) => e.stopPropagation()}
+            >
               <button
                 type="button"
                 className="sjhEnquiry__backStepBtn"
                 onClick={() => goToStep(1, "back")}
+                onPointerDown={(e) => e.stopPropagation()}
+                onTouchStart={(e) => e.stopPropagation()}
               >
                 ← Back
               </button>
@@ -479,6 +808,8 @@ export function TransparentEnquiryCard({
                 type="button"
                 className="sjhEnquiry__submitBtn sjhEnquiry__submitBtn--flex"
                 onClick={() => goToStep(3, "next")}
+                onPointerDown={(e) => e.stopPropagation()}
+                onTouchStart={(e) => e.stopPropagation()}
               >
                 <span>Review & Dispatch</span>
                 <span className="sjhEnquiry__submitArrow" aria-hidden="true">
@@ -498,7 +829,11 @@ export function TransparentEnquiryCard({
         {currentStep === 3 && (
           <div className={`sjhEnquiry__stepContent sjhEnquiry__stepContent--${stepDir}`}>
             {/* Review Summary Card */}
-            <div className="sjhEnquiry__summaryBox">
+            <div
+              className="sjhEnquiry__summaryBox"
+              onPointerDown={(e) => e.stopPropagation()}
+              onTouchStart={(e) => e.stopPropagation()}
+            >
               <div className="sjhEnquiry__summaryRow">
                 <span className="sjhEnquiry__summaryLabel">
                   <span>📍</span> Route:
@@ -538,6 +873,8 @@ export function TransparentEnquiryCard({
               type="button"
               className="sjhEnquiry__submitBtn sjhEnquiry__submitBtn--whatsapp"
               onClick={() => handleFinalSubmit()}
+              onPointerDown={(e) => e.stopPropagation()}
+              onTouchStart={(e) => e.stopPropagation()}
             >
               <span className="sjhEnquiry__contactIcon" aria-hidden="true">
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -548,11 +885,17 @@ export function TransparentEnquiryCard({
             </button>
 
             {/* Secondary Row: Call Concierge or Edit Details */}
-            <div className="sjhEnquiry__contactBar">
+            <div
+              className="sjhEnquiry__contactBar"
+              onPointerDown={(e) => e.stopPropagation()}
+              onTouchStart={(e) => e.stopPropagation()}
+            >
               <a
                 href={createPhoneUrl()}
                 className="sjhEnquiry__contactBtn sjhEnquiry__contactBtn--phone"
                 aria-label="Direct Phone Call with Concierge"
+                onPointerDown={(e) => e.stopPropagation()}
+                onTouchStart={(e) => e.stopPropagation()}
               >
                 <span className="sjhEnquiry__contactIcon" aria-hidden="true">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -567,6 +910,8 @@ export function TransparentEnquiryCard({
                 className="sjhEnquiry__contactBtn sjhEnquiry__contactBtn--whatsapp"
                 onClick={() => goToStep(1, "back")}
                 aria-label="Edit enquiry fields"
+                onPointerDown={(e) => e.stopPropagation()}
+                onTouchStart={(e) => e.stopPropagation()}
               >
                 <span>✏️ Edit Details</span>
               </button>

@@ -30,6 +30,7 @@ interface JourneyDockPlannerProps {
   isIntroComplete: boolean;
   isPortalActive: boolean;
   onOpenStateChange?: (state: PlannerState) => void;
+  onFormTouch?: () => void;
   onCreateJourney?: (draft: JourneyDraft) => void;
   backgroundRef: React.RefObject<HTMLImageElement>;
   headerRef: React.RefObject<HTMLElement>;
@@ -44,8 +45,9 @@ export const JourneyDockPlanner = forwardRef<JourneyDockPlannerHandle, JourneyDo
       activeDestination,
       assetBase = "/assets/sjh-hero",
       isIntroComplete,
-      isPortalActive,
+      isPortalActive: _isPortalActive,
       onOpenStateChange,
+      onFormTouch,
       onCreateJourney,
       backgroundRef,
       headerRef,
@@ -139,9 +141,9 @@ export const JourneyDockPlanner = forwardRef<JourneyDockPlannerHandle, JourneyDo
       };
     }, [backgroundRef, headerRef, compassNavRef, veilRef]);
 
-    // Open Morph Action
+    // Open Morph Action (user tap always has priority over background transitions)
     const openPlanner = useCallback(() => {
-      if (!isIntroComplete || isPortalActive || plannerStateRef.current !== "closed") {
+      if (!isIntroComplete || plannerStateRef.current !== "closed") {
         return;
       }
 
@@ -169,7 +171,7 @@ export const JourneyDockPlanner = forwardRef<JourneyDockPlannerHandle, JourneyDo
         closeBtnRef.current?.focus();
       });
       activeTimelineRef.current = tl;
-    }, [isIntroComplete, isPortalActive, updateState, getMotionRefs, calculateExpandedHeight]);
+    }, [isIntroComplete, updateState, getMotionRefs, calculateExpandedHeight]);
 
     // Close Reverse Morph Action (minimizes card back to "Book Now" pill)
     const closePlanner = useCallback(() => {
@@ -276,7 +278,11 @@ export const JourneyDockPlanner = forwardRef<JourneyDockPlannerHandle, JourneyDo
           ref={dockCollapsedRef}
           type="button"
           className="sjhHero__dockCollapsed"
-          onClick={openPlanner}
+          style={{ display: isExpandedVisible ? "none" : undefined }}
+          onClick={() => {
+            onFormTouch?.();
+            openPlanner();
+          }}
           aria-label="Book now"
           tabIndex={isExpandedVisible ? -1 : 0}
           aria-hidden={isExpandedVisible}
@@ -298,7 +304,7 @@ export const JourneyDockPlanner = forwardRef<JourneyDockPlannerHandle, JourneyDo
           aria-label="Travel enquiry card"
           aria-hidden={!isExpandedVisible}
         >
-          <div ref={plannerHeaderRef} style={{ width: "100%", height: "100%" }}>
+          <div ref={plannerHeaderRef} style={{ width: "100%" }}>
             <TransparentEnquiryCard
               draft={draft}
               onDraftChange={(newDraft) => {
@@ -306,6 +312,7 @@ export const JourneyDockPlanner = forwardRef<JourneyDockPlannerHandle, JourneyDo
                 setDraft(newDraft);
               }}
               onClose={closePlanner}
+              onFormTouch={onFormTouch}
               onExploreJourneys={() => {
                 const el = document.getElementById("sacred-journeys") || document.getElementById("destinations");
                 if (el) {

@@ -62,7 +62,7 @@ type Props = {
 };
 
 const SESSION_STORAGE_KEY = "sjh_hero_intro_seen";
-const AUTOPLAY_DWELL_SECONDS = 2.5;
+const AUTOPLAY_DWELL_SECONDS = 4.0;
 
 export function MobileCinematicHero({
   onOpenMenu,
@@ -519,6 +519,12 @@ export function MobileCinematicHero({
     },
     [transitionDestination]
   );
+
+  // Form Touch: pause background autoplay when user touches/interacts with the enquiry card
+  const handleFormTouch = useCallback(() => {
+    killAutoplayTimer();
+    isUserInteractingRef.current = true;
+  }, [killAutoplayTimer]);
 
   // Mobile Swipe Gesture: Horizontal swipe advances/returns destination; Vertical swipe remains 100% native scroll!
   const handlePointerDown = (e: React.PointerEvent) => {
@@ -1445,17 +1451,19 @@ export function MobileCinematicHero({
               assetBase={assetBase}
               isIntroComplete={isIntroComplete}
               isPortalActive={portalActive || heroMotionStateRef.current === "dragging" || heroMotionStateRef.current === "transitioning"}
+              onFormTouch={handleFormTouch}
               onOpenStateChange={(st) => {
                 setPlannerState(st);
                 if (st === "open" || st === "opening") {
                   heroMotionStateRef.current = "planner-open";
                   onPlanJourney?.();
-                  scheduleAutoplay(AUTOPLAY_DWELL_SECONDS);
-                } else if (st === "closed") {
-                  if (heroMotionStateRef.current === "planner-open") {
-                    heroMotionStateRef.current = "settled";
-                    scheduleAutoplay(8.0);
+                  if (!isUserInteractingRef.current) {
+                    scheduleAutoplay(AUTOPLAY_DWELL_SECONDS);
                   }
+                } else if (st === "closed") {
+                  isUserInteractingRef.current = false;
+                  heroMotionStateRef.current = "settled";
+                  scheduleAutoplay(AUTOPLAY_DWELL_SECONDS);
                 }
               }}
               onCreateJourney={onCreateJourney}

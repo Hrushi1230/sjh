@@ -26,6 +26,8 @@ export function createPlannerOpenTimeline(
   const tl = gsap.timeline({
     defaults: { overwrite: "auto" },
     onComplete: () => {
+      // Clear rigid fixed height and let natural responsive card size govern
+      gsap.set(refs.shell, { height: "auto", clearProps: "height" });
       onComplete?.();
     },
   });
@@ -289,11 +291,11 @@ export function createPlannerCloseTimeline(
  */
 export function setPlannerOpenReducedMotion(
   refs: PlannerMotionRefs,
-  expandedHeight: number
+  _expandedHeight?: number
 ) {
   gsap.set(refs.dockCollapsed, { opacity: 0, pointerEvents: "none" });
   gsap.set(refs.shell, {
-    height: expandedHeight,
+    height: "auto",
     maxWidth: 440,
     borderRadius: "20px",
     backgroundColor: "transparent",

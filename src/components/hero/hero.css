@@ -625,12 +625,21 @@
 .sjhHero__dock.is-open {
   max-width: 440px;
   background: transparent !important;
+  border: none !important;
   border-color: transparent !important;
   box-shadow: none !important;
   overflow: visible !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
-  bottom: calc(max(10px, env(safe-area-inset-bottom)) + 6px);
+  bottom: calc(max(8px, env(safe-area-inset-bottom)) + 4px) !important;
+  height: auto !important;
+  min-height: unset !important;
+}
+
+.sjhHero__dock.is-open .sjhHero__dockCollapsed {
+  display: none !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
 }
 
 .sjhHero__dockExpanded {
@@ -649,9 +658,14 @@
 }
 
 .sjhHero__dock.is-open .sjhHero__dockExpanded {
-  opacity: 1;
-  pointer-events: auto;
-  visibility: visible;
+  position: relative !important;
+  inset: auto !important;
+  height: auto !important;
+  width: 100% !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  visibility: visible !important;
+  display: flex !important;
 }
 
 /* ==================================================
@@ -727,6 +741,7 @@
 
 /* Main Transparent Enquiry Card */
 .sjhEnquiryCard {
+  position: relative;
   width: 100%;
   background: rgba(17, 16, 14, 0.76);
   backdrop-filter: blur(22px) saturate(180%);
@@ -937,7 +952,7 @@
   font-size: 12.5px;
   font-weight: 500;
   color: #F4EFE6;
-  padding: 0 18px 0 0;
+  padding: 0 28px 0 0;
   margin: 0;
 }
 
@@ -953,9 +968,9 @@
   opacity: 0;
   cursor: pointer;
   position: absolute;
-  right: 4px;
-  width: 22px;
-  height: 22px;
+  inset: 0;
+  width: 100%;
+  height: 100%;
 }
 
 .sjhEnquiry__selectWrap {
@@ -984,6 +999,24 @@
   justify-content: center;
   color: #3b82f6;
   pointer-events: none;
+}
+
+.sjhEnquiry__iconBtn {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+  background: transparent;
+  border: none;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #3b82f6;
+  transition: transform 0.15s ease, color 0.15s ease;
+}
+
+.sjhEnquiry__iconBtn:hover {
+  color: #60a5fa;
+  transform: scale(1.12);
 }
 
 .sjhEnquiry__chevronIcon {
@@ -1222,6 +1255,126 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+}
+
+/* ==================================================
+   POPULAR CITY & DESTINATION SUGGESTIONS POPOVER
+   ================================================== */
+
+.sjhEnquiry__popover {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  z-index: 120;
+  background: rgba(14, 13, 11, 0.96);
+  backdrop-filter: blur(28px) saturate(200%);
+  -webkit-backdrop-filter: blur(28px) saturate(200%);
+  border: 1px solid rgba(235, 198, 120, 0.45);
+  border-radius: 16px;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(255, 239, 195, 0.12);
+  padding: 12px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  animation: sjhPopoverIn 0.20s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes sjhPopoverIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.sjhEnquiry__popoverHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2px 2px;
+  border-bottom: 1px solid rgba(244, 239, 230, 0.10);
+  padding-bottom: 6px;
+}
+
+.sjhEnquiry__popoverTitle {
+  font-family: 'Manrope', sans-serif;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #EBC678;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sjhEnquiry__popoverClose {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(244, 239, 230, 0.18);
+  color: rgba(244, 239, 230, 0.75);
+  font-size: 11px;
+  cursor: pointer;
+  padding: 3px 8px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.sjhEnquiry__popoverClose:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.18);
+  border-color: #EBC678;
+}
+
+.sjhEnquiry__chipsGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  max-height: 190px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(235, 198, 120, 0.35) transparent;
+  padding: 2px 2px 4px 0;
+}
+
+.sjhEnquiry__chipBtn {
+  font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #F4EFE6;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(244, 239, 230, 0.20);
+  border-radius: 999px;
+  padding: 5px 11px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.sjhEnquiry__chipBtn:hover {
+  background: rgba(235, 198, 120, 0.22);
+  border-color: #EBC678;
+  color: #FFFFFF;
+  transform: translateY(-1px);
+}
+
+.sjhEnquiry__chipBtn:active {
+  transform: scale(0.96);
+}
+
+.sjhEnquiry__chipBtn.is-selected {
+  background: linear-gradient(135deg, #155dfc, #1d4ed8);
+  border-color: rgba(255, 255, 255, 0.45);
+  color: #FFFFFF;
+  box-shadow: 0 2px 8px rgba(21, 93, 252, 0.42);
 }
 
 /* Responsive adjustments for smaller viewports */
@@ -1933,38 +2086,51 @@
 /* Smaller viewport height adjustments */
 @media (max-height: 820px) {
   .sjhHero__copy {
-    top: 18.5%;
+    top: 76px;
   }
   .sjhHero__title {
-    margin-top: 28px;
-    font-size: clamp(47px, 13.8vw, 56px);
+    margin-top: 10px;
+    font-size: clamp(32px, 9.5vw, 44px);
   }
   .sjhHero__sub {
-    margin-top: 16px;
+    margin-top: 8px;
+    font-size: 12px;
   }
   .sjhHero__rule {
-    margin-top: 14px;
+    margin-top: 8px;
+    margin-bottom: 8px;
   }
   .sjhHero__dock {
     min-height: 72px;
-    bottom: calc(max(14px, env(safe-area-inset-bottom)) + 38px);
+    bottom: calc(max(8px, env(safe-area-inset-bottom)) + 4px);
+  }
+  .sjhHero__dock.is-open {
+    bottom: calc(max(8px, env(safe-area-inset-bottom)) + 4px) !important;
   }
 }
 
 @media (max-height: 720px) {
   .sjhHero__copy {
-    top: 16%;
+    top: 56px;
   }
   .sjhHero__title {
-    margin-top: 20px;
-    font-size: clamp(42px, 12vw, 48px);
+    margin-top: 6px;
+    font-size: clamp(28px, 8.5vw, 36px);
   }
   .sjhHero__sub {
-    margin-top: 12px;
+    margin-top: 5px;
+    font-size: 11px;
   }
   .sjhHero__rule {
-    margin-top: 10px;
-    margin-bottom: 10px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+  }
+  .sjhHero__dock {
+    min-height: 68px;
+    bottom: calc(max(6px, env(safe-area-inset-bottom)) + 2px);
+  }
+  .sjhHero__dock.is-open {
+    bottom: calc(max(6px, env(safe-area-inset-bottom)) + 2px) !important;
   }
 }
 
