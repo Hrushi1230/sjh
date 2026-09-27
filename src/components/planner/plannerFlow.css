@@ -537,3 +537,448 @@
   padding: 6px 12px;
   border-radius: 6px;
 }
+
+/* ======================================================== */
+/* VIEWPORT-LEVEL JOURNEY PLANNER OVERLAY ARCHITECTURE      */
+/* ======================================================== */
+
+.sjhPlannerOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  pointer-events: none;
+  --planner-vvh: 100dvh;
+  --planner-vv-top: 0px;
+}
+
+.sjhPlannerBackdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(11, 10, 8, 0.88);
+  pointer-events: auto;
+  opacity: 1;
+}
+
+/* Visual Viewport Matched Geometry */
+.sjhPlannerViewport {
+  position: fixed;
+  top: var(--planner-vv-top, 0px);
+  left: 0;
+  right: 0;
+  height: var(--planner-vvh, 100dvh);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  pointer-events: none;
+  box-sizing: border-box;
+}
+
+@supports not (height: 100dvh) {
+  .sjhPlannerViewport {
+    height: var(--planner-vvh, 100svh);
+  }
+}
+
+/* Planner Shell Card */
+.sjhPlannerShell {
+  pointer-events: auto;
+  width: 100%;
+  max-width: 460px;
+  max-height: 94%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  background: #11100E;
+  border-radius: 24px 24px 0 0;
+  border: 1px solid rgba(185, 148, 85, 0.32);
+  border-bottom: none;
+  box-shadow: 0 -16px 48px rgba(0, 0, 0, 0.75);
+  box-sizing: border-box;
+  overflow: hidden;
+  position: relative;
+  will-change: transform, opacity;
+}
+
+/* Unified Planner Header */
+.sjhPlannerHeader {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px 10px;
+  border-bottom: 1px solid rgba(185, 148, 85, 0.2);
+  background: #11100E;
+}
+
+.sjhPlannerHeader__info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sjhPlannerHeader__title {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  color: #F4EFE6;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.sjhPlannerHeader__subtitle {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: #B99455;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.sjhPlannerHeader__close {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: rgba(244, 239, 230, 0.75);
+  font-size: 19px;
+  background: transparent;
+  border: 1px solid rgba(185, 148, 85, 0.2);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sjhPlannerHeader__close:hover,
+.sjhPlannerHeader__close:focus-visible {
+  color: #F4EFE6;
+  border-color: #B99455;
+  background: rgba(185, 148, 85, 0.12);
+  outline: none;
+}
+
+/* Internal Scroll & Action Structure */
+.sjhFlow {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.sjhFlow__form {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.sjhFlow__scrollArea {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding: 12px 20px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-sizing: border-box;
+}
+
+.sjhFlow__actionArea {
+  flex-shrink: 0;
+  padding: 10px 20px;
+  padding-bottom: max(14px, env(safe-area-inset-bottom));
+  background: #11100E;
+  border-top: 1px solid rgba(185, 148, 85, 0.15);
+  box-sizing: border-box;
+}
+
+/* Step Content Animation (Closed Keyboard) */
+@keyframes sjhStepForward {
+  from {
+    opacity: 0;
+    transform: translateX(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.sjhFlow__stepAnimated {
+  animation: sjhStepForward 0.26s cubic-bezier(0.25, 1, 0.5, 1) both;
+}
+
+/* ======================================================== */
+/* KEYBOARD OPEN STATE (CRITICAL IOS SUPPORT)               */
+/* ======================================================== */
+
+.sjhPlannerShell[data-keyboard-open="true"] {
+  height: 100% !important;
+  max-height: 100% !important;
+  border-radius: 0 !important;
+  border: none !important;
+  box-shadow: none !important;
+  transition: none !important;
+}
+
+.sjhPlannerShell[data-keyboard-open="true"] .sjhFlow__stepAnimated {
+  animation: none !important;
+  transform: none !important;
+}
+
+.sjhPlannerShell[data-keyboard-open="true"] .sjhPlannerHeader {
+  padding: max(8px, env(safe-area-inset-top)) 16px 6px;
+}
+
+.sjhPlannerShell[data-keyboard-open="true"] .sjhPlannerHeader__title {
+  font-size: 16px;
+}
+
+.sjhPlannerShell[data-keyboard-open="true"] .sjhPlannerHeader__subtitle {
+  font-size: 10px;
+}
+
+.sjhPlannerShell[data-keyboard-open="true"] .sjhPlannerHeader__close {
+  width: 36px;
+  height: 36px;
+  font-size: 16px;
+}
+
+.sjhPlannerShell[data-keyboard-open="true"] .sjhFlow__stepBar {
+  margin-bottom: 4px;
+  padding-bottom: 4px;
+}
+
+.sjhPlannerShell[data-keyboard-open="true"] .sjhFlow__scrollArea {
+  padding: 6px 16px 10px;
+  gap: 8px;
+}
+
+.sjhPlannerShell[data-keyboard-open="true"] .sjhFlow__actionArea {
+  padding: 8px 16px;
+  padding-bottom: max(8px, env(safe-area-inset-bottom));
+}
+
+.sjhPlannerShell[data-keyboard-open="true"] .sjhHero__plannerRow {
+  padding: 8px 12px !important;
+}
+
+/* ======================================================== */
+/* HERO IN-PLACE BOOKING CARD (30–36% of screen height)     */
+/* ======================================================== */
+
+.sjhHeroBookingCard {
+  width: 100%;
+  box-sizing: border-box;
+  background: rgba(17, 16, 14, 0.84);
+  backdrop-filter: blur(22px) saturate(180%);
+  -webkit-backdrop-filter: blur(22px) saturate(180%);
+  border: 1px solid rgba(185, 148, 85, 0.42);
+  border-radius: 20px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(235, 198, 120, 0.22);
+  padding: 12px 14px 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.sjhFlow--hero {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  overflow: visible !important;
+}
+
+.sjhFlow--hero .sjhFlow__form[data-step="1"] {
+  overflow: visible !important;
+}
+
+.sjhHeroCard__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(185, 148, 85, 0.2);
+}
+
+.sjhHeroCard__headerTitles {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.sjhHeroCard__kicker {
+  font-family: 'Manrope', -apple-system, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #EBC678;
+}
+
+.sjhHeroCard__subtitle {
+  font-family: 'Manrope', -apple-system, sans-serif;
+  font-size: 9.5px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(244, 239, 230, 0.65);
+}
+
+.sjhHeroCard__headerMeta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sjhHeroCard__stepBadge {
+  font-family: 'Manrope', -apple-system, sans-serif;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #EBC678;
+  background: rgba(185, 148, 85, 0.16);
+  border: 1px solid rgba(185, 148, 85, 0.3);
+  padding: 3px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.sjhHeroCard__backBtn {
+  background: transparent;
+  border: none;
+  color: rgba(244, 239, 230, 0.75);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 4px;
+  transition: color 0.2s ease;
+  white-space: nowrap;
+}
+
+.sjhHeroCard__backBtn:hover {
+  color: #F4EFE6;
+}
+
+/* Scroll area in Hero card */
+.sjhFlow--hero .sjhFlow__scrollArea {
+  overflow: visible;
+  padding: 2px 2px 4px;
+}
+
+.sjhFlow--hero .sjhFlow__form:not([data-step="1"]) .sjhFlow__scrollArea {
+  max-height: 185px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Compact Destination Selector Dropdown */
+.sjhHeroCard__destSelectorWrap {
+  position: relative;
+  width: 100%;
+  margin-top: 4px;
+}
+
+.sjhHeroCard__destSelectBtn {
+  width: 100%;
+  height: 38px;
+  min-height: 38px;
+  background: rgba(244, 239, 230, 0.05);
+  border: 1px solid rgba(185, 148, 85, 0.32);
+  border-radius: 10px;
+  color: #F4EFE6;
+  padding: 0 12px;
+  font-size: 13.5px;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease;
+  box-sizing: border-box;
+}
+
+.sjhHeroCard__destSelectBtn:hover,
+.sjhHeroCard__destSelectBtn:focus-visible {
+  border-color: #EBC678;
+  background: rgba(244, 239, 230, 0.08);
+  outline: none;
+}
+
+.sjhHeroCard__destSelectVal {
+  color: #F4EFE6;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sjhHeroCard__destSelectChevron {
+  color: #EBC678;
+  font-size: 12px;
+  margin-left: 8px;
+}
+
+.sjhHeroCard__destDropdown {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  max-height: 220px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  background: rgba(17, 16, 14, 0.96);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(185, 148, 85, 0.45);
+  border-radius: 14px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.75);
+  padding: 6px;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.sjhHeroCard__destDropdownItem {
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  padding: 7px 10px;
+  color: rgba(244, 239, 230, 0.85);
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.sjhHeroCard__destDropdownItem:hover,
+.sjhHeroCard__destDropdownItem.is-active {
+  background: rgba(185, 148, 85, 0.22);
+  color: #EBC678;
+}
+
+.sjhFlow--hero .sjhFlow__actionArea {
+  padding-top: 6px;
+  margin-top: 2px;
+  border-top: none;
+}
+
+.sjhFlow--hero .sjhHero__plannerCta {
+  height: 40px;
+  font-size: 12px;
+}
+
+

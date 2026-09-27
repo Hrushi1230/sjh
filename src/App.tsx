@@ -143,12 +143,14 @@ export function App() {
     return () => window.removeEventListener("hashchange", handleHash);
   }, []);
 
-  // Global planner hooks so down-page callers (Phase 11, Footer, Menu) can open planner seamlessly
+  // Close planner safely if route changes (Requirement 35)
+  useEffect(() => {
+    setPlannerModalOpen(false);
+  }, [activeJourney, isTravelMemories]);
+
+  // Global planner hooks so callers anywhere (Hero, Phase 9, Phase 11, Footer, Menu) open planner seamlessly
   useLayoutEffect(() => {
     const win = window as any;
-    const heroOpen = win.__SJH_PLANNER_OPEN__;
-    const heroClose = win.__SJH_PLANNER_CLOSE__;
-    const heroSetField = win.__SJH_PLANNER_SET_FIELD__;
 
     win.__SJH_PLANNER_SET_FIELD__ = (field: string, val: any) => {
       if (field === "destination") {
@@ -156,32 +158,20 @@ export function App() {
       } else if (field === "source") {
         setPlannerSource(val);
       }
-      if (heroSetField) heroSetField(field, val);
     };
 
     win.__SJH_PLANNER_OPEN__ = () => {
-      if (window.scrollY > 800) {
-        setPlannerModalOpen(true);
-      } else if (heroOpen) {
-        heroOpen();
-      } else {
-        setPlannerModalOpen(true);
-      }
+      setPlannerModalOpen(true);
     };
 
     win.__SJH_PLANNER_CLOSE__ = () => {
       setPlannerModalOpen(false);
-      if (heroClose) heroClose();
     };
 
-    return () => {
-      win.__SJH_PLANNER_OPEN__ = heroOpen;
-      win.__SJH_PLANNER_CLOSE__ = heroClose;
-      win.__SJH_PLANNER_SET_FIELD__ = heroSetField;
+    win.__SJH_GET_PLANNER_STATE__ = () => {
+      return plannerModalOpen ? "open" : "closed";
     };
-  }, []);
-
-
+  }, [plannerModalOpen]);
 
   return (
     <>
@@ -193,6 +183,7 @@ export function App() {
       >
         <MobileCinematicHero
           onOpenMenu={handleOpenMenu}
+          onPlanJourney={() => setPlannerModalOpen(true)}
           onCreateJourney={handleCreateJourney}
           onDestinationChange={(dest) => {
             setActiveDestination(dest);

@@ -59,6 +59,7 @@ type Props = {
   homeHref?: string;
   assetBase?: string;
   isInternalPageOpen?: boolean;
+  isPlannerOpen?: boolean;
 };
 
 const SESSION_STORAGE_KEY = "sjh_hero_intro_seen";
@@ -72,6 +73,7 @@ export function MobileCinematicHero({
   homeHref = "/",
   assetBase = "/assets/sjh-hero",
   isInternalPageOpen = false,
+  isPlannerOpen,
 }: Props) {
   const root = useRef<HTMLElement>(null);
   const introContainer = useRef<HTMLDivElement>(null);
@@ -1012,15 +1014,36 @@ export function MobileCinematicHero({
     return () => document.removeEventListener("visibilitychange", handleVisibility);
   }, [killAutoplayTimer, canAutoplay, scheduleAutoplay]);
 
+  // Synchronize planner open state from parent
+  useEffect(() => {
+    if (isPlannerOpen !== undefined) {
+      setPlannerState(isPlannerOpen ? "open" : "closed");
+      if (isPlannerOpen) {
+        heroMotionStateRef.current = "planner-open";
+        killAutoplayTimer();
+      } else {
+        heroMotionStateRef.current = "settled";
+        scheduleAutoplay(AUTOPLAY_DWELL_SECONDS);
+      }
+    }
+  }, [isPlannerOpen, killAutoplayTimer, scheduleAutoplay]);
+
   // Expose Phase 3 Journey Planner deterministic testing hooks
   useEffect(() => {
     const win = window as any;
-    win.__SJH_PLANNER_OPEN__ = () => plannerRef.current?.open();
-    win.__SJH_PLANNER_CLOSE__ = () => plannerRef.current?.close();
+    if (!win.__SJH_PLANNER_OPEN__) {
+      win.__SJH_PLANNER_OPEN__ = () => plannerRef.current?.open();
+    }
+    if (!win.__SJH_PLANNER_CLOSE__) {
+      win.__SJH_PLANNER_CLOSE__ = () => plannerRef.current?.close();
+    }
     win.__SJH_PLANNER_SEEK__ = (progress: number) => plannerRef.current?.seek(progress);
-    win.__SJH_GET_PLANNER_STATE__ = () => plannerRef.current?.getState() || "closed";
-    win.__SJH_GET_DRAFT__ = () => plannerRef.current?.getDraft();
-    win.__SJH_PLANNER_SET_FIELD__ = (field: any, val: any) => plannerRef.current?.setField(field, val);
+    if (!win.__SJH_GET_PLANNER_STATE__) {
+      win.__SJH_GET_PLANNER_STATE__ = () => plannerRef.current?.getState() || "closed";
+    }
+    if (!win.__SJH_GET_DRAFT__) {
+      win.__SJH_GET_DRAFT__ = () => plannerRef.current?.getDraft();
+    }
   }, []);
 
   // Phase 4: Master Scroll Transition Effect (Cinema -> Magazine)
@@ -1438,9 +1461,8 @@ export function MobileCinematicHero({
             {/* Phase 3: Visual Backdrop Veil behind morphing planner */}
             <div
               ref={veilRef}
-              className={`sjhHero__veil ${plannerState !== "closed" ? "is-active" : ""}`}
+              className="sjhHero__veil"
               aria-hidden="true"
-              onClick={() => plannerRef.current?.close()}
             />
 
             {/* Phase 3: Morphing Journey Dock & Planner Shell */}
@@ -1450,16 +1472,15 @@ export function MobileCinematicHero({
               activeDestination={currentDest.id}
               assetBase={assetBase}
               isIntroComplete={isIntroComplete}
+              isOpen={isPlannerOpen}
+              onOpenPlanner={onPlanJourney}
               isPortalActive={portalActive || heroMotionStateRef.current === "dragging" || heroMotionStateRef.current === "transitioning"}
               onFormTouch={handleFormTouch}
               onOpenStateChange={(st) => {
                 setPlannerState(st);
                 if (st === "open" || st === "opening") {
                   heroMotionStateRef.current = "planner-open";
-                  onPlanJourney?.();
-                  if (!isUserInteractingRef.current) {
-                    scheduleAutoplay(AUTOPLAY_DWELL_SECONDS);
-                  }
+                  killAutoplayTimer();
                 } else if (st === "closed") {
                   isUserInteractingRef.current = false;
                   heroMotionStateRef.current = "settled";
