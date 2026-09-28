@@ -22,7 +22,7 @@ import {
   formatWhenSummary,
   formatTravellersSummary,
 } from "../hero/plannerData";
-import { SUGGESTED_DESTINATIONS, JOURNEY_TYPE_OPTIONS } from "../../config/business";
+import { SUGGESTED_DESTINATIONS, JOURNEY_TYPE_OPTIONS, ODISHA_DISTRICTS } from "../../config/business";
 import { buildJourneyWhatsAppMessage, createWhatsAppUrl } from "../../utils/contact";
 import "./plannerFlow.css";
 
@@ -78,9 +78,12 @@ export const JourneyPlannerFlow: React.FC<JourneyPlannerFlowProps> = ({
   const [generatedWhatsAppUrl, setGeneratedWhatsAppUrl] = useState("");
   const [isCustomDest, setIsCustomDest] = useState(false);
   const [isDestDropdownOpen, setIsDestDropdownOpen] = useState(false);
+  const [isFromDropdownOpen, setIsFromDropdownOpen] = useState(false);
+  const [isCustomFrom, setIsCustomFrom] = useState(false);
 
   const idPrefix = useId();
   const destDropdownRef = useRef<HTMLDivElement>(null);
+  const fromDropdownRef = useRef<HTMLDivElement>(null);
 
   // Close destination dropdown on outside click
   useEffect(() => {
@@ -88,6 +91,7 @@ export const JourneyPlannerFlow: React.FC<JourneyPlannerFlowProps> = ({
     const handleClickOutside = (e: MouseEvent | TouchEvent) => {
       if (destDropdownRef.current && !destDropdownRef.current.contains(e.target as Node)) {
         setIsDestDropdownOpen(false);
+        onDropdownStateChange?.(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -96,7 +100,25 @@ export const JourneyPlannerFlow: React.FC<JourneyPlannerFlowProps> = ({
       document.removeEventListener("mousedown", handleClickOutside);
       document.removeEventListener("touchstart", handleClickOutside);
     };
-  }, [isDestDropdownOpen]);
+  }, [isDestDropdownOpen, onDropdownStateChange]);
+
+  // Close from dropdown on outside click
+  useEffect(() => {
+    if (!isFromDropdownOpen) return;
+    const handleClickOutside = (e: MouseEvent | TouchEvent) => {
+      if (fromDropdownRef.current && !fromDropdownRef.current.contains(e.target as Node)) {
+        setIsFromDropdownOpen(false);
+        onDropdownStateChange?.(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("touchstart", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+    };
+  }, [isFromDropdownOpen, onDropdownStateChange]);
+
 
   // Upcoming 12 months for flexible dates dropdown
   const upcomingMonths = useMemo(() => {
@@ -344,44 +366,163 @@ export const JourneyPlannerFlow: React.FC<JourneyPlannerFlowProps> = ({
               <label className="sjhHero__plannerLabel" htmlFor={`${idPrefix}-from`}>
                 WHERE ARE YOU TRAVELLING FROM? *
               </label>
-              <div className="sjhHero__plannerValueWrap">
-                <input
-                  id={`${idPrefix}-from`}
-                  className="sjhHero__plannerInput"
-                  type="text"
-                  value={draft.from}
-                  onChange={(e) => {
-                    onFormTouch?.();
-                    setField("from", e.target.value);
-                  }}
-                  onPointerDown={(e) => {
-                    e.stopPropagation();
-                    onFormTouch?.();
-                    if (variant === "hero") {
-                      e.preventDefault();
-                      onPromoteToSheet?.("from");
-                    }
-                  }}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onFormTouch?.();
-                    if (variant === "hero") {
-                      e.preventDefault();
-                      onPromoteToSheet?.("from");
-                    }
-                  }}
-                  onFocus={handleInputFocus}
-                  placeholder="e.g. Bhubaneswar"
-                  autoComplete="address-level2"
-                  readOnly={variant === "hero"}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      (e.target as HTMLElement).blur();
-                    }
-                  }}
-                />
-              </div>
+
+              {variant === "hero" ? (
+                /* Compact Origin Selector Dropdown (Symmetrical with Destination) */
+                <div ref={fromDropdownRef} className="sjhHeroCard__destSelectorWrap">
+                  <button
+                    id={`${idPrefix}-from`}
+                    type="button"
+                    className="sjhHeroCard__destSelectBtn"
+                    onPointerDown={(e) => {
+                      e.stopPropagation();
+                      onFormTouch?.();
+                    }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onFormTouch?.();
+                      setIsDestDropdownOpen(false);
+                      setIsFromDropdownOpen((prev) => {
+                        const next = !prev;
+                        onDropdownStateChange?.(next);
+                        return next;
+                      });
+                    }}
+                    aria-haspopup="listbox"
+                    aria-expanded={isFromDropdownOpen}
+                  >
+                    <span className="sjhHeroCard__destSelectVal">
+                      {draft.from || "Select Origin District"}
+                    </span>
+                    <span className="sjhHeroCard__destSelectChevron" aria-hidden="true">
+                      {isFromDropdownOpen ? "▲" : "▼"}
+                    </span>
+                  </button>
+
+                  {isFromDropdownOpen && (
+                    <div className="sjhHeroCard__fromDropdown" role="listbox">
+                      {ODISHA_DISTRICTS.map((district) => (
+                        <button
+                          key={district}
+                          type="button"
+                          role="option"
+                          aria-selected={draft.from === district}
+                          className={`sjhHeroCard__destDropdownItem ${draft.from === district ? "is-active" : ""}`}
+                          onPointerDown={(e) => {
+                            e.stopPropagation();
+                            onFormTouch?.();
+                          }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onFormTouch?.();
+                            if (district === "Other City / State") {
+                              setIsCustomFrom(true);
+                              setField("from", "");
+                              setIsFromDropdownOpen(false);
+                              onDropdownStateChange?.(false);
+                              onPromoteToSheet?.("from");
+                            } else {
+                              setIsCustomFrom(false);
+                              setField("from", district);
+                              setIsFromDropdownOpen(false);
+                              onDropdownStateChange?.(false);
+                            }
+                          }}
+                        >
+                          {district}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                /* Modal Origin Selector: Dropdown with All 30 Districts + Quick Top Chips */
+                <div>
+                  <div ref={fromDropdownRef} className="sjhHeroCard__destSelectorWrap">
+                    <button
+                      id={`${idPrefix}-from`}
+                      type="button"
+                      className="sjhHeroCard__destSelectBtn"
+                      onClick={() => {
+                        if (typeof document !== "undefined" && document.activeElement instanceof HTMLElement) {
+                          document.activeElement.blur();
+                        }
+                        setIsFromDropdownOpen((prev) => !prev);
+                      }}
+                      aria-haspopup="listbox"
+                      aria-expanded={isFromDropdownOpen}
+                    >
+                      <span className="sjhHeroCard__destSelectVal">
+                        {draft.from || "Select Origin District"}
+                      </span>
+                      <span className="sjhHeroCard__destSelectChevron" aria-hidden="true">
+                        {isFromDropdownOpen ? "▲" : "▼"}
+                      </span>
+                    </button>
+
+                    {isFromDropdownOpen && (
+                      <div className="sjhFlow__dropdownModal" role="listbox">
+                        {ODISHA_DISTRICTS.map((district) => (
+                          <button
+                            key={district}
+                            type="button"
+                            role="option"
+                            aria-selected={draft.from === district}
+                            className={`sjhHeroCard__destDropdownItem ${draft.from === district ? "is-active" : ""}`}
+                            onClick={() => {
+                              if (district === "Other City / State") {
+                                setIsCustomFrom(true);
+                                setField("from", "");
+                              } else {
+                                setIsCustomFrom(false);
+                                setField("from", district);
+                              }
+                              setIsFromDropdownOpen(false);
+                            }}
+                          >
+                            {district}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Top Origin Quick Chips for fastest 1-tap selection */}
+                  <div className="sjhFlow__fromChips" role="group" aria-label="Quick origin selection">
+                    {["Bhubaneswar", "Cuttack", "Puri", "Mayurbhanj (Baripada)", "Ganjam (Berhampur)", "Sundargarh (Rourkela)", "Sambalpur", "Balasore"].map((city) => (
+                      <button
+                        key={city}
+                        type="button"
+                        className={`sjhFlow__chip ${draft.from === city ? "is-active" : ""}`}
+                        onClick={() => {
+                          setIsCustomFrom(false);
+                          setField("from", city);
+                          setIsFromDropdownOpen(false);
+                        }}
+                      >
+                        {city}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Custom city input if "Other City / State" or custom */}
+                  {(isCustomFrom || (!ODISHA_DISTRICTS.includes(draft.from as any) && draft.from)) && (
+                    <div className="sjhHero__plannerValueWrap" style={{ marginTop: "8px" }}>
+                      <input
+                        id={`${idPrefix}-from-custom`}
+                        className="sjhHero__plannerInput"
+                        type="text"
+                        value={draft.from}
+                        onChange={(e) => {
+                          setField("from", e.target.value);
+                        }}
+                        placeholder="Enter your origin city / state"
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
+
               {errors.from && (
                 <span className="sjhHero__plannerError" role="alert">
                   {errors.from}
@@ -408,6 +549,7 @@ export const JourneyPlannerFlow: React.FC<JourneyPlannerFlowProps> = ({
                     onClick={(e) => {
                       e.stopPropagation();
                       onFormTouch?.();
+                      setIsFromDropdownOpen(false);
                       setIsDestDropdownOpen((prev) => {
                         const next = !prev;
                         onDropdownStateChange?.(next);
@@ -424,6 +566,7 @@ export const JourneyPlannerFlow: React.FC<JourneyPlannerFlowProps> = ({
                       {isDestDropdownOpen ? "▲" : "▼"}
                     </span>
                   </button>
+
 
                   {isDestDropdownOpen && (
                     <div className="sjhHeroCard__destDropdown" role="listbox">
