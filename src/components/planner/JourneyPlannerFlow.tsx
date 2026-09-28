@@ -29,27 +29,49 @@ import "./plannerFlow.css";
 interface JourneyPlannerFlowProps {
   draft: JourneyDraft;
   onDraftChange: (draft: JourneyDraft) => void;
+  step?: 1 | 2 | 3 | 4 | 5 | 6 | 7;
+  onStepChange?: (step: 1 | 2 | 3 | 4 | 5 | 6 | 7) => void;
   onClose?: () => void;
   onComplete?: (draft: JourneyDraft) => void;
   isKeyboardOpen?: boolean;
   variant?: "hero" | "modal";
   onFormTouch?: () => void;
   onDestinationTouch?: () => void;
+  onDropdownStateChange?: (isOpen: boolean) => void;
   onKeyboardStateChange?: (isOpen: boolean) => void;
+  onPromoteToSheet?: (focusField?: string) => void;
+  onContinueFromHero?: () => void;
+  focusFieldOnMount?: string | null;
+  onClearFocusField?: () => void;
 }
 
 export const JourneyPlannerFlow: React.FC<JourneyPlannerFlowProps> = ({
   draft,
   onDraftChange,
+  step: stepProp,
+  onStepChange,
   onClose,
   onComplete,
   isKeyboardOpen = false,
   variant = "modal",
   onFormTouch,
   onDestinationTouch,
-  onKeyboardStateChange,
+  onDropdownStateChange,
+  onKeyboardStateChange: _onKeyboardStateChange,
+  onPromoteToSheet,
+  onContinueFromHero,
+  focusFieldOnMount,
+  onClearFocusField,
 }) => {
-  const [step, setStep] = useState<1 | 2 | 3 | 4 | 5 | 6 | 7>(1);
+  const [internalStep, setInternalStep] = useState<1 | 2 | 3 | 4 | 5 | 6 | 7>(1);
+  const step = stepProp !== undefined ? stepProp : internalStep;
+  const setStep = (nextStep: 1 | 2 | 3 | 4 | 5 | 6 | 7) => {
+    if (onStepChange) {
+      onStepChange(nextStep);
+    } else {
+      setInternalStep(nextStep);
+    }
+  };
   const [errors, setErrors] = useState<FormErrors>({});
   const [isHandoffDone, setIsHandoffDone] = useState(false);
   const [popupBlocked, setPopupBlocked] = useState(false);
@@ -121,19 +143,26 @@ export const JourneyPlannerFlow: React.FC<JourneyPlannerFlowProps> = ({
     }
   };
 
-  // Prevent focus auto-scroll on mobile / touch interaction (Requirement 3 & 4)
-  const handlePointerDownInput = (e: React.PointerEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    e.stopPropagation();
-    onFormTouch?.();
-    onKeyboardStateChange?.(true);
-    e.currentTarget.focus({ preventScroll: true });
-  };
+  // Auto-focus requested field when promoted to viewport sheet
+  useEffect(() => {
+    if (focusFieldOnMount && variant === "modal") {
+      const timer = setTimeout(() => {
+        const el =
+          document.getElementById(`${idPrefix}-${focusFieldOnMount}`) ||
+          document.querySelector<HTMLElement>(`[name="${focusFieldOnMount}"]`);
+        if (el) {
+          el.focus({ preventScroll: true });
+        }
+        onClearFocusField?.();
+      }, 320);
+      return () => clearTimeout(timer);
+    }
+  }, [focusFieldOnMount, variant, idPrefix, onClearFocusField]);
 
-  const handleTouchStartInput = (e: React.TouchEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  // Clean focus handler for modal inputs without premature keyboard events
+  const handleInputFocus = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     e.stopPropagation();
     onFormTouch?.();
-    onKeyboardStateChange?.(true);
-    e.currentTarget.focus({ preventScroll: true });
   };
 
   // Step 1: Journey (From + Destination)
@@ -145,7 +174,11 @@ export const JourneyPlannerFlow: React.FC<JourneyPlannerFlowProps> = ({
       return;
     }
     setErrors({});
-    transitionToStep(2);
+    if (variant === "hero" && onContinueFromHero) {
+      onContinueFromHero();
+    } else {
+      transitionToStep(2);
+    }
   };
 
   // Step 2: Dates
@@ -321,19 +354,26 @@ export const JourneyPlannerFlow: React.FC<JourneyPlannerFlowProps> = ({
                     onFormTouch?.();
                     setField("from", e.target.value);
                   }}
-                  onPointerDown={handlePointerDownInput}
-                  onTouchStart={handleTouchStartInput}
-                  placeholder="e.g. Bhubaneswar"
-                  autoComplete="address-level2"
-                  onFocus={(e) => {
+                  onPointerDown={(e) => {
                     e.stopPropagation();
                     onFormTouch?.();
-                    onKeyboardStateChange?.(true);
+                    if (variant === "hero") {
+                      e.preventDefault();
+                      onPromoteToSheet?.("from");
+                    }
                   }}
-                  onBlur={(e) => {
+                  onClick={(e) => {
                     e.stopPropagation();
-                    onKeyboardStateChange?.(false);
+                    onFormTouch?.();
+                    if (variant === "hero") {
+                      e.preventDefault();
+                      onPromoteToSheet?.("from");
+                    }
                   }}
+                  onFocus={handleInputFocus}
+                  placeholder="e.g. Bhubaneswar"
+                  autoComplete="address-level2"
+                  readOnly={variant === "hero"}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       e.preventDefault();
@@ -368,7 +408,11 @@ export const JourneyPlannerFlow: React.FC<JourneyPlannerFlowProps> = ({
                     onClick={(e) => {
                       e.stopPropagation();
                       onFormTouch?.();
-                      setIsDestDropdownOpen((prev) => !prev);
+                      setIsDestDropdownOpen((prev) => {
+                        const next = !prev;
+                        onDropdownStateChange?.(next);
+                        return next;
+                      });
                     }}
                     aria-haspopup="listbox"
                     aria-expanded={isDestDropdownOpen}
@@ -406,6 +450,7 @@ export const JourneyPlannerFlow: React.FC<JourneyPlannerFlowProps> = ({
                               setField("destination", dest);
                             }
                             setIsDestDropdownOpen(false);
+                            onDropdownStateChange?.(false);
                           }}
                         >
                           {dest}
@@ -428,6 +473,7 @@ export const JourneyPlannerFlow: React.FC<JourneyPlannerFlowProps> = ({
                           if (typeof document !== "undefined" && document.activeElement instanceof HTMLElement) {
                             document.activeElement.blur();
                           }
+                          onDestinationTouch?.();
                           if (dest === "Customized Journey") {
                             setIsCustomDest(true);
                             setField("destination", "Customized Journey");
@@ -457,18 +503,25 @@ export const JourneyPlannerFlow: React.FC<JourneyPlannerFlowProps> = ({
                       onDestinationTouch?.();
                       setField("destination", e.target.value);
                     }}
-                    onPointerDown={handlePointerDownInput}
-                    onTouchStart={handleTouchStartInput}
-                    placeholder="Specify destination or region"
-                    onFocus={(e) => {
+                    onPointerDown={(e) => {
                       e.stopPropagation();
                       onFormTouch?.();
-                      onKeyboardStateChange?.(true);
+                      if (variant === "hero") {
+                        e.preventDefault();
+                        onPromoteToSheet?.("dest");
+                      }
                     }}
-                    onBlur={(e) => {
+                    onClick={(e) => {
                       e.stopPropagation();
-                      onKeyboardStateChange?.(false);
+                      onFormTouch?.();
+                      if (variant === "hero") {
+                        e.preventDefault();
+                        onPromoteToSheet?.("dest");
+                      }
                     }}
+                    onFocus={handleInputFocus}
+                    placeholder="Specify destination or region"
+                    readOnly={variant === "hero"}
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
                         e.preventDefault();
@@ -547,18 +600,9 @@ export const JourneyPlannerFlow: React.FC<JourneyPlannerFlowProps> = ({
                       className="sjhHero__dateInput"
                       min={todayStr}
                       value={draft.date || ""}
-                      onPointerDown={handlePointerDownInput}
-                      onTouchStart={handleTouchStartInput}
+                      onPointerDown={(e) => e.stopPropagation()}
                       onChange={(e) => setField("date", e.target.value)}
-                      onFocus={(e) => {
-                        e.stopPropagation();
-                        onFormTouch?.();
-                        onKeyboardStateChange?.(true);
-                      }}
-                      onBlur={(e) => {
-                        e.stopPropagation();
-                        onKeyboardStateChange?.(false);
-                      }}
+                      onFocus={handleInputFocus}
                     />
                     {errors.date && (
                       <span className="sjhHero__plannerError" role="alert">
@@ -577,18 +621,9 @@ export const JourneyPlannerFlow: React.FC<JourneyPlannerFlowProps> = ({
                       className="sjhHero__dateInput"
                       min={draft.date || todayStr}
                       value={draft.returnDate || ""}
-                      onPointerDown={handlePointerDownInput}
-                      onTouchStart={handleTouchStartInput}
+                      onPointerDown={(e) => e.stopPropagation()}
                       onChange={(e) => setField("returnDate", e.target.value)}
-                      onFocus={(e) => {
-                        e.stopPropagation();
-                        onFormTouch?.();
-                        onKeyboardStateChange?.(true);
-                      }}
-                      onBlur={(e) => {
-                        e.stopPropagation();
-                        onKeyboardStateChange?.(false);
-                      }}
+                      onFocus={handleInputFocus}
                     />
                     {errors.returnDate && (
                       <span className="sjhHero__plannerError" role="alert">
@@ -815,19 +850,10 @@ export const JourneyPlannerFlow: React.FC<JourneyPlannerFlowProps> = ({
                   type="text"
                   value={draft.name}
                   onChange={(e) => setField("name", e.target.value)}
-                  onPointerDown={handlePointerDownInput}
-                  onTouchStart={handleTouchStartInput}
+                  onPointerDown={(e) => e.stopPropagation()}
                   placeholder="Enter your full name"
                   autoComplete="name"
-                  onFocus={(e) => {
-                    e.stopPropagation();
-                    onFormTouch?.();
-                    onKeyboardStateChange?.(true);
-                  }}
-                  onBlur={(e) => {
-                    e.stopPropagation();
-                    onKeyboardStateChange?.(false);
-                  }}
+                  onFocus={handleInputFocus}
                 />
               </div>
               {errors.name && (
@@ -850,19 +876,10 @@ export const JourneyPlannerFlow: React.FC<JourneyPlannerFlowProps> = ({
                   inputMode="tel"
                   value={draft.phone}
                   onChange={(e) => setField("phone", e.target.value)}
-                  onPointerDown={handlePointerDownInput}
-                  onTouchStart={handleTouchStartInput}
+                  onPointerDown={(e) => e.stopPropagation()}
                   placeholder="+91 XXXXX XXXXX"
                   autoComplete="tel"
-                  onFocus={(e) => {
-                    e.stopPropagation();
-                    onFormTouch?.();
-                    onKeyboardStateChange?.(true);
-                  }}
-                  onBlur={(e) => {
-                    e.stopPropagation();
-                    onKeyboardStateChange?.(false);
-                  }}
+                  onFocus={handleInputFocus}
                 />
               </div>
               {errors.phone && (
@@ -885,19 +902,10 @@ export const JourneyPlannerFlow: React.FC<JourneyPlannerFlowProps> = ({
                   inputMode="email"
                   value={draft.email || ""}
                   onChange={(e) => setField("email", e.target.value)}
-                  onPointerDown={handlePointerDownInput}
-                  onTouchStart={handleTouchStartInput}
+                  onPointerDown={(e) => e.stopPropagation()}
                   placeholder="example@email.com"
                   autoComplete="email"
-                  onFocus={(e) => {
-                    e.stopPropagation();
-                    onFormTouch?.();
-                    onKeyboardStateChange?.(true);
-                  }}
-                  onBlur={(e) => {
-                    e.stopPropagation();
-                    onKeyboardStateChange?.(false);
-                  }}
+                  onFocus={handleInputFocus}
                 />
               </div>
               {errors.email && (
@@ -933,18 +941,9 @@ export const JourneyPlannerFlow: React.FC<JourneyPlannerFlowProps> = ({
                 rows={4}
                 value={draft.notes || ""}
                 onChange={(e) => setField("notes", e.target.value)}
-                onPointerDown={handlePointerDownInput}
-                onTouchStart={handleTouchStartInput}
+                onPointerDown={(e) => e.stopPropagation()}
                 placeholder="Hotel preference, senior citizens, pickup requirements, special pilgrimage needs, coach preference, etc."
-                onFocus={(e) => {
-                  e.stopPropagation();
-                  onFormTouch?.();
-                  onKeyboardStateChange?.(true);
-                }}
-                onBlur={(e) => {
-                  e.stopPropagation();
-                  onKeyboardStateChange?.(false);
-                }}
+                onFocus={handleInputFocus}
               />
             </div>
           </div>

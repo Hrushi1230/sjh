@@ -29,7 +29,7 @@ import {
   JourneyDockPlanner,
   JourneyDockPlannerHandle,
 } from "./JourneyDockPlanner";
-import { JourneyDraft, PlannerState } from "./plannerData";
+import { JourneyDraft } from "./plannerData";
 import {
   createHeroScrollTransition,
   ScrollTransitionHandle,
@@ -53,12 +53,25 @@ export type HeroTransitionSource = "auto" | "swipe" | "compass" | "keyboard";
 
 type Props = {
   onOpenMenu?: () => void;
+  onOpenPlannerSheet?: (options?: {
+    source?: string;
+    destination?: string;
+    step?: 1 | 2 | 3 | 4 | 5 | 6 | 7;
+    focusField?: string;
+  }) => void;
   onPlanJourney?: () => void;
+  draft: JourneyDraft;
+  onDraftChange: (draft: JourneyDraft) => void;
+  step?: 1 | 2 | 3 | 4 | 5 | 6 | 7;
+  onStepChange?: (step: 1 | 2 | 3 | 4 | 5 | 6 | 7) => void;
+  destinationTouchedByUser?: boolean;
+  onDestinationTouched?: () => void;
   onCreateJourney?: (draft: JourneyDraft) => void;
   onDestinationChange?: (destinationId: "puri" | "kashmir" | "rajasthan" | "kerala") => void;
   homeHref?: string;
   assetBase?: string;
   isInternalPageOpen?: boolean;
+  isPlannerSheetOpen?: boolean;
   isPlannerOpen?: boolean;
 };
 
@@ -67,12 +80,20 @@ const AUTOPLAY_DWELL_SECONDS = 4.0;
 
 export function MobileCinematicHero({
   onOpenMenu,
+  onOpenPlannerSheet,
   onPlanJourney,
+  draft,
+  onDraftChange,
+  step = 1,
+  onStepChange,
+  destinationTouchedByUser: _destinationTouchedByUser = false,
+  onDestinationTouched,
   onCreateJourney,
   onDestinationChange,
   homeHref = "/",
   assetBase = "/assets/sjh-hero",
   isInternalPageOpen = false,
+  isPlannerSheetOpen,
   isPlannerOpen,
 }: Props) {
   const root = useRef<HTMLElement>(null);
@@ -115,12 +136,25 @@ export function MobileCinematicHero({
   const dock = useRef<HTMLDivElement>(null);
   const compassNav = useRef<HTMLElement>(null);
 
-  // Phase 3: Journey Planner Morph State & Refs
+  // Phase 3: Journey Planner Refs & Mental Model:
+  // A. bookingCardVisible (compact card visible in settled hero)
+  // B. bookingInteractionActive (idle grace period with cancellable 8s timer)
+  // C. plannerSheetOpen (viewport-level sheet open)
   const plannerRef = useRef<JourneyDockPlannerHandle>(null);
   const veilRef = useRef<HTMLDivElement>(null);
-  const [plannerState, setPlannerState] = useState<PlannerState>("closed");
-  const plannerStateRef = useRef<PlannerState>("closed");
-  plannerStateRef.current = plannerState;
+
+  const isSheetOpen = Boolean(isPlannerSheetOpen ?? isPlannerOpen);
+  const isSheetOpenRef = useRef(isSheetOpen);
+  isSheetOpenRef.current = isSheetOpen;
+
+  const isAlreadySeen = typeof sessionStorage !== "undefined" && sessionStorage.getItem(SESSION_STORAGE_KEY) === "true";
+  const [bookingCardVisible, setBookingCardVisible] = useState(isAlreadySeen);
+
+  const [isDestDropdownOpen, setIsDestDropdownOpen] = useState(false);
+  const isDestDropdownOpenRef = useRef(false);
+  isDestDropdownOpenRef.current = isDestDropdownOpen;
+
+  const interactionIdleTimerRef = useRef<gsap.core.Tween | null>(null);
 
   // Phase 2: Destination State & Indices (Puri -> Kashmir -> Rajasthan -> Kerala)
   const [activeDestIndex, setActiveDestIndex] = useState(0); // 0 = Puri (East)
@@ -279,14 +313,14 @@ export function MobileCinematicHero({
     if (!isIntroCompleteRef.current) return false;
     if (
       heroMotionStateRef.current !== "settled" &&
-      heroMotionStateRef.current !== "auto-wait" &&
-      heroMotionStateRef.current !== "planner-open"
+      heroMotionStateRef.current !== "auto-wait"
     ) {
       return false;
     }
     if (isSuspendedRef.current) return false;
-    // Allow background auto-slide even when transparent enquiry card is open/animating
+    if (isSheetOpenRef.current) return false;
     if (isUserInteractingRef.current) return false;
+    if (isDestDropdownOpenRef.current) return false;
     if (typeof document !== "undefined" && document.hidden) return false;
     if (prefersReducedMotionRef.current) return false;
     if (scrollProgressRef.current > 0.02) return false;
@@ -302,8 +336,8 @@ export function MobileCinematicHero({
     (targetIndex: number, source: HeroTransitionSource, fromDirection?: Direction) => {
       if (!isIntroCompleteRef.current) return;
       if (isScrollLockedRef.current) return;
-      // Allow auto slideshow transitions even when planner card is open
-      if (plannerStateRef.current !== "closed" && source !== "auto") return;
+      // Allow auto slideshow transitions even when booking card is visible
+      if (isSheetOpenRef.current && source !== "auto") return;
       if (heroMotionStateRef.current === "transitioning" || heroMotionStateRef.current === "leaving-hero") return;
       if (targetIndex === activeDestIndexRef.current && source !== "swipe") return;
 
@@ -369,7 +403,7 @@ export function MobileCinematicHero({
                 support: support.current!,
               },
               () => {
-                heroMotionStateRef.current = plannerStateRef.current !== "closed" ? "planner-open" : "settled";
+                heroMotionStateRef.current = isSheetOpenRef.current ? "planner-open" : "settled";
                 scheduleAutoplayRef.current(AUTOPLAY_DWELL_SECONDS);
               }
             );
@@ -504,7 +538,7 @@ export function MobileCinematicHero({
   // Tapping compass cardinal point
   const handleCompassTap = useCallback(
     (dir: Direction) => {
-      if (!isIntroCompleteRef.current || isScrollLockedRef.current || plannerStateRef.current !== "closed") return;
+      if (!isIntroCompleteRef.current || isScrollLockedRef.current || isSheetOpenRef.current || isDestDropdownOpenRef.current) return;
       if (heroMotionStateRef.current === "transitioning") return;
 
       if (heroMotionStateRef.current === "settling") {
@@ -522,16 +556,55 @@ export function MobileCinematicHero({
     [transitionDestination]
   );
 
-  // Form Touch: pause background autoplay when user touches/interacts with the enquiry card
-  const handleFormTouch = useCallback(() => {
+  // Cancellable interaction-idle timer (Section 5 & 6)
+  // Every interaction pauses autoplay and resets an 8-second grace period.
+  const markPlannerInteraction = useCallback(() => {
     killAutoplayTimer();
     isUserInteractingRef.current = true;
+
+    if (interactionIdleTimerRef.current) {
+      interactionIdleTimerRef.current.kill();
+      interactionIdleTimerRef.current = null;
+    }
+
+    interactionIdleTimerRef.current = gsap.delayedCall(8.0, () => {
+      if (
+        !isSheetOpenRef.current &&
+        !isDestDropdownOpenRef.current &&
+        scrollProgressRef.current <= 0.02
+      ) {
+        isUserInteractingRef.current = false;
+        scheduleAutoplayRef.current(AUTOPLAY_DWELL_SECONDS);
+      }
+    });
   }, [killAutoplayTimer]);
+
+  useEffect(() => {
+    if (isSheetOpen) {
+      heroMotionStateRef.current = "planner-open";
+      killAutoplayTimer();
+      if (interactionIdleTimerRef.current) {
+        interactionIdleTimerRef.current.kill();
+        interactionIdleTimerRef.current = null;
+      }
+    } else {
+      heroMotionStateRef.current = "settled";
+      markPlannerInteraction();
+    }
+  }, [isSheetOpen, killAutoplayTimer, markPlannerInteraction]);
+
+  useEffect(() => {
+    return () => {
+      if (interactionIdleTimerRef.current) {
+        interactionIdleTimerRef.current.kill();
+      }
+    };
+  }, []);
 
   // Mobile Swipe Gesture: Horizontal swipe advances/returns destination; Vertical swipe remains 100% native scroll!
   const handlePointerDown = (e: React.PointerEvent) => {
     if (!isIntroCompleteRef.current || isScrollLockedRef.current) return;
-    if (plannerStateRef.current !== "closed") return;
+    if (isSheetOpenRef.current) return;
     if (heroMotionStateRef.current === "transitioning") return;
 
     if (heroMotionStateRef.current === "settling") {
@@ -554,7 +627,7 @@ export function MobileCinematicHero({
   const handlePointerMove = (e: React.PointerEvent) => {
     const g = gestureRef.current;
     if (!g || !isIntroCompleteRef.current || isScrollLockedRef.current) return;
-    if (plannerStateRef.current !== "closed") return;
+    if (isSheetOpenRef.current) return;
     if (heroMotionStateRef.current === "transitioning") return;
 
     const dx = e.clientX - g.startX;
@@ -682,8 +755,11 @@ export function MobileCinematicHero({
   // Keyboard accessibility
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (!isIntroCompleteRef.current || isScrollLockedRef.current || plannerStateRef.current !== "closed") return;
+      if (!isIntroCompleteRef.current || isScrollLockedRef.current || isSheetOpenRef.current) return;
       if (heroMotionStateRef.current === "transitioning" || heroMotionStateRef.current === "dragging") return;
+
+      const activeEl = document.activeElement;
+      if (activeEl && (activeEl.tagName === "INPUT" || activeEl.tagName === "TEXTAREA" || activeEl.tagName === "SELECT")) return;
 
       if (e.key === "ArrowLeft") {
         const nextIdx = (activeDestIndexRef.current + 1) % destinations.length;
@@ -1014,37 +1090,17 @@ export function MobileCinematicHero({
     return () => document.removeEventListener("visibilitychange", handleVisibility);
   }, [killAutoplayTimer, canAutoplay, scheduleAutoplay]);
 
-  // Synchronize planner open state from parent
-  useEffect(() => {
-    if (isPlannerOpen !== undefined) {
-      setPlannerState(isPlannerOpen ? "open" : "closed");
-      if (isPlannerOpen) {
-        heroMotionStateRef.current = "planner-open";
-        killAutoplayTimer();
-      } else {
-        heroMotionStateRef.current = "settled";
-        scheduleAutoplay(AUTOPLAY_DWELL_SECONDS);
-      }
-    }
-  }, [isPlannerOpen, killAutoplayTimer, scheduleAutoplay]);
-
   // Expose Phase 3 Journey Planner deterministic testing hooks
   useEffect(() => {
     const win = window as any;
-    if (!win.__SJH_PLANNER_OPEN__) {
-      win.__SJH_PLANNER_OPEN__ = () => plannerRef.current?.open();
-    }
-    if (!win.__SJH_PLANNER_CLOSE__) {
-      win.__SJH_PLANNER_CLOSE__ = () => plannerRef.current?.close();
-    }
-    win.__SJH_PLANNER_SEEK__ = (progress: number) => plannerRef.current?.seek(progress);
-    if (!win.__SJH_GET_PLANNER_STATE__) {
-      win.__SJH_GET_PLANNER_STATE__ = () => plannerRef.current?.getState() || "closed";
-    }
+    win.__SJH_HERO_CARD_SEEK__ = (progress: number) => plannerRef.current?.seek(progress);
+    win.__SJH_SHOW_HERO_CARD__ = () => plannerRef.current?.showCard();
+    win.__SJH_HIDE_HERO_CARD__ = () => plannerRef.current?.hideCard();
+    win.__SJH_IS_HERO_CARD_VISIBLE__ = () => plannerRef.current?.isCardVisible() ?? bookingCardVisible;
     if (!win.__SJH_GET_DRAFT__) {
       win.__SJH_GET_DRAFT__ = () => plannerRef.current?.getDraft();
     }
-  }, []);
+  }, [bookingCardVisible]);
 
   // Phase 4: Master Scroll Transition Effect (Cinema -> Magazine)
   useEffect(() => {
@@ -1391,7 +1447,7 @@ export function MobileCinematicHero({
                   className={`sjhHero__header ${isScrolled ? "is-scrolled" : ""} ${
                     isDarkTheme ? "is-dark-theme" : isEditorialTheme ? "is-editorial" : ""
                   }`}
-                  aria-hidden={plannerState !== "closed" ? "true" : undefined}
+                  aria-hidden={isSheetOpen ? "true" : undefined}
                 >
                   <a
                     className="sjhHero__home"
@@ -1403,7 +1459,7 @@ export function MobileCinematicHero({
                         window.scrollTo({ top: 0, behavior: "smooth" });
                       }
                     }}
-                    tabIndex={plannerState !== "closed" ? -1 : 0}
+                    tabIndex={isSheetOpen ? -1 : 0}
                   >
                     <img
                       className="sjhHero__logo"
@@ -1416,8 +1472,8 @@ export function MobileCinematicHero({
                     type="button"
                     onClick={onOpenMenu}
                     aria-label="Open menu"
-                    tabIndex={plannerState !== "closed" ? -1 : 0}
-                    disabled={plannerState !== "closed"}
+                    tabIndex={isSheetOpen ? -1 : 0}
+                    disabled={isSheetOpen}
                   >
                     <img src={`${assetBase}/menu.svg`} alt="" aria-hidden="true" />
                   </button>
@@ -1465,27 +1521,49 @@ export function MobileCinematicHero({
               aria-hidden="true"
             />
 
-            {/* Phase 3: Morphing Journey Dock & Planner Shell */}
+            {/* Phase 3: Settled Journey Dock & Planner Shell */}
             <JourneyDockPlanner
               ref={plannerRef}
               dockRef={dock}
               activeDestination={currentDest.id}
               assetBase={assetBase}
               isIntroComplete={isIntroComplete}
-              isOpen={isPlannerOpen}
-              onOpenPlanner={onPlanJourney}
-              isPortalActive={portalActive || heroMotionStateRef.current === "dragging" || heroMotionStateRef.current === "transitioning"}
-              onFormTouch={handleFormTouch}
-              onOpenStateChange={(st) => {
-                setPlannerState(st);
-                if (st === "open" || st === "opening") {
-                  heroMotionStateRef.current = "planner-open";
-                  killAutoplayTimer();
-                } else if (st === "closed") {
-                  isUserInteractingRef.current = false;
-                  heroMotionStateRef.current = "settled";
-                  scheduleAutoplay(AUTOPLAY_DWELL_SECONDS);
+              draft={draft}
+              onDraftChange={onDraftChange}
+              step={step}
+              onStepChange={onStepChange}
+              onPromoteToSheet={(focusField) => {
+                if (onOpenPlannerSheet) {
+                  onOpenPlannerSheet({ focusField, step });
+                } else if (onPlanJourney) {
+                  onPlanJourney();
                 }
+              }}
+              onContinueToSheet={() => {
+                const nextStep = step === 1 ? 2 : step;
+                onStepChange?.(nextStep);
+                if (onOpenPlannerSheet) {
+                  onOpenPlannerSheet({ step: nextStep });
+                } else if (onPlanJourney) {
+                  onPlanJourney();
+                }
+              }}
+              onFormTouch={markPlannerInteraction}
+              onDestinationTouch={() => {
+                onDestinationTouched?.();
+                markPlannerInteraction();
+              }}
+              onDropdownStateChange={(isOpen) => {
+                setIsDestDropdownOpen(isOpen);
+                if (isOpen) {
+                  killAutoplayTimer();
+                  isUserInteractingRef.current = true;
+                } else {
+                  markPlannerInteraction();
+                }
+              }}
+              onCardVisibleChange={(visible) => {
+                setBookingCardVisible(visible);
               }}
               onCreateJourney={onCreateJourney}
               backgroundRef={background}
@@ -1499,7 +1577,7 @@ export function MobileCinematicHero({
               ref={compassNav}
               className="sjhHero__compassNav"
               aria-label="Destination compass navigation"
-              aria-hidden={plannerState !== "closed" ? "true" : undefined}
+              aria-hidden={isSheetOpen ? "true" : undefined}
             >
               <div className="sjhHero__compassRing">
                 <button
@@ -1508,8 +1586,8 @@ export function MobileCinematicHero({
                   onClick={() => handleCompassTap("north")}
                   aria-label="Go to Kashmir (North)"
                   aria-current={currentDest.direction === "north" ? "true" : undefined}
-                  tabIndex={plannerState !== "closed" || isScrollLocked ? -1 : 0}
-                  disabled={plannerState !== "closed" || isScrollLocked}
+                  tabIndex={isSheetOpen || isScrollLocked || isDestDropdownOpen ? -1 : 0}
+                  disabled={isSheetOpen || isScrollLocked || isDestDropdownOpen}
                 >
                   <span className="sjhHero__compassLabel">N</span>
                   <span className="sjhHero__compassDot" />
@@ -1521,8 +1599,8 @@ export function MobileCinematicHero({
                   onClick={() => handleCompassTap("east")}
                   aria-label="Go to Puri (East)"
                   aria-current={currentDest.direction === "east" ? "true" : undefined}
-                  tabIndex={plannerState !== "closed" || isScrollLocked ? -1 : 0}
-                  disabled={plannerState !== "closed" || isScrollLocked}
+                  tabIndex={isSheetOpen || isScrollLocked || isDestDropdownOpen ? -1 : 0}
+                  disabled={isSheetOpen || isScrollLocked || isDestDropdownOpen}
                 >
                   <span className="sjhHero__compassDot" />
                   <span className="sjhHero__compassLabel">E</span>
@@ -1534,8 +1612,8 @@ export function MobileCinematicHero({
                   onClick={() => handleCompassTap("south")}
                   aria-label="Go to Kerala (South)"
                   aria-current={currentDest.direction === "south" ? "true" : undefined}
-                  tabIndex={plannerState !== "closed" || isScrollLocked ? -1 : 0}
-                  disabled={plannerState !== "closed" || isScrollLocked}
+                  tabIndex={isSheetOpen || isScrollLocked || isDestDropdownOpen ? -1 : 0}
+                  disabled={isSheetOpen || isScrollLocked || isDestDropdownOpen}
                 >
                   <span className="sjhHero__compassDot" />
                   <span className="sjhHero__compassLabel">S</span>
@@ -1547,8 +1625,8 @@ export function MobileCinematicHero({
                   onClick={() => handleCompassTap("west")}
                   aria-label="Go to Rajasthan (West)"
                   aria-current={currentDest.direction === "west" ? "true" : undefined}
-                  tabIndex={plannerState !== "closed" || isScrollLocked ? -1 : 0}
-                  disabled={plannerState !== "closed" || isScrollLocked}
+                  tabIndex={isSheetOpen || isScrollLocked || isDestDropdownOpen ? -1 : 0}
+                  disabled={isSheetOpen || isScrollLocked || isDestDropdownOpen}
                 >
                   <span className="sjhHero__compassLabel">W</span>
                   <span className="sjhHero__compassDot" />
@@ -1570,8 +1648,8 @@ export function MobileCinematicHero({
                       ? "Resume destination slideshow"
                       : "Pause destination slideshow"
                   }
-                  tabIndex={plannerState !== "closed" || isScrollLocked ? -1 : 0}
-                  disabled={plannerState !== "closed" || isScrollLocked}
+                  tabIndex={isSheetOpen || isScrollLocked || isDestDropdownOpen ? -1 : 0}
+                  disabled={isSheetOpen || isScrollLocked || isDestDropdownOpen}
                 >
                   <span className="sjhHero__autoplayBtnIcon">
                     {isAutoplayManuallyPaused ? (

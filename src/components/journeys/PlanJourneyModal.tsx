@@ -25,6 +25,14 @@ interface PlanJourneyModalProps {
   onClose: () => void;
   destination?: string;
   source?: string;
+  draft?: JourneyDraft;
+  onDraftChange?: (draft: JourneyDraft) => void;
+  step?: 1 | 2 | 3 | 4 | 5 | 6 | 7;
+  onStepChange?: (step: 1 | 2 | 3 | 4 | 5 | 6 | 7) => void;
+  destinationTouchedByUser?: boolean;
+  onDestinationTouch?: () => void;
+  focusField?: string | null;
+  onClearFocusField?: () => void;
   onCreateJourney?: (draft: JourneyDraft) => void;
   triggerElement?: HTMLElement | null;
 }
@@ -34,10 +42,25 @@ export function PlanJourneyModal({
   onClose,
   destination = "",
   source = "modal",
+  draft: externalDraft,
+  onDraftChange: externalOnDraftChange,
+  step: externalStep,
+  onStepChange: externalOnStepChange,
+  destinationTouchedByUser = false,
+  onDestinationTouch,
+  focusField,
+  onClearFocusField,
   onCreateJourney,
   triggerElement,
 }: PlanJourneyModalProps) {
-  const [draft, setDraft] = useState<JourneyDraft>(() => createDefaultDraft(destination));
+  const [internalDraft, setInternalDraft] = useState<JourneyDraft>(() => createDefaultDraft(destination));
+  const currentDraft = externalDraft !== undefined ? externalDraft : internalDraft;
+  const handleDraftChange = externalOnDraftChange || setInternalDraft;
+
+  const [internalStep, setInternalStep] = useState<1 | 2 | 3 | 4 | 5 | 6 | 7>(1);
+  const currentStep = externalStep !== undefined ? externalStep : internalStep;
+  const handleStepChange = externalOnStepChange || setInternalStep;
+
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
 
   const overlayRef = useRef<HTMLDivElement>(null);
@@ -46,16 +69,24 @@ export function PlanJourneyModal({
   const shellRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLElement | null>(null);
 
-  // Synchronize destination & source when opening modal
+  // Synchronize destination & source when opening modal IF user hasn't chosen one
   useEffect(() => {
     if (isOpen) {
-      setDraft((prev) => ({
-        ...prev,
-        destination: getDestinationLabel(destination) || prev.destination || "Puri / Odisha",
-        source: source || prev.source,
-      }));
+      if (destination && !destinationTouchedByUser) {
+        const mapped = getDestinationLabel(destination) || destination;
+        handleDraftChange({
+          ...currentDraft,
+          destination: mapped,
+          source: source || currentDraft.source,
+        });
+      } else if (source && source !== currentDraft.source) {
+        handleDraftChange({
+          ...currentDraft,
+          source: source,
+        });
+      }
     }
-  }, [isOpen, destination, source]);
+  }, [isOpen, destination, source, destinationTouchedByUser]);
 
   // Remember triggering element for focus restoration (Requirement 36)
   useEffect(() => {
@@ -247,7 +278,7 @@ export function PlanJourneyModal({
                 PLAN YOUR JOURNEY
               </h2>
               <div className="sjhPlannerHeader__subtitle">
-                {draft.destination ? `${draft.destination} Edition` : "Enquiry Concierge"}
+                {currentDraft.destination ? `${currentDraft.destination} Edition` : "Enquiry Concierge"}
               </div>
             </div>
 
@@ -263,10 +294,15 @@ export function PlanJourneyModal({
 
           {/* 7-Step Journey Planner Flow (Requirement 12 & 13) */}
           <JourneyPlannerFlow
-            draft={draft}
-            onDraftChange={setDraft}
+            draft={currentDraft}
+            onDraftChange={handleDraftChange}
+            step={currentStep}
+            onStepChange={handleStepChange}
             onClose={handleClose}
             onComplete={onCreateJourney}
+            onDestinationTouch={onDestinationTouch}
+            focusFieldOnMount={focusField}
+            onClearFocusField={onClearFocusField}
             isKeyboardOpen={isKeyboardOpen}
           />
         </div>

@@ -1,6 +1,7 @@
 import { useState, useCallback, useLayoutEffect, useEffect } from "react";
 import { MobileCinematicHero } from "./components/hero/MobileCinematicHero";
-import { JourneyDraft } from "./components/hero/plannerData";
+import { JourneyDraft, getDestinationLabel } from "./components/hero/plannerData";
+import { PlannerSessionProvider, usePlannerSession } from "./context/PlannerSessionContext";
 import { EditorialExperience } from "./components/editorial/EditorialExperience";
 import { TravelThreadRegion } from "./components/thread/TravelThreadRegion";
 import { TravelThreadOutro } from "./components/thread/TravelThreadOutro";
@@ -21,14 +22,19 @@ import "./components/closing/closing.css";
 import "./components/journeys/detail/journeyDetail.css";
 
 export function App() {
+  return (
+    <PlannerSessionProvider initialDestination="puri">
+      <AppContent />
+    </PlannerSessionProvider>
+  );
+}
+
+function AppContent() {
+  const planner = usePlannerSession();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [plannerModalOpen, setPlannerModalOpen] = useState(false);
   const [activeDestination, setActiveDestination] = useState<
     "puri" | "kashmir" | "rajasthan" | "kerala"
   >("puri");
-
-  const [plannerDestination, setPlannerDestination] = useState<string>("puri");
-  const [plannerSource, setPlannerSource] = useState<string>("hero");
 
   const {
     activeJourney,
@@ -145,8 +151,8 @@ export function App() {
 
   // Close planner safely if route changes (Requirement 35)
   useEffect(() => {
-    setPlannerModalOpen(false);
-  }, [activeJourney, isTravelMemories]);
+    planner.closePlannerSheet();
+  }, [activeJourney, isTravelMemories, planner]);
 
   // Global planner hooks so callers anywhere (Hero, Phase 9, Phase 11, Footer, Menu) open planner seamlessly
   useLayoutEffect(() => {
@@ -154,24 +160,27 @@ export function App() {
 
     win.__SJH_PLANNER_SET_FIELD__ = (field: string, val: any) => {
       if (field === "destination") {
-        setPlannerDestination(val);
+        if (!planner.destinationTouchedByUser) {
+          const label = getDestinationLabel(val) || val;
+          planner.updateDraftField("destination", label);
+        }
       } else if (field === "source") {
-        setPlannerSource(val);
+        planner.updateDraftField("source", val);
       }
     };
 
     win.__SJH_PLANNER_OPEN__ = () => {
-      setPlannerModalOpen(true);
+      planner.openPlannerSheet();
     };
 
     win.__SJH_PLANNER_CLOSE__ = () => {
-      setPlannerModalOpen(false);
+      planner.closePlannerSheet();
     };
 
     win.__SJH_GET_PLANNER_STATE__ = () => {
-      return plannerModalOpen ? "open" : "closed";
+      return planner.isPlannerSheetOpen ? "open" : "closed";
     };
-  }, [plannerModalOpen]);
+  }, [planner]);
 
   return (
     <>
@@ -183,12 +192,20 @@ export function App() {
       >
         <MobileCinematicHero
           onOpenMenu={handleOpenMenu}
-          onPlanJourney={() => setPlannerModalOpen(true)}
+          onOpenPlannerSheet={planner.openPlannerSheet}
+          onPlanJourney={() => planner.openPlannerSheet()}
           onCreateJourney={handleCreateJourney}
           onDestinationChange={(dest) => {
             setActiveDestination(dest);
-            setPlannerDestination(dest);
+            planner.setActiveHeroDestination(dest);
           }}
+          draft={planner.draft}
+          onDraftChange={planner.setDraft}
+          step={planner.step}
+          onStepChange={planner.setStep}
+          destinationTouchedByUser={planner.destinationTouchedByUser}
+          onDestinationTouched={() => planner.setDestinationTouchedByUser(true)}
+          isPlannerSheetOpen={planner.isPlannerSheetOpen}
           isInternalPageOpen={isInternalPageOpen}
         />
 
@@ -229,24 +246,14 @@ export function App() {
         {/* Phase 11: Start Your Journey (Final conversion moment, Temple Black) */}
         <FinalJourneyCTA
           onOpenPlanner={() => {
-            const win = window as any;
-            if (win.__SJH_PLANNER_SET_FIELD__) {
-              win.__SJH_PLANNER_SET_FIELD__("source", "final-home-cta");
-            }
-            setPlannerSource("final-home-cta");
-            setPlannerModalOpen(true);
+            planner.openPlannerSheet({ source: "final-home-cta" });
           }}
         />
 
         {/* Phase 12: Site Footer (Editorial Colophon, verified info, final gold node) */}
         <SiteFooter
           onOpenPlanner={() => {
-            const win = window as any;
-            if (win.__SJH_PLANNER_SET_FIELD__) {
-              win.__SJH_PLANNER_SET_FIELD__("source", "footer");
-            }
-            setPlannerSource("footer");
-            setPlannerModalOpen(true);
+            planner.openPlannerSheet({ source: "footer" });
           }}
           onNavigateRoute={(href) => {
             if (href === "/travel-memories") {
@@ -260,194 +267,189 @@ export function App() {
       </main>
 
       {menuOpen && (
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-label="Navigation menu"
-            style={{
-              position: "fixed",
-              inset: 0,
-              zIndex: 100,
-              background: "rgba(11, 10, 8, 0.96)",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "space-between",
-              padding: "28px 24px",
-              color: "var(--sjh-ivory, #F4EFE6)",
-              backdropFilter: "blur(14px)",
-              overflowY: "auto",
-            }}
-          >
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <img src="/assets/sjh-hero/sjh-logo.svg" alt="SJH Logo" style={{ width: "76px" }} />
-              <button
-                type="button"
-                onClick={() => setMenuOpen(false)}
-                aria-label="Close menu"
-                style={{
-                  width: "44px",
-                  height: "44px",
-                  borderRadius: "50%",
-                  border: "1px solid rgba(244, 239, 230, 0.6)",
-                  fontSize: "20px",
-                  display: "grid",
-                  placeItems: "center",
-                  background: "transparent",
-                  color: "#F4EFE6",
-                  cursor: "pointer",
-                }}
-              >
-                ✕
-              </button>
-            </div>
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Navigation menu"
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 100,
+            background: "rgba(11, 10, 8, 0.96)",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+            padding: "28px 24px",
+            color: "var(--sjh-ivory, #F4EFE6)",
+            backdropFilter: "blur(14px)",
+            overflowY: "auto",
+          }}
+        >
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <img src="/assets/sjh-hero/sjh-logo.svg" alt="SJH Logo" style={{ width: "76px" }} />
+            <button
+              type="button"
+              onClick={() => setMenuOpen(false)}
+              aria-label="Close menu"
+              style={{
+                width: "44px",
+                height: "44px",
+                borderRadius: "50%",
+                border: "1px solid rgba(244, 239, 230, 0.6)",
+                fontSize: "20px",
+                display: "grid",
+                placeItems: "center",
+                background: "transparent",
+                color: "#F4EFE6",
+                cursor: "pointer",
+              }}
+            >
+              ✕
+            </button>
+          </div>
 
-            {/* Navigation Links */}
-            <nav style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-              <a
-                href="#destinations"
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleNavigateSection("destinations");
-                }}
-                style={{ fontFamily: "Cormorant Garamond, serif", fontSize: "28px", color: "#F4EFE6", textDecoration: "none" }}
-              >
-                Destinations
-              </a>
-              <a
-                href="#sacred-journeys"
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleNavigateSection("sacred-journeys");
-                }}
-                style={{ fontFamily: "Cormorant Garamond, serif", fontSize: "28px", color: "#F4EFE6", textDecoration: "none" }}
-              >
-                Sacred Journeys
-              </a>
-              <a
-                href="#our-heritage"
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleNavigateSection("our-heritage");
-                }}
-                style={{ fontFamily: "Cormorant Garamond, serif", fontSize: "28px", color: "#F4EFE6", textDecoration: "none" }}
-              >
-                Our Heritage
-              </a>
-              <a
-                href="/travel-memories"
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleNavigateSection("travel-memories", "/travel-memories");
-                }}
-                style={{ fontFamily: "Cormorant Garamond, serif", fontSize: "28px", color: "#F4EFE6", textDecoration: "none" }}
-              >
-                Travel Memories
-              </a>
-            </nav>
+          {/* Navigation Links */}
+          <nav style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+            <a
+              href="#destinations"
+              onClick={(e) => {
+                e.preventDefault();
+                handleNavigateSection("destinations");
+              }}
+              style={{ fontFamily: "Cormorant Garamond, serif", fontSize: "28px", color: "#F4EFE6", textDecoration: "none" }}
+            >
+              Destinations
+            </a>
+            <a
+              href="#sacred-journeys"
+              onClick={(e) => {
+                e.preventDefault();
+                handleNavigateSection("sacred-journeys");
+              }}
+              style={{ fontFamily: "Cormorant Garamond, serif", fontSize: "28px", color: "#F4EFE6", textDecoration: "none" }}
+            >
+              Sacred Journeys
+            </a>
+            <a
+              href="#our-heritage"
+              onClick={(e) => {
+                e.preventDefault();
+                handleNavigateSection("our-heritage");
+              }}
+              style={{ fontFamily: "Cormorant Garamond, serif", fontSize: "28px", color: "#F4EFE6", textDecoration: "none" }}
+            >
+              Our Heritage
+            </a>
+            <a
+              href="/travel-memories"
+              onClick={(e) => {
+                e.preventDefault();
+                handleNavigateSection("travel-memories", "/travel-memories");
+              }}
+              style={{ fontFamily: "Cormorant Garamond, serif", fontSize: "28px", color: "#F4EFE6", textDecoration: "none" }}
+            >
+              Travel Memories
+            </a>
+          </nav>
 
-            {/* Direct Contact Actions (Section 23) */}
-            <div style={{ display: "flex", flexDirection: "column", gap: "10px", borderTop: "1px solid rgba(185, 148, 85, 0.25)", paddingTop: "18px" }}>
-              <button
-                type="button"
-                onClick={() => {
-                  setMenuOpen(false);
-                  const win = window as any;
-                  if (win.__SJH_PLANNER_SET_FIELD__) {
-                    win.__SJH_PLANNER_SET_FIELD__("source", "mobile-menu");
-                  }
-                  setPlannerSource("mobile-menu");
-                  setPlannerModalOpen(true);
-                }}
-                style={{
-                  background: "rgba(185, 148, 85, 0.15)",
-                  border: "1px solid #B99455",
-                  color: "#F4EFE6",
-                  padding: "12px 18px",
-                  borderRadius: "999px",
-                  fontSize: "12px",
-                  letterSpacing: "0.14em",
-                  textTransform: "uppercase",
-                  fontWeight: 600,
-                  cursor: "pointer",
-                  textAlign: "center",
-                }}
-              >
-                PLAN A JOURNEY →
-              </button>
+          {/* Direct Contact Actions */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "10px", borderTop: "1px solid rgba(185, 148, 85, 0.25)", paddingTop: "18px" }}>
+            <button
+              type="button"
+              onClick={() => {
+                setMenuOpen(false);
+                planner.openPlannerSheet({ source: "mobile-menu" });
+              }}
+              style={{
+                background: "rgba(185, 148, 85, 0.15)",
+                border: "1px solid #B99455",
+                color: "#F4EFE6",
+                padding: "12px 18px",
+                borderRadius: "999px",
+                fontSize: "12px",
+                letterSpacing: "0.14em",
+                textTransform: "uppercase",
+                fontWeight: 600,
+                cursor: "pointer",
+                textAlign: "center",
+              }}
+            >
+              PLAN A JOURNEY →
+            </button>
 
+            <a
+              href={createWhatsAppUrl("Hello Shree Jagannath Holidays,\n\nI would like to enquire about a journey.\n\nPlease help me with the details.")}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => setMenuOpen(false)}
+              style={{
+                background: "transparent",
+                border: "1px solid rgba(244, 239, 230, 0.25)",
+                color: "#F4EFE6",
+                padding: "11px 18px",
+                borderRadius: "999px",
+                fontSize: "12px",
+                letterSpacing: "0.14em",
+                textTransform: "uppercase",
+                textDecoration: "none",
+                textAlign: "center",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "8px",
+              }}
+            >
+              <span style={{ color: "#25D366" }}>●</span> WHATSAPP US
+            </a>
+
+            <a
+              href={createPhoneUrl()}
+              onClick={() => setMenuOpen(false)}
+              aria-label="Call Shree Jagannath Holidays"
+              style={{
+                background: "transparent",
+                border: "1px solid rgba(244, 239, 230, 0.25)",
+                color: "#F4EFE6",
+                padding: "11px 18px",
+                borderRadius: "999px",
+                fontSize: "12px",
+                letterSpacing: "0.14em",
+                textTransform: "uppercase",
+                textDecoration: "none",
+                textAlign: "center",
+              }}
+            >
+              CALL US · {BUSINESS_INFO.phone.display}
+            </a>
+          </div>
+
+          {/* Social Links & Location */}
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid rgba(185, 148, 85, 0.15)", paddingTop: "14px", marginTop: "8px" }}>
+            <div style={{ display: "flex", gap: "16px" }}>
               <a
-                href={createWhatsAppUrl("Hello Shree Jagannath Holidays,\n\nI would like to enquire about a journey.\n\nPlease help me with the details.")}
+                href={BUSINESS_INFO.socials.instagram}
                 target="_blank"
                 rel="noopener noreferrer"
-                onClick={() => setMenuOpen(false)}
-                style={{
-                  background: "transparent",
-                  border: "1px solid rgba(244, 239, 230, 0.25)",
-                  color: "#F4EFE6",
-                  padding: "11px 18px",
-                  borderRadius: "999px",
-                  fontSize: "12px",
-                  letterSpacing: "0.14em",
-                  textTransform: "uppercase",
-                  textDecoration: "none",
-                  textAlign: "center",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: "8px",
-                }}
+                style={{ color: "#B99455", fontSize: "12px", letterSpacing: "0.12em", textDecoration: "none", textTransform: "uppercase" }}
               >
-                <span style={{ color: "#25D366" }}>●</span> WHATSAPP US
+                Instagram ↗
               </a>
-
               <a
-                href={createPhoneUrl()}
-                onClick={() => setMenuOpen(false)}
-                aria-label="Call Shree Jagannath Holidays"
-                style={{
-                  background: "transparent",
-                  border: "1px solid rgba(244, 239, 230, 0.25)",
-                  color: "#F4EFE6",
-                  padding: "11px 18px",
-                  borderRadius: "999px",
-                  fontSize: "12px",
-                  letterSpacing: "0.14em",
-                  textTransform: "uppercase",
-                  textDecoration: "none",
-                  textAlign: "center",
-                }}
+                href={BUSINESS_INFO.socials.facebook}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: "#B99455", fontSize: "12px", letterSpacing: "0.12em", textDecoration: "none", textTransform: "uppercase" }}
               >
-                CALL US · {BUSINESS_INFO.phone.display}
+                Facebook ↗
               </a>
             </div>
 
-            {/* Social Links & Location */}
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid rgba(185, 148, 85, 0.15)", paddingTop: "14px", marginTop: "8px" }}>
-              <div style={{ display: "flex", gap: "16px" }}>
-                <a
-                  href={BUSINESS_INFO.socials.instagram}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ color: "#B99455", fontSize: "12px", letterSpacing: "0.12em", textDecoration: "none", textTransform: "uppercase" }}
-                >
-                  Instagram ↗
-                </a>
-                <a
-                  href={BUSINESS_INFO.socials.facebook}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ color: "#B99455", fontSize: "12px", letterSpacing: "0.12em", textDecoration: "none", textTransform: "uppercase" }}
-                >
-                  Facebook ↗
-                </a>
-              </div>
-
-              <div style={{ fontSize: "10px", letterSpacing: "0.16em", color: "rgba(244, 239, 230, 0.55)", textTransform: "uppercase" }}>
-                {BUSINESS_INFO.location}
-              </div>
+            <div style={{ fontSize: "10px", letterSpacing: "0.16em", color: "rgba(244, 239, 230, 0.55)", textTransform: "uppercase" }}>
+              {BUSINESS_INFO.location}
             </div>
           </div>
-        )}
+        </div>
+      )}
 
       {/* Internal Travel Memories Archive Page */}
       {isTravelMemories && (
@@ -463,18 +465,31 @@ export function App() {
           journey={activeJourney}
           onBack={navigateHome}
           onCreateJourney={handleCreateJourney}
+          onOpenPlanner={(dest) => {
+            planner.openPlannerSheet({
+              source: `journey-detail-${activeJourney.id}`,
+              destination: dest,
+            });
+          }}
         />
       )}
 
-      {/* Plan Journey Modal for down-page triggers (Phase 11 CTA, Footer, Menu, Phase 9, etc.) */}
+      {/* Viewport Planner Sheet Modal — Shares the same session draft & step */}
       <PlanJourneyModal
-        isOpen={plannerModalOpen}
-        onClose={() => setPlannerModalOpen(false)}
-        destination={plannerDestination || activeDestination}
-        source={plannerSource}
+        isOpen={planner.isPlannerSheetOpen}
+        onClose={planner.closePlannerSheet}
+        draft={planner.draft}
+        onDraftChange={planner.setDraft}
+        step={planner.step}
+        onStepChange={planner.setStep}
+        destinationTouchedByUser={planner.destinationTouchedByUser}
+        onDestinationTouch={() => planner.setDestinationTouchedByUser(true)}
+        focusField={planner.focusField}
+        onClearFocusField={planner.clearFocusField}
         onCreateJourney={handleCreateJourney}
       />
     </>
   );
 }
+
 export default App;

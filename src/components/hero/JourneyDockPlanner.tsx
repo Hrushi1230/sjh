@@ -3,15 +3,16 @@ import gsap from "gsap";
 import {
   JourneyDraft,
   PlannerState,
-  createDefaultDraft,
-  getDestinationLabel,
 } from "./plannerData";
 import { heroCopy } from "./heroData";
 import { JourneyPlannerFlow } from "../planner/JourneyPlannerFlow";
 
 export interface JourneyDockPlannerHandle {
+  showCard: () => void;
+  hideCard: () => void;
   open: () => void;
   close: () => void;
+  isCardVisible: () => boolean;
   getState: () => PlannerState;
   getDraft: () => JourneyDraft;
   setField: <K extends keyof JourneyDraft>(field: K, value: JourneyDraft[K]) => void;
@@ -25,10 +26,19 @@ interface JourneyDockPlannerProps {
   isIntroComplete: boolean;
   isPortalActive?: boolean;
   isOpen?: boolean;
+  draft: JourneyDraft;
+  onDraftChange: (draft: JourneyDraft) => void;
+  step?: 1 | 2 | 3 | 4 | 5 | 6 | 7;
+  onStepChange?: (step: 1 | 2 | 3 | 4 | 5 | 6 | 7) => void;
+  onPromoteToSheet?: (focusField?: string) => void;
+  onContinueToSheet?: () => void;
   onOpenPlanner?: () => void;
   onOpenStateChange?: (state: PlannerState) => void;
   onFormTouch?: () => void;
+  onDestinationTouch?: () => void;
+  onDropdownStateChange?: (isOpen: boolean) => void;
   onCreateJourney?: (draft: JourneyDraft) => void;
+  onCardVisibleChange?: (visible: boolean) => void;
   backgroundRef?: React.RefObject<HTMLImageElement>;
   headerRef?: React.RefObject<HTMLElement>;
   compassNavRef?: React.RefObject<HTMLElement>;
@@ -41,14 +51,20 @@ export const JourneyDockPlanner = forwardRef<JourneyDockPlannerHandle, JourneyDo
   function JourneyDockPlanner(
     {
       dockRef,
-      activeDestination,
       assetBase = "/assets/sjh-hero",
       isIntroComplete,
       isOpen: externalIsOpen,
-      onOpenPlanner,
-      onOpenStateChange,
+      draft,
+      onDraftChange,
+      step = 1,
+      onStepChange,
+      onPromoteToSheet,
+      onContinueToSheet,
       onFormTouch,
+      onDestinationTouch,
+      onDropdownStateChange,
       onCreateJourney,
+      onCardVisibleChange,
     },
     ref
   ) {
@@ -70,157 +86,34 @@ export const JourneyDockPlanner = forwardRef<JourneyDockPlannerHandle, JourneyDo
     const isAlreadySeen = typeof sessionStorage !== "undefined" && sessionStorage.getItem(SESSION_STORAGE_KEY) === "true";
     const hasAnimatedOpenRef = useRef(isAlreadySeen);
 
-    // Booking Card Open State:
-    // On revisit: open immediately. On first visit: wait 350-500ms after Hero settles, then auto-open.
-    const [isCardOpen, setIsCardOpen] = useState(isAlreadySeen);
+    // Booking Card Visibility:
+    // On revisit: visible immediately. On first visit: wait ~400ms after Hero settles, then auto-open.
+    // The Hero booking card is normal settled Hero UI, NOT a blocking modal.
+    const [isCardVisible, setIsCardVisible] = useState(isAlreadySeen);
 
-    // User ownership rule: before traveller manually selects/edits destination, hero changes update prefill.
-    // After traveller selects/edits destination, planner destination is user-owned.
-    const destinationTouchedByUserRef = useRef(false);
-
-    // Keyboard state, locked scroll anchoring & lift on mobile (Requirements 5, 7, 9, 11)
-    const [isKeyboardActive, setIsKeyboardActive] = useState(false);
-    const [keyboardLiftPx, setKeyboardLiftPx] = useState(0);
-    const lockedScrollYRef = useRef<number | null>(null);
-    const isKeyboardActiveRef = useRef(false);
-    isKeyboardActiveRef.current = isKeyboardActive;
-
-    const handleKeyboardChange = useCallback((isOpen: boolean) => {
-      if (isOpen) {
-        if (lockedScrollYRef.current === null) {
-          lockedScrollYRef.current = typeof window !== "undefined" ? window.scrollY : 0;
-        }
-        (window as any).__SJH_HERO_KEYBOARD_ACTIVE__ = true;
-        setIsKeyboardActive(true);
-        onFormTouch?.();
-      } else {
-        setIsKeyboardActive(false);
-        setKeyboardLiftPx(0);
-        const lockedY = lockedScrollYRef.current;
-        lockedScrollYRef.current = null;
-        (window as any).__SJH_HERO_KEYBOARD_ACTIVE__ = false;
-        if (lockedY !== null && typeof window !== "undefined" && Math.abs(window.scrollY - lockedY) > 0.5) {
-          window.scrollTo(0, lockedY);
-        }
-      }
-    }, [onFormTouch]);
-
-    // Requirement 7 & 8: Visual viewport & mobile keyboard lift without ScrollTrigger refresh
-    useEffect(() => {
-      const handleVV = () => {
-        const vv = window.visualViewport;
-        if (!vv) return;
-        const reduction = window.innerHeight - vv.height;
-        if (reduction > 100 && isKeyboardActiveRef.current) {
-          setKeyboardLiftPx(Math.min(reduction, 320));
-        } else if (reduction <= 100 && isKeyboardActiveRef.current) {
-          setKeyboardLiftPx(0);
-          handleKeyboardChange(false);
-        }
-      };
-
-      const vv = window.visualViewport;
-      if (vv) {
-        vv.addEventListener("resize", handleVV);
-        vv.addEventListener("scroll", handleVV);
-      }
-      return () => {
-        if (vv) {
-          vv.removeEventListener("resize", handleVV);
-          vv.removeEventListener("scroll", handleVV);
-        }
-      };
-    }, [handleKeyboardChange]);
-
-    // Requirement 5 & 11: Bounded scroll anchoring during keyboard mode (no body { position: fixed })
-    useEffect(() => {
-      if (!isKeyboardActive) return;
-
-      const handleScrollCorrection = () => {
-        const lockedY = lockedScrollYRef.current;
-        if (lockedY !== null && Math.abs(window.scrollY - lockedY) > 0.5) {
-          window.scrollTo(0, lockedY);
-        }
-      };
-
-      window.addEventListener("scroll", handleScrollCorrection, { passive: true });
-      return () => {
-        window.removeEventListener("scroll", handleScrollCorrection);
-      };
-    }, [isKeyboardActive]);
-
-    useEffect(() => {
-      return () => {
-        (window as any).__SJH_HERO_KEYBOARD_ACTIVE__ = false;
-      };
-    }, []);
-
-    // Journey draft data
-    const [draft, setDraft] = useState<JourneyDraft>(() => ({
-      ...createDefaultDraft(activeDestination),
-      from: "",
-      destination: getDestinationLabel(activeDestination) || "Puri / Odisha",
-    }));
-    const draftRef = useRef<JourneyDraft>(draft);
-    draftRef.current = draft;
-
-    // Prefill destination from active Hero world until user edits it (Requirement 7 & 8)
-    useEffect(() => {
-      if (!destinationTouchedByUserRef.current && activeDestination) {
-        const mapped = getDestinationLabel(activeDestination);
-        if (mapped) {
-          setDraft((prev) => ({
-            ...prev,
-            destination: mapped,
-          }));
-        }
-      }
-    }, [activeDestination]);
-
-    // Handle user manual destination touch (Requirement 8)
-    const handleDestinationTouch = useCallback(() => {
-      destinationTouchedByUserRef.current = true;
-      onFormTouch?.();
-    }, [onFormTouch]);
-
-    // Handle any form interaction (Requirement 9: pause hero autoplay)
-    const handleFormInteraction = useCallback(() => {
-      onFormTouch?.();
-    }, [onFormTouch]);
-
-    // Handle draft update
-    const handleDraftChange = useCallback((nextDraft: JourneyDraft) => {
-      setDraft(nextDraft);
-      const win = window as any;
-      if (win.__SJH_PLANNER_DRAFT__) {
-        win.__SJH_PLANNER_DRAFT__ = nextDraft;
-      }
-    }, []);
-
-    // Requirement 1 & 4: Auto-open sequence after first ceremonial hero animation
+    // Auto-open sequence after first ceremonial hero intro
     useEffect(() => {
       if (!isIntroComplete) return;
 
       if (isAlreadySeen) {
-        setIsCardOpen(true);
-        onOpenStateChange?.("open");
+        setIsCardVisible(true);
+        onCardVisibleChange?.(true);
         return;
       }
 
-      if (!isCardOpen) {
-        // Wait approximately 350–500ms after Hero settles
+      if (!isCardVisible) {
         const timer = setTimeout(() => {
-          setIsCardOpen(true);
-          onOpenStateChange?.("open");
+          setIsCardVisible(true);
+          onCardVisibleChange?.(true);
         }, 400);
 
         return () => clearTimeout(timer);
       }
-    }, [isIntroComplete, isCardOpen, isAlreadySeen, onOpenStateChange]);
+    }, [isIntroComplete, isCardVisible, isAlreadySeen, onCardVisibleChange]);
 
-    // Requirement 4: Smooth Auto-Open Choreography (GSAP ~750ms, ease: power3.out, NO bounce, NO autofocus)
+    // Smooth Auto-Open Choreography (GSAP ~750ms, ease: power3.out, NO bounce, NO autofocus)
     useLayoutEffect(() => {
-      if (!isCardOpen) return;
+      if (!isCardVisible) return;
       if (hasAnimatedOpenRef.current) return;
       hasAnimatedOpenRef.current = true;
 
@@ -257,53 +150,50 @@ export const JourneyDockPlanner = forwardRef<JourneyDockPlannerHandle, JourneyDo
       if (actionArea) {
         tl.fromTo(actionArea, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.35 }, 0.4);
       }
-    }, [isCardOpen]);
+    }, [isCardVisible]);
 
-    // Manual open action if ever triggered externally
-    const openPlanner = useCallback(() => {
+    // Show Hero card in-place (does NOT open PlanJourneyModal)
+    const showHeroBookingCard = useCallback(() => {
       onFormTouch?.();
-      onOpenPlanner?.();
-      setIsCardOpen(true);
-      onOpenStateChange?.("open");
-    }, [onFormTouch, onOpenPlanner, onOpenStateChange]);
+      setIsCardVisible(true);
+      onCardVisibleChange?.(true);
+    }, [onFormTouch, onCardVisibleChange]);
 
-    const closePlanner = useCallback(() => {
-      setIsCardOpen(false);
-      onOpenStateChange?.("closed");
-    }, [onOpenStateChange]);
+    const hideHeroBookingCard = useCallback(() => {
+      setIsCardVisible(false);
+      onCardVisibleChange?.(false);
+    }, [onCardVisibleChange]);
 
     // Imperative API for parent components & automated test hooks
     useImperativeHandle(
       ref,
       () => ({
-        open: openPlanner,
-        close: closePlanner,
-        getState: () => (isCardOpen ? "open" : "closed"),
-        getDraft: () => draftRef.current,
+        showCard: showHeroBookingCard,
+        hideCard: hideHeroBookingCard,
+        open: showHeroBookingCard,
+        close: hideHeroBookingCard,
+        isCardVisible: () => isCardVisible,
+        getState: () => (isCardVisible ? "open" : "closed"),
+        getDraft: () => draft,
         setField: <K extends keyof JourneyDraft>(field: K, value: JourneyDraft[K]) => {
-          setDraft((prev) => ({ ...prev, [field]: value }));
+          onDraftChange({ ...draft, [field]: value });
         },
         seek: () => {},
       }),
-      [openPlanner, closePlanner, isCardOpen]
+      [showHeroBookingCard, hideHeroBookingCard, isCardVisible, draft, onDraftChange]
     );
 
-    const isVisible = externalIsOpen !== undefined ? externalIsOpen : isCardOpen;
+    const isVisible = externalIsOpen !== undefined ? externalIsOpen : isCardVisible;
 
     return (
       <div
         ref={setShellRef}
         className={`sjhHero__dock ${isVisible ? "is-open" : ""}`}
-        data-keyboard-open={isKeyboardActive}
         onPointerDown={(e) => e.stopPropagation()}
         onPointerUp={(e) => e.stopPropagation()}
         onTouchStart={(e) => e.stopPropagation()}
         onTouchEnd={(e) => e.stopPropagation()}
         onClick={(e) => e.stopPropagation()}
-        style={{
-          transform: isKeyboardActive && keyboardLiftPx > 0 ? `translate3d(0, -${keyboardLiftPx}px, 0)` : undefined,
-          transition: isKeyboardActive ? "transform 0.25s cubic-bezier(0.16, 1, 0.3, 1)" : undefined,
-        }}
       >
         {isVisible ? (
           <div ref={cardContentRef} className="sjhHero__dockExpanded">
@@ -311,12 +201,16 @@ export const JourneyDockPlanner = forwardRef<JourneyDockPlannerHandle, JourneyDo
               <JourneyPlannerFlow
                 variant="hero"
                 draft={draft}
-                onDraftChange={handleDraftChange}
-                onClose={closePlanner}
-                onFormTouch={handleFormInteraction}
-                onDestinationTouch={handleDestinationTouch}
+                onDraftChange={onDraftChange}
+                step={step}
+                onStepChange={onStepChange}
+                onClose={hideHeroBookingCard}
+                onFormTouch={onFormTouch}
+                onDestinationTouch={onDestinationTouch}
+                onDropdownStateChange={onDropdownStateChange}
                 onComplete={onCreateJourney}
-                onKeyboardStateChange={handleKeyboardChange}
+                onPromoteToSheet={onPromoteToSheet}
+                onContinueFromHero={onContinueToSheet}
               />
             </div>
           </div>
@@ -326,7 +220,7 @@ export const JourneyDockPlanner = forwardRef<JourneyDockPlannerHandle, JourneyDo
             ref={dockCollapsedRef}
             type="button"
             className="sjhHero__dockCollapsed"
-            onClick={openPlanner}
+            onClick={showHeroBookingCard}
             aria-label="Book now"
           >
             <span className="sjhHero__dockIcon" aria-hidden="true">

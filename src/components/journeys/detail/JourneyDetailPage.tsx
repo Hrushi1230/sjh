@@ -22,12 +22,14 @@ interface JourneyDetailPageProps {
   journey: CuratedJourney;
   onBack: () => void;
   onCreateJourney?: (draft: JourneyDraft) => void;
+  onOpenPlanner?: (destination: string) => void;
 }
 
 export function JourneyDetailPage({
   journey,
   onBack,
   onCreateJourney,
+  onOpenPlanner: externalOnOpenPlanner,
 }: JourneyDetailPageProps) {
   const [plannerOpen, setPlannerOpen] = useState(false);
 
@@ -73,7 +75,13 @@ export function JourneyDetailPage({
         {/* H. FINAL PLAN THIS JOURNEY CTA */}
         <JourneyPlanCtaSection
           journey={journey}
-          onOpenPlanner={() => setPlannerOpen(true)}
+          onOpenPlanner={() => {
+            if (externalOnOpenPlanner) {
+              externalOnOpenPlanner(journey.id);
+            } else {
+              setPlannerOpen(true);
+            }
+          }}
         />
 
         {/* EDITORIAL FRAMEWORK DISCLAIMER */}
@@ -84,14 +92,16 @@ export function JourneyDetailPage({
         </div>
       </div>
 
-      {/* REUSED PHASE-3 JOURNEY PLANNER MODAL */}
-      <PlanJourneyModal
-        isOpen={plannerOpen}
-        onClose={() => setPlannerOpen(false)}
-        destination={journey.id}
-        source={journey.id}
-        onCreateJourney={onCreateJourney}
-      />
+      {/* Fallback modal only when not connected to shared session */}
+      {!externalOnOpenPlanner && (
+        <PlanJourneyModal
+          isOpen={plannerOpen}
+          onClose={() => setPlannerOpen(false)}
+          destination={journey.id}
+          source={journey.id}
+          onCreateJourney={onCreateJourney}
+        />
+      )}
     </main>
   );
 }
