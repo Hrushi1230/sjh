@@ -149,31 +149,9 @@ export function validateStep4(draft: JourneyDraft): FormErrors {
   return errors;
 }
 
-/** Step 5 Validation: Customer Details */
-export function validateStep5(draft: JourneyDraft): FormErrors {
-  const errors: FormErrors = {};
-
-  if (!draft.name || !draft.name.trim()) {
-    errors.name = "Please enter your name.";
-  }
-
-  if (!draft.phone || !draft.phone.trim()) {
-    errors.phone = "Please enter a contact number.";
-  } else {
-    const cleanPhone = draft.phone.replace(/[\s\-+()]/g, "");
-    if (cleanPhone.length < 8) {
-      errors.phone = "Please enter a valid phone number.";
-    }
-  }
-
-  if (draft.email && draft.email.trim()) {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(draft.email.trim())) {
-      errors.email = "Please enter a valid email address.";
-    }
-  }
-
-  return errors;
+/** Optional Details Validation (formerly Step 5) */
+export function validateStep5(_draft: JourneyDraft): FormErrors {
+  return {};
 }
 
 /** Full Journey Draft Validation */
@@ -183,7 +161,6 @@ export function validateJourneyDraft(draft: JourneyDraft): FormErrors {
     ...validateStep2(draft),
     ...validateStep3(draft),
     ...validateStep4(draft),
-    ...validateStep5(draft),
   };
 }
 

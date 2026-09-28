@@ -32,21 +32,16 @@ def run_tests():
         # ========================================================
         print("\n--- TEST CASE 1: Full 7-Step Enquiry Flow ---", flush=True)
         page.goto("http://localhost:5173/")
-        page.wait_for_timeout(600)
-
-        # Settle hero intro immediately
+        page.wait_for_function("() => typeof window.__SJH_PLANNER_OPEN__ === 'function'")
         page.evaluate("window.__SJH_SET_SETTLED__ && window.__SJH_SET_SETTLED__();")
-        page.wait_for_timeout(300)
-
-        # Open planner deterministically via testing hook
-        page.evaluate("window.__SJH_PLANNER_OPEN__ && window.__SJH_PLANNER_OPEN__();")
+        page.evaluate("window.__SJH_PLANNER_OPEN__();")
         page.wait_for_timeout(700)
 
-        # Verify Step 1: Step 1 of 7 · JOURNEY
+        # Verify Step 1: Step 1 of 6 · JOURNEY
         step_badge = page.inner_text(".sjhFlow__stepBadge")
         step_title = page.inner_text(".sjhFlow__stepTitle")
         print(f"Step indicator: '{step_badge}' - '{step_title}'", flush=True)
-        assert "STEP 1 OF 7" in step_badge, f"Expected STEP 1 OF 7, got {step_badge}"
+        assert "STEP 1 OF 6" in step_badge, f"Expected STEP 1 OF 6, got {step_badge}"
         assert "JOURNEY" in step_title, f"Expected JOURNEY, got {step_title}"
 
         # Verify exactly 8 destination chips are present
@@ -55,102 +50,88 @@ def run_tests():
         print(f"Found {chip_count} destination chips (expected 8)", flush=True)
         assert chip_count == 8, f"Expected 8 destination chips, got {chip_count}"
 
-        # Fill Step 1: From = Bhubaneswar, Destination = South India
-        from_input = page.locator(".sjhHero__plannerInput").first
-        from_input.fill("Bhubaneswar")
+        modal = page.locator(".sjhPlannerShell")
+
+        # Select "Bhubaneswar" origin chip
+        modal.locator("button.sjhFlow__chip:has-text('Bhubaneswar')").click()
+        page.wait_for_timeout(200)
         
         # Select "South India" chip
-        page.click("button.sjhFlow__destChip:has-text('South India')")
+        modal.locator("button.sjhFlow__destChip:has-text('South India')").click()
         page.wait_for_timeout(200)
 
         # Click CONTINUE to Step 2
-        page.click("button.sjhHero__plannerCta:has-text('CONTINUE')")
+        modal.locator("button.sjhHero__plannerCta:has-text('CONTINUE')").click()
         page.wait_for_timeout(400)
 
         # Verify Step 2: DATES
-        step_badge = page.inner_text(".sjhFlow__stepBadge")
-        assert "STEP 2 OF 7" in step_badge, f"Expected STEP 2 OF 7, got {step_badge}"
+        step_badge = modal.locator(".sjhFlow__stepBadge").inner_text()
+        assert "STEP 2 OF 6" in step_badge, f"Expected STEP 2 OF 6, got {step_badge}"
         print(f"Step 2 indicator: '{step_badge}'", flush=True)
 
         # Select Exact Dates: 2027-01-12 to 2027-01-20
-        page.click("button.sjhHero__whenPill:has-text('I know my dates')")
+        modal.locator("button.sjhHero__whenPill:has-text('I know my dates')").click()
         page.wait_for_timeout(200)
-        page.locator("input[type='date']").nth(0).fill("2027-01-12")
-        page.locator("input[type='date']").nth(1).fill("2027-01-20")
+        modal.locator("input[type='date']").nth(0).fill("2027-01-12")
+        modal.locator("input[type='date']").nth(1).fill("2027-01-20")
 
         # Click CONTINUE to Step 3
-        page.click("button.sjhHero__plannerCta:has-text('CONTINUE')")
+        modal.locator("button.sjhHero__plannerCta:has-text('CONTINUE')").click()
         page.wait_for_timeout(400)
 
         # Verify Step 3: TRAVELLERS
-        step_badge = page.inner_text(".sjhFlow__stepBadge")
-        assert "STEP 3 OF 7" in step_badge, f"Expected STEP 3 OF 7, got {step_badge}"
+        step_badge = modal.locator(".sjhFlow__stepBadge").inner_text()
+        assert "STEP 3 OF 6" in step_badge, f"Expected STEP 3 OF 6, got {step_badge}"
         print(f"Step 3 indicator: '{step_badge}'", flush=True)
 
         # Increment Adults from 2 to 3, Children from 0 to 1
-        page.locator("button[aria-label='Increase adults']").click(force=True)
-        page.locator("button[aria-label='Increase children']").click(force=True)
+        modal.locator("button[aria-label='Increase adults']").click(force=True)
+        modal.locator("button[aria-label='Increase children']").click(force=True)
 
         # Click CONTINUE to Step 4
-        page.click("button.sjhHero__plannerCta:has-text('CONTINUE')")
+        modal.locator("button.sjhHero__plannerCta:has-text('CONTINUE')").click()
         page.wait_for_timeout(400)
 
         # Verify Step 4: JOURNEY TYPE
-        step_badge = page.inner_text(".sjhFlow__stepBadge")
-        assert "STEP 4 OF 7" in step_badge, f"Expected STEP 4 OF 7, got {step_badge}"
+        step_badge = modal.locator(".sjhFlow__stepBadge").inner_text()
+        assert "STEP 4 OF 6" in step_badge, f"Expected STEP 4 OF 6, got {step_badge}"
         print(f"Step 4 indicator: '{step_badge}'", flush=True)
 
         # Select "Pilgrimage & Spiritual Tour"
-        page.click("button.sjhFlow__typeRow:has-text('Pilgrimage & Spiritual Tour')")
+        modal.locator("button.sjhFlow__typeRow:has-text('Pilgrimage & Spiritual Tour')").click()
 
-        # Click CONTINUE to Step 5
-        page.click("button.sjhHero__plannerCta:has-text('CONTINUE')")
+        # Click CONTINUE to Step 5 (Notes)
+        modal.locator("button.sjhHero__plannerCta:has-text('CONTINUE')").click()
         page.wait_for_timeout(400)
 
-        # Verify Step 5: YOUR DETAILS
-        step_badge = page.inner_text(".sjhFlow__stepBadge")
-        assert "STEP 5 OF 7" in step_badge, f"Expected STEP 5 OF 7, got {step_badge}"
+        # Verify Step 5: NOTES
+        step_badge = modal.locator(".sjhFlow__stepBadge").inner_text()
+        assert "STEP 5 OF 6" in step_badge, f"Expected STEP 5 OF 6, got {step_badge}"
         print(f"Step 5 indicator: '{step_badge}'", flush=True)
 
-        # Fill Details: Name = Test Traveller, Phone = 9876543210
-        inputs = page.locator(".sjhHero__plannerInput")
-        inputs.nth(0).fill("Test Traveller")
-        inputs.nth(1).fill("9876543210")
+        modal.locator("textarea.sjhFlow__textarea").fill("Travelling with senior citizens.")
 
-        # Click CONTINUE to Step 6
-        page.click("button.sjhHero__plannerCta:has-text('CONTINUE')")
+        # Click REVIEW JOURNEY DETAILS to Step 6
+        modal.locator("button.sjhHero__plannerCta:has-text('REVIEW')").click()
         page.wait_for_timeout(400)
 
-        # Verify Step 6: NOTES
-        step_badge = page.inner_text(".sjhFlow__stepBadge")
-        assert "STEP 6 OF 7" in step_badge, f"Expected STEP 6 OF 7, got {step_badge}"
+        # Verify Step 6: REVIEW
+        step_badge = modal.locator(".sjhFlow__stepBadge").inner_text()
+        assert "STEP 6 OF 6" in step_badge, f"Expected STEP 6 OF 6, got {step_badge}"
         print(f"Step 6 indicator: '{step_badge}'", flush=True)
 
-        page.locator("textarea.sjhFlow__textarea").fill("Travelling with senior citizens.")
-
-        # Click REVIEW JOURNEY DETAILS to Step 7
-        page.click("button.sjhHero__plannerCta:has-text('REVIEW')")
-        page.wait_for_timeout(400)
-
-        # Verify Step 7: REVIEW
-        step_badge = page.inner_text(".sjhFlow__stepBadge")
-        assert "STEP 7 OF 7" in step_badge, f"Expected STEP 7 OF 7, got {step_badge}"
-        print(f"Step 7 indicator: '{step_badge}'", flush=True)
-
         # Verify Review Card Content
-        review_text = page.inner_text(".sjhReviewCard")
+        review_text = modal.locator(".sjhReviewCard").inner_text()
         assert "BHUBANESWAR" in review_text.upper()
         assert "SOUTH INDIA" in review_text.upper()
         assert "3 ADULTS" in review_text.upper()
         assert "1 CHILD" in review_text.upper()
         assert "PILGRIMAGE & SPIRITUAL TOUR" in review_text.upper()
-        assert "TEST TRAVELLER" in review_text.upper()
-        assert "9876543210" in review_text
         assert "TRAVELLING WITH SENIOR CITIZENS" in review_text.upper()
         print("Review card display validation: PASS", flush=True)
 
         # Click CONTINUE ON WHATSAPP
-        page.click(".sjhFlow__whatsappBtn")
+        modal.locator(".sjhFlow__whatsappBtn").click()
         page.wait_for_timeout(400)
         
         wa_url = page.evaluate("window.__LAST_OPENED_URL__;")
@@ -169,8 +150,6 @@ def run_tests():
         assert "Adults: 3" in message
         assert "Children: 1" in message
         assert "Pilgrimage & Spiritual Tour" in message
-        assert "Name: Test Traveller" in message
-        assert "Phone: 9876543210" in message
         assert "Travelling with senior citizens." in message
         print("Test Case 1: PASS", flush=True)
 
@@ -192,7 +171,7 @@ def run_tests():
         print("Test Case 2: PASS", flush=True)
 
         # Close modal
-        page.click(".sjhPlanModal__card .sjhHero__plannerClose")
+        page.click(".sjhPlannerHeader__close")
         page.wait_for_timeout(400)
 
         # ========================================================
@@ -200,44 +179,38 @@ def run_tests():
         # ========================================================
         print("\n--- TEST CASE 3: Flexible Dates Formatting ---", flush=True)
         page.goto("http://localhost:5173/")
-        page.wait_for_timeout(600)
+        page.wait_for_function("() => typeof window.__SJH_PLANNER_OPEN__ === 'function'")
         page.evaluate("window.__SJH_SET_SETTLED__ && window.__SJH_SET_SETTLED__();")
-        page.wait_for_timeout(300)
-        page.evaluate("window.__SJH_PLANNER_OPEN__ && window.__SJH_PLANNER_OPEN__();")
+        page.evaluate("window.__SJH_PLANNER_OPEN__();")
         page.wait_for_timeout(600)
 
+        modal = page.locator(".sjhPlannerShell")
+
         # Step 1 -> Destination = Kashmir
-        page.click("button.sjhFlow__destChip:has-text('Kashmir')")
-        page.click("button.sjhHero__plannerCta:has-text('CONTINUE')")
+        modal.locator("button.sjhFlow__destChip:has-text('Kashmir')").click()
+        modal.locator("button.sjhHero__plannerCta:has-text('CONTINUE')").click()
         page.wait_for_timeout(400)
 
         # Step 2 -> Flexible dates with Preferred Month = December 2026
-        page.locator("select").select_option("December 2026")
-        page.click("button.sjhHero__plannerCta:has-text('CONTINUE')")
+        modal.locator("select").select_option("December 2026")
+        modal.locator("button.sjhHero__plannerCta:has-text('CONTINUE')").click()
         page.wait_for_timeout(400)
 
         # Step 3 -> Continue
-        page.click("button.sjhHero__plannerCta:has-text('CONTINUE')")
+        modal.locator("button.sjhHero__plannerCta:has-text('CONTINUE')").click()
         page.wait_for_timeout(400)
 
         # Step 4 -> Pan-India Group Tour
-        page.click("button.sjhFlow__typeRow:has-text('Pan-India Group Tour')")
-        page.click("button.sjhHero__plannerCta:has-text('CONTINUE')")
+        modal.locator("button.sjhFlow__typeRow:has-text('Pan-India Group Tour')").click()
+        modal.locator("button.sjhHero__plannerCta:has-text('CONTINUE')").click()
         page.wait_for_timeout(400)
 
-        # Step 5 -> Name & Phone
-        inputs = page.locator(".sjhHero__plannerInput")
-        inputs.nth(0).fill("Flexible Traveller")
-        inputs.nth(1).fill("9123456780")
-        page.click("button.sjhHero__plannerCta:has-text('CONTINUE')")
-        page.wait_for_timeout(400)
-
-        # Step 6 -> Review
-        page.click("button.sjhHero__plannerCta:has-text('REVIEW')")
+        # Step 5 -> Notes (click REVIEW to proceed to Step 6 Review)
+        modal.locator("button.sjhHero__plannerCta:has-text('REVIEW')").click()
         page.wait_for_timeout(400)
 
         # Trigger WhatsApp
-        page.click(".sjhFlow__whatsappBtn")
+        modal.locator(".sjhFlow__whatsappBtn").click()
         page.wait_for_timeout(400)
 
         wa_url = page.evaluate("window.__LAST_OPENED_URL__;")

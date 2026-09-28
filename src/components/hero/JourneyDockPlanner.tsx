@@ -28,8 +28,8 @@ interface JourneyDockPlannerProps {
   isOpen?: boolean;
   draft: JourneyDraft;
   onDraftChange: (draft: JourneyDraft) => void;
-  step?: 1 | 2 | 3 | 4 | 5 | 6 | 7;
-  onStepChange?: (step: 1 | 2 | 3 | 4 | 5 | 6 | 7) => void;
+  step?: 1 | 2 | 3 | 4 | 5 | 6;
+  onStepChange?: (step: 1 | 2 | 3 | 4 | 5 | 6) => void;
   onPromoteToSheet?: (focusField?: string) => void;
   onContinueToSheet?: () => void;
   onOpenPlanner?: () => void;

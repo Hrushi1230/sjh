@@ -56,14 +56,14 @@ type Props = {
   onOpenPlannerSheet?: (options?: {
     source?: string;
     destination?: string;
-    step?: 1 | 2 | 3 | 4 | 5 | 6 | 7;
+    step?: 1 | 2 | 3 | 4 | 5 | 6;
     focusField?: string;
   }) => void;
   onPlanJourney?: () => void;
   draft: JourneyDraft;
   onDraftChange: (draft: JourneyDraft) => void;
-  step?: 1 | 2 | 3 | 4 | 5 | 6 | 7;
-  onStepChange?: (step: 1 | 2 | 3 | 4 | 5 | 6 | 7) => void;
+  step?: 1 | 2 | 3 | 4 | 5 | 6;
+  onStepChange?: (step: 1 | 2 | 3 | 4 | 5 | 6) => void;
   destinationTouchedByUser?: boolean;
   onDestinationTouched?: () => void;
   onCreateJourney?: (draft: JourneyDraft) => void;

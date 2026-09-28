@@ -79,13 +79,24 @@ export function buildJourneyWhatsAppMessage(draft: JourneyDraft): string {
   lines.push("Journey Type:");
   lines.push(draft.journeyType || "Customized Tour");
 
-  lines.push("");
-  lines.push("TRAVELLER DETAILS");
-  lines.push("");
-  lines.push(`Name: ${draft.name.trim()}`);
-  lines.push(`Phone: ${draft.phone.trim()}`);
-  if (draft.email && draft.email.trim()) {
-    lines.push(`Email: ${draft.email.trim()}`);
+  const hasTravellerDetails = Boolean(
+    (draft.name && draft.name.trim()) ||
+    (draft.phone && draft.phone.trim()) ||
+    (draft.email && draft.email.trim())
+  );
+  if (hasTravellerDetails) {
+    lines.push("");
+    lines.push("TRAVELLER DETAILS");
+    lines.push("");
+    if (draft.name && draft.name.trim()) {
+      lines.push(`Name: ${draft.name.trim()}`);
+    }
+    if (draft.phone && draft.phone.trim()) {
+      lines.push(`Phone: ${draft.phone.trim()}`);
+    }
+    if (draft.email && draft.email.trim()) {
+      lines.push(`Email: ${draft.email.trim()}`);
+    }
   }
 
   if (draft.notes && draft.notes.trim()) {

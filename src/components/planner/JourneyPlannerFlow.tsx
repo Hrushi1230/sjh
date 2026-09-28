@@ -1,13 +1,12 @@
 /**
- * SHREE JAGANNATH HOLIDAYS — 7-STEP JOURNEY PLANNER FLOW
+ * SHREE JAGANNATH HOLIDAYS — 6-STEP JOURNEY PLANNER FLOW
  * Upgraded production customer enquiry flow:
  * 01 JOURNEY: From + Destination (combined into Step 1)
  * 02 DATES: Flexible or exact dates + duration
  * 03 TRAVELLERS: Adults + Children + Infants
  * 04 JOURNEY TYPE: Verified SJH service selection
- * 05 YOUR DETAILS: Name + Phone + optional Email
- * 06 NOTES: Optional additional requirements
- * 07 REVIEW: Complete summary + WhatsApp handoff
+ * 05 NOTES: Optional additional requirements
+ * 06 REVIEW: Complete summary + WhatsApp handoff
  */
 
 import React, { useState, useRef, useEffect, useId, useMemo } from "react";
@@ -18,7 +17,6 @@ import {
   validateStep2,
   validateStep3,
   validateStep4,
-  validateStep5,
   formatWhenSummary,
   formatTravellersSummary,
 } from "../hero/plannerData";
@@ -29,8 +27,8 @@ import "./plannerFlow.css";
 interface JourneyPlannerFlowProps {
   draft: JourneyDraft;
   onDraftChange: (draft: JourneyDraft) => void;
-  step?: 1 | 2 | 3 | 4 | 5 | 6 | 7;
-  onStepChange?: (step: 1 | 2 | 3 | 4 | 5 | 6 | 7) => void;
+  step?: 1 | 2 | 3 | 4 | 5 | 6;
+  onStepChange?: (step: 1 | 2 | 3 | 4 | 5 | 6) => void;
   onClose?: () => void;
   onComplete?: (draft: JourneyDraft) => void;
   isKeyboardOpen?: boolean;
@@ -63,9 +61,9 @@ export const JourneyPlannerFlow: React.FC<JourneyPlannerFlowProps> = ({
   focusFieldOnMount,
   onClearFocusField,
 }) => {
-  const [internalStep, setInternalStep] = useState<1 | 2 | 3 | 4 | 5 | 6 | 7>(1);
+  const [internalStep, setInternalStep] = useState<1 | 2 | 3 | 4 | 5 | 6>(1);
   const step = stepProp !== undefined ? stepProp : internalStep;
-  const setStep = (nextStep: 1 | 2 | 3 | 4 | 5 | 6 | 7) => {
+  const setStep = (nextStep: 1 | 2 | 3 | 4 | 5 | 6) => {
     if (onStepChange) {
       onStepChange(nextStep);
     } else {
@@ -145,7 +143,7 @@ export const JourneyPlannerFlow: React.FC<JourneyPlannerFlowProps> = ({
   };
 
   // Helper to transition steps cleanly with keyboard handling (Requirement 23)
-  const transitionToStep = (nextStep: 1 | 2 | 3 | 4 | 5 | 6 | 7) => {
+  const transitionToStep = (nextStep: 1 | 2 | 3 | 4 | 5 | 6) => {
     const isInputFocused =
       typeof document !== "undefined" &&
       document.activeElement instanceof HTMLElement &&
@@ -239,26 +237,14 @@ export const JourneyPlannerFlow: React.FC<JourneyPlannerFlowProps> = ({
     transitionToStep(5);
   };
 
-  // Step 5: Your Details
+  // Step 5: Notes -> Review
   const handleNextStep5 = (e: React.FormEvent) => {
     e.preventDefault();
-    const errs = validateStep5(draft);
-    if (Object.keys(errs).length > 0) {
-      setErrors(errs);
-      return;
-    }
     setErrors({});
     transitionToStep(6);
   };
 
-  // Step 6: Notes -> Review
-  const handleNextStep6 = (e: React.FormEvent) => {
-    e.preventDefault();
-    setErrors({});
-    transitionToStep(7);
-  };
-
-  // Step 7: Continue on WhatsApp
+  // Step 6: Continue on WhatsApp
   const handleContinueOnWhatsApp = () => {
     const message = buildJourneyWhatsAppMessage(draft);
     const url = createWhatsAppUrl(message);
@@ -288,7 +274,7 @@ export const JourneyPlannerFlow: React.FC<JourneyPlannerFlowProps> = ({
       onTouchEnd={(e) => e.stopPropagation()}
       onClick={(e) => e.stopPropagation()}
     >
-      {/* Step Header & Progress (1 OF 7 through 7 OF 7) */}
+      {/* Step Header & Progress (1 OF 6 through 6 OF 6) */}
       {!isHandoffDone && (
         variant === "hero" ? (
           <div className="sjhHeroCard__header">
@@ -298,13 +284,12 @@ export const JourneyPlannerFlow: React.FC<JourneyPlannerFlowProps> = ({
             </div>
             <div className="sjhHeroCard__headerMeta">
               <span className="sjhHeroCard__stepBadge">
-                STEP {step} OF 7 · {
+                STEP {step} OF 6 · {
                   step === 1 ? "JOURNEY" :
                   step === 2 ? "DATES" :
                   step === 3 ? "TRAVELLERS" :
                   step === 4 ? "JOURNEY TYPE" :
-                  step === 5 ? "YOUR DETAILS" :
-                  step === 6 ? "NOTES" : "REVIEW"
+                  step === 5 ? "NOTES" : "REVIEW"
                 }
               </span>
               {step > 1 && (
@@ -326,15 +311,14 @@ export const JourneyPlannerFlow: React.FC<JourneyPlannerFlowProps> = ({
         ) : (
           <div className="sjhFlow__stepBar">
             <div className="sjhFlow__stepInfo">
-              <span className="sjhFlow__stepBadge">STEP {step} OF 7</span>
+              <span className="sjhFlow__stepBadge">STEP {step} OF 6</span>
               <span className="sjhFlow__stepTitle">
                 {step === 1 && "JOURNEY"}
                 {step === 2 && "TRAVEL DATES"}
                 {step === 3 && "TRAVELLERS"}
                 {step === 4 && "JOURNEY TYPE"}
-                {step === 5 && "YOUR DETAILS"}
-                {step === 6 && "SPECIAL REQUESTS"}
-                {step === 7 && "REVIEW ENQUIRY"}
+                {step === 5 && "SPECIAL REQUESTS"}
+                {step === 6 && "REVIEW ENQUIRY"}
               </span>
             </div>
 
@@ -976,103 +960,10 @@ export const JourneyPlannerFlow: React.FC<JourneyPlannerFlowProps> = ({
       )}
 
       {/* ======================================================== */}
-      {/* STEP 5 / 7: YOUR DETAILS (NAME, PHONE, OPTIONAL EMAIL)   */}
+      {/* STEP 5 / 6: NOTES (SPECIAL REQUIREMENTS)                 */}
       {/* ======================================================== */}
       {step === 5 && (
         <form onSubmit={handleNextStep5} className="sjhFlow__form sjhFlow__stepAnimated">
-          <div className="sjhFlow__scrollArea">
-            {/* NAME */}
-            <div className={`sjhHero__plannerRow ${errors.name ? "has-error" : ""}`}>
-              <label className="sjhHero__plannerLabel" htmlFor={`${idPrefix}-name`}>
-                FULL NAME *
-              </label>
-              <div className="sjhHero__plannerValueWrap">
-                <input
-                  id={`${idPrefix}-name`}
-                  className="sjhHero__plannerInput"
-                  type="text"
-                  value={draft.name}
-                  onChange={(e) => setField("name", e.target.value)}
-                  onPointerDown={(e) => e.stopPropagation()}
-                  placeholder="Enter your full name"
-                  autoComplete="name"
-                  onFocus={handleInputFocus}
-                />
-              </div>
-              {errors.name && (
-                <span className="sjhHero__plannerError" role="alert">
-                  {errors.name}
-                </span>
-              )}
-            </div>
-
-            {/* PHONE */}
-            <div className={`sjhHero__plannerRow ${errors.phone ? "has-error" : ""}`}>
-              <label className="sjhHero__plannerLabel" htmlFor={`${idPrefix}-phone`}>
-                PHONE NUMBER (WHATSAPP CONNECTED) *
-              </label>
-              <div className="sjhHero__plannerValueWrap">
-                <input
-                  id={`${idPrefix}-phone`}
-                  className="sjhHero__plannerInput"
-                  type="tel"
-                  inputMode="tel"
-                  value={draft.phone}
-                  onChange={(e) => setField("phone", e.target.value)}
-                  onPointerDown={(e) => e.stopPropagation()}
-                  placeholder="+91 XXXXX XXXXX"
-                  autoComplete="tel"
-                  onFocus={handleInputFocus}
-                />
-              </div>
-              {errors.phone && (
-                <span className="sjhHero__plannerError" role="alert">
-                  {errors.phone}
-                </span>
-              )}
-            </div>
-
-            {/* EMAIL */}
-            <div className={`sjhHero__plannerRow ${errors.email ? "has-error" : ""}`}>
-              <label className="sjhHero__plannerLabel" htmlFor={`${idPrefix}-email`}>
-                EMAIL ADDRESS (OPTIONAL)
-              </label>
-              <div className="sjhHero__plannerValueWrap">
-                <input
-                  id={`${idPrefix}-email`}
-                  className="sjhHero__plannerInput"
-                  type="email"
-                  inputMode="email"
-                  value={draft.email || ""}
-                  onChange={(e) => setField("email", e.target.value)}
-                  onPointerDown={(e) => e.stopPropagation()}
-                  placeholder="example@email.com"
-                  autoComplete="email"
-                  onFocus={handleInputFocus}
-                />
-              </div>
-              {errors.email && (
-                <span className="sjhHero__plannerError" role="alert">
-                  {errors.email}
-                </span>
-              )}
-            </div>
-          </div>
-
-          <div className="sjhFlow__actionArea">
-            <button type="submit" className="sjhHero__plannerCta">
-              <span>CONTINUE</span>
-              <span className="sjhHero__plannerCtaArrow" aria-hidden="true">→</span>
-            </button>
-          </div>
-        </form>
-      )}
-
-      {/* ======================================================== */}
-      {/* STEP 6 / 7: NOTES (SPECIAL REQUIREMENTS)                 */}
-      {/* ======================================================== */}
-      {step === 6 && (
-        <form onSubmit={handleNextStep6} className="sjhFlow__form sjhFlow__stepAnimated">
           <div className="sjhFlow__scrollArea">
             <div className="sjhHero__plannerRow">
               <label className="sjhHero__plannerLabel" htmlFor={`${idPrefix}-notes`}>
@@ -1101,9 +992,9 @@ export const JourneyPlannerFlow: React.FC<JourneyPlannerFlowProps> = ({
       )}
 
       {/* ======================================================== */}
-      {/* STEP 7 / 7: REVIEW ENQUIRY + WHATSAPP HANDOFF            */}
+      {/* STEP 6 / 6: REVIEW ENQUIRY + WHATSAPP HANDOFF            */}
       {/* ======================================================== */}
-      {step === 7 && !isHandoffDone && (
+      {step === 6 && !isHandoffDone && (
         <div className="sjhFlow__form sjhFlow__stepAnimated">
           <div className="sjhFlow__scrollArea">
             <div className="sjhReviewCard">
@@ -1133,13 +1024,14 @@ export const JourneyPlannerFlow: React.FC<JourneyPlannerFlowProps> = ({
                   <span className="sjhReviewCard__val">{draft.journeyType}</span>
                 </div>
 
-                <div className="sjhReviewCard__cell sjhReviewCard__cell--full">
-                  <span className="sjhReviewCard__label">CONTACT</span>
-                  <span className="sjhReviewCard__val">
-                    {draft.name} · {draft.phone}
-                    {draft.email ? ` · ${draft.email}` : ""}
-                  </span>
-                </div>
+                {Boolean((draft.name && draft.name.trim()) || (draft.phone && draft.phone.trim()) || (draft.email && draft.email.trim())) && (
+                  <div className="sjhReviewCard__cell sjhReviewCard__cell--full">
+                    <span className="sjhReviewCard__label">CONTACT</span>
+                    <span className="sjhReviewCard__val">
+                      {[draft.name, draft.phone, draft.email].filter((v) => v && v.trim()).join(" · ")}
+                    </span>
+                  </div>
+                )}
 
                 {draft.notes && draft.notes.trim() && (
                   <div className="sjhReviewCard__cell sjhReviewCard__cell--full">
@@ -1218,7 +1110,7 @@ export const JourneyPlannerFlow: React.FC<JourneyPlannerFlowProps> = ({
                 style={{ flex: 1 }}
                 onClick={() => {
                   setIsHandoffDone(false);
-                  transitionToStep(7);
+                  transitionToStep(6);
                 }}
               >
                 Review Details

@@ -9,15 +9,15 @@ export interface PlannerSessionContextType {
   draft: JourneyDraft;
   setDraft: React.Dispatch<React.SetStateAction<JourneyDraft>>;
   updateDraftField: <K extends keyof JourneyDraft>(field: K, value: JourneyDraft[K]) => void;
-  step: 1 | 2 | 3 | 4 | 5 | 6 | 7;
-  setStep: (step: 1 | 2 | 3 | 4 | 5 | 6 | 7) => void;
+  step: 1 | 2 | 3 | 4 | 5 | 6;
+  setStep: (step: 1 | 2 | 3 | 4 | 5 | 6) => void;
   destinationTouchedByUser: boolean;
   setDestinationTouchedByUser: (touched: boolean) => void;
   isPlannerSheetOpen: boolean;
   openPlannerSheet: (options?: {
     source?: string;
     destination?: string;
-    step?: 1 | 2 | 3 | 4 | 5 | 6 | 7;
+    step?: 1 | 2 | 3 | 4 | 5 | 6;
     focusField?: string;
   }) => void;
   closePlannerSheet: () => void;
@@ -40,7 +40,7 @@ export const PlannerSessionProvider: React.FC<PlannerSessionProviderProps> = ({
   initialDestination = "puri",
 }) => {
   const [draft, setDraft] = useState<JourneyDraft>(() => createDefaultDraft(initialDestination));
-  const [step, setStep] = useState<1 | 2 | 3 | 4 | 5 | 6 | 7>(1);
+  const [step, setStep] = useState<1 | 2 | 3 | 4 | 5 | 6>(1);
   const [destinationTouchedByUser, setDestinationTouchedByUserState] = useState(false);
   const [isPlannerSheetOpen, setIsPlannerSheetOpen] = useState(false);
   const [focusField, setFocusField] = useState<string | null>(null);
@@ -75,7 +75,7 @@ export const PlannerSessionProvider: React.FC<PlannerSessionProviderProps> = ({
   const openPlannerSheet = useCallback((options?: {
     source?: string;
     destination?: string;
-    step?: 1 | 2 | 3 | 4 | 5 | 6 | 7;
+    step?: 1 | 2 | 3 | 4 | 5 | 6;
     focusField?: string;
   }) => {
     if (options?.source) {

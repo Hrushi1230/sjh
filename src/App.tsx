@@ -152,7 +152,7 @@ function AppContent() {
   // Close planner safely if route changes (Requirement 35)
   useEffect(() => {
     planner.closePlannerSheet();
-  }, [activeJourney, isTravelMemories, planner]);
+  }, [activeJourney, isTravelMemories]);
 
   // Global planner hooks so callers anywhere (Hero, Phase 9, Phase 11, Footer, Menu) open planner seamlessly
   useLayoutEffect(() => {

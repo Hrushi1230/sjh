@@ -27,8 +27,8 @@ interface PlanJourneyModalProps {
   source?: string;
   draft?: JourneyDraft;
   onDraftChange?: (draft: JourneyDraft) => void;
-  step?: 1 | 2 | 3 | 4 | 5 | 6 | 7;
-  onStepChange?: (step: 1 | 2 | 3 | 4 | 5 | 6 | 7) => void;
+  step?: 1 | 2 | 3 | 4 | 5 | 6;
+  onStepChange?: (step: 1 | 2 | 3 | 4 | 5 | 6) => void;
   destinationTouchedByUser?: boolean;
   onDestinationTouch?: () => void;
   focusField?: string | null;
@@ -57,7 +57,7 @@ export function PlanJourneyModal({
   const currentDraft = externalDraft !== undefined ? externalDraft : internalDraft;
   const handleDraftChange = externalOnDraftChange || setInternalDraft;
 
-  const [internalStep, setInternalStep] = useState<1 | 2 | 3 | 4 | 5 | 6 | 7>(1);
+  const [internalStep, setInternalStep] = useState<1 | 2 | 3 | 4 | 5 | 6>(1);
   const currentStep = externalStep !== undefined ? externalStep : internalStep;
   const handleStepChange = externalOnStepChange || setInternalStep;
 
